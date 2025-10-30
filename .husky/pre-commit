@@ -1,0 +1,2 @@
+bun run ./scripts/generate-env.ts
+bun run lint:fix

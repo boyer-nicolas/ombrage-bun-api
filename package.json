@@ -7,11 +7,13 @@
 		"dev": "bun run --hot index.ts",
 		"start": "bun index.ts",
 		"lint:fix": "biome check --write .",
-		"lint": "biome check"
+		"lint": "biome check",
+		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.2",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"husky": "^9.1.7"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
