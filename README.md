@@ -38,44 +38,43 @@ Once the server is running, visit:
 2. **Add route handlers** in `route.ts`:
 
    ```typescript
-   import { Route } from "@lib/route";
-   import { ProfileService } from "./service";
+   import { createRoute } from "@lib/helpers";
+   import { getProfile } from "@routes/users/profile/service";
+   import spec from "@routes/users/profile/spec";
 
-   export class UserProfileRoute extends Route<ProfileService> {
-     public override GET = async () => {
-       const profile = await this.service.getProfile();
+   export const GET = createRoute({
+     method: "GET",
+     callback: async () => {
+       const profile = await getProfile();
        return Response.json(profile);
-     };
-   }
+     },
+     spec: spec.get,
+   });
    ```
 
 3. **Add business logic** in `service.ts`:
 
    ```typescript
-   export class ProfileService {
-     async getProfile() {
-       return { id: 1, name: "John Doe" };
-     }
+   export async function getProfile() {
+     return { id: 1, name: "John Doe" };
    }
    ```
 
 4. **Add API documentation** in `spec.ts`:
    ```typescript
    export const profileSpec = {
-     "/users/profile": {
-       get: {
-         summary: "Get user profile",
-         responses: {
-           "200": {
-             description: "User profile data",
-             content: {
-               "application/json": {
-                 schema: {
-                   type: "object",
-                   properties: {
-                     id: { type: "number" },
-                     name: { type: "string" },
-                   },
+     get: {
+       summary: "Get user profile",
+       responses: {
+         "200": {
+           description: "User profile data",
+           content: {
+             "application/json": {
+               schema: {
+                 type: "object",
+                 properties: {
+                   id: { type: "number" },
+                   name: { type: "string" },
                  },
                },
              },

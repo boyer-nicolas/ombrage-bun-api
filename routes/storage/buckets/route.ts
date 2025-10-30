@@ -16,7 +16,7 @@ export const POST = createRoute({
 	callback: async ({ request }) => {
 		const body: { name: string } = (await request.json()) as { name: string };
 		const bucket = await createBucket(body.name);
-		return Response.json(bucket, { status: 201 });
+		return Response.json({ name: bucket }, { status: 201 });
 	},
 	spec: spec.post,
 });
