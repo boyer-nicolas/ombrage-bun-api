@@ -183,14 +183,11 @@ describe("config.ts", () => {
 		});
 
 		test("should load config from environment variables", () => {
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.PORT = "3000";
 			Bun.env.HOST = "localhost";
 			Bun.env.LOG_LEVEL = "debug";
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.SWAGGER_ENABLED = "false";
 			Bun.env.SWAGGER_PATH = "/api-docs";
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.AUTH_ENABLED = "true";
 			Bun.env.AUTH_SECRET = "super-secret-key";
 			Bun.env.API_TITLE = "Custom API";
@@ -227,14 +224,12 @@ describe("config.ts", () => {
 		});
 
 		test("should throw error for invalid configuration", () => {
-			// @ts-expect-error - Setting invalid value for testing
 			Bun.env.PORT = "invalid";
 
 			expect(() => AppConfig.load()).toThrow("Invalid configuration");
 		});
 
 		test("should handle partial environment variables with defaults", () => {
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.PORT = "4000";
 			Bun.env.API_TITLE = "Partial Config API";
 
@@ -248,9 +243,7 @@ describe("config.ts", () => {
 		});
 
 		test("should handle boolean environment variables correctly", () => {
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.SWAGGER_ENABLED = "true";
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.AUTH_ENABLED = "false";
 
 			AppConfig.load();
@@ -261,9 +254,7 @@ describe("config.ts", () => {
 		});
 
 		test("should handle string 'false' as boolean false", () => {
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.SWAGGER_ENABLED = "false";
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.AUTH_ENABLED = "false";
 
 			AppConfig.load();
@@ -277,7 +268,6 @@ describe("config.ts", () => {
 			AppConfig.load();
 			const firstConfig = AppConfig.get();
 
-			// @ts-expect-error - Setting string values for testing
 			Bun.env.PORT = "5000";
 			AppConfig.load();
 			const secondConfig = AppConfig.get();
