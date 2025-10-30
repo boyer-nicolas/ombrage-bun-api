@@ -16,10 +16,23 @@ const booleanFromString = z
 		return Boolean(val);
 	});
 
+// Custom number coercion from string
+const numberFromString = z.union([z.number(), z.string()]).transform((val) => {
+	if (typeof val === "number") return val;
+	if (typeof val === "string") {
+		const num = Number(val);
+		if (Number.isNaN(num)) {
+			return val; // Return original value to let Zod handle the error
+		}
+		return num;
+	}
+	return Number(val);
+});
+
 export const ConfigSchema = z.object({
 	server: z
 		.object({
-			port: z.coerce.number().min(1).max(65535).default(8080),
+			port: numberFromString.pipe(z.number().min(1).max(65535)).default(8080),
 			host: z.string().default("0.0.0.0"),
 			logLevel: z.enum(["debug", "info", "warn", "error"]).default("info"),
 		})

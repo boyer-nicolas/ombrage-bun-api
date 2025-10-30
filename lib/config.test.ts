@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { AppConfig, type Config, ConfigSchema } from "../config";
+import { AppConfig, type Config, ConfigSchema } from "./config";
 
 describe("config.ts", () => {
 	// Store original environment variables
@@ -183,16 +183,20 @@ describe("config.ts", () => {
 		});
 
 		test("should load config from environment variables", () => {
-			Bun.env.PORT = "3000";
-			Bun.env.HOST = "localhost";
-			Bun.env.LOG_LEVEL = "debug";
-			Bun.env.SWAGGER_ENABLED = "false";
-			Bun.env.SWAGGER_PATH = "/api-docs";
-			Bun.env.AUTH_ENABLED = "true";
-			Bun.env.AUTH_SECRET = "super-secret-key";
-			Bun.env.API_TITLE = "Custom API";
-			Bun.env.API_DESCRIPTION = "Custom API description";
-			Bun.env.ENVIRONMENT = "production";
+			(Bun.env as Record<string, string | undefined>).PORT = "3000";
+			(Bun.env as Record<string, string | undefined>).HOST = "localhost";
+			(Bun.env as Record<string, string | undefined>).LOG_LEVEL = "debug";
+			(Bun.env as Record<string, string | undefined>).SWAGGER_ENABLED = "false";
+			(Bun.env as Record<string, string | undefined>).SWAGGER_PATH =
+				"/api-docs";
+			(Bun.env as Record<string, string | undefined>).AUTH_ENABLED = "true";
+			(Bun.env as Record<string, string | undefined>).AUTH_SECRET =
+				"super-secret-key";
+			(Bun.env as Record<string, string | undefined>).API_TITLE = "Custom API";
+			(Bun.env as Record<string, string | undefined>).API_DESCRIPTION =
+				"Custom API description";
+			(Bun.env as Record<string, string | undefined>).ENVIRONMENT =
+				"production";
 
 			AppConfig.load();
 			const config = AppConfig.get();
@@ -224,13 +228,13 @@ describe("config.ts", () => {
 		});
 
 		test("should throw error for invalid configuration", () => {
-			Bun.env.PORT = "invalid";
+			(Bun.env as Record<string, string | undefined>).PORT = "invalid";
 
 			expect(() => AppConfig.load()).toThrow("Invalid configuration");
 		});
 
 		test("should handle partial environment variables with defaults", () => {
-			Bun.env.PORT = "4000";
+			Bun.env.PORT = 4000;
 			Bun.env.API_TITLE = "Partial Config API";
 
 			AppConfig.load();
@@ -243,8 +247,8 @@ describe("config.ts", () => {
 		});
 
 		test("should handle boolean environment variables correctly", () => {
-			Bun.env.SWAGGER_ENABLED = "true";
-			Bun.env.AUTH_ENABLED = "false";
+			Bun.env.SWAGGER_ENABLED = true;
+			Bun.env.AUTH_ENABLED = false;
 
 			AppConfig.load();
 			const config = AppConfig.get();
@@ -254,7 +258,9 @@ describe("config.ts", () => {
 		});
 
 		test("should handle string 'false' as boolean false", () => {
+			// @ts-expect-error - Setting string value for testing --- IGNORE ---
 			Bun.env.SWAGGER_ENABLED = "false";
+			// @ts-expect-error - Setting string value for testing --- IGNORE ---
 			Bun.env.AUTH_ENABLED = "false";
 
 			AppConfig.load();
@@ -268,7 +274,7 @@ describe("config.ts", () => {
 			AppConfig.load();
 			const firstConfig = AppConfig.get();
 
-			Bun.env.PORT = "5000";
+			Bun.env.PORT = 5000;
 			AppConfig.load();
 			const secondConfig = AppConfig.get();
 

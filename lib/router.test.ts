@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { FileRouter } from "../router";
+import { FileRouter } from "./router";
 
 describe("router.ts", () => {
 	let router: FileRouter;

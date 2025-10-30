@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createRoute } from "../helpers";
+import { createRoute } from "./helpers";
 
 describe("createRoute with spec validation", () => {
 	test("should throw error when response status doesn't match spec", async () => {

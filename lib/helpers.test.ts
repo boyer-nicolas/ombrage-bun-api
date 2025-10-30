@@ -5,7 +5,7 @@ import {
 	createRoute,
 	defineSpec,
 	type RouteProps,
-} from "../helpers";
+} from "./helpers";
 
 describe("helpers.ts", () => {
 	describe("createRoute", () => {

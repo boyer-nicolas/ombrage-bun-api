@@ -1,5 +1,5 @@
 import { mock } from "bun:test";
-import type { Config } from "../config";
+import type { Config } from "./lib/config";
 
 /**
  * Mock configuration factory for tests

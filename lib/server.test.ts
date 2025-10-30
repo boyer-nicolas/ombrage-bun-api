@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { AppConfig } from "../config";
-import { Server } from "../server";
+import { AppConfig } from "./config";
+import { Server } from "./server";
 
 describe("server.ts", () => {
 	let server: Server;
@@ -49,7 +49,9 @@ describe("server.ts", () => {
 
 			Server.handleShutdown();
 
-			expect(console.log).toHaveBeenCalledWith("==> Shutting down gracefully...");
+			expect(console.log).toHaveBeenCalledWith(
+				"==> Shutting down gracefully...",
+			);
 			expect(process.exit).toHaveBeenCalled();
 
 			// Restore
