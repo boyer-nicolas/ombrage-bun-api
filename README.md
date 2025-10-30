@@ -1,5 +1,7 @@
 # File-based Router Framework
 
+[Documentation](./docs/index.md)
+
 A powerful file-based routing system built with Bun, featuring automatic API documentation generation with Swagger UI.
 
 ## Features
