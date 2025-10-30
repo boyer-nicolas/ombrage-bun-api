@@ -1,29 +1,39 @@
+import { AppConfig } from "@lib/config";
+import { FileRouter } from "@lib/file-router";
+
+// Initialize the file-based router
+const fileRouter = new FileRouter("./routes");
+
+const config = AppConfig.get();
+
+// Discover and load all routes
+await fileRouter.discoverRoutes();
+await fileRouter.loadRoutes();
+
+// Log discovered routes for debugging
+console.debug("Discovered routes:");
+console.debug(fileRouter.getRouteInfo());
+
 const server = Bun.serve({
-  routes: {
-    "/healthz": new Response("OK"),
+	port: config.server.port,
+	hostname: config.server.host,
+	async fetch(request) {
+		const url = new URL(request.url);
 
-    // Dynamic routes
-    "/users/:id": (req) => {
-      return new Response(`Hello User ${req.params.id}!`);
-    },
+		// Health check endpoint
+		if (url.pathname === "/healthz") {
+			return new Response("OK");
+		}
 
-    // Per-HTTP method handlers
-    "/posts": {
-      GET: () => new Response("List posts"),
-      POST: async (req) => {
-        const body = await req.json();
-        return Response.json({ created: true, body });
-      },
-    },
+		// Check for Swagger UI routes
+		const swaggerResponse = fileRouter.handleSwaggerRequest(url.pathname);
+		if (swaggerResponse) {
+			return swaggerResponse;
+		}
 
-    "/blog/hello": Response.redirect("/blog/hello/world"),
-  },
-
-  // (optional) fallback for unmatched routes:
-  // Required if Bun's version < 1.2.3
-  fetch() {
-    return Response.json({ message: "Not found" }, { status: 404 });
-  },
+		// Use file-based router for all other requests
+		return await fileRouter.handleRequest(request);
+	},
 });
 
 console.log(`Server running at ${server.url}`);
