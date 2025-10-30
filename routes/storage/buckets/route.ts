@@ -1,15 +1,19 @@
-import { Route } from "@lib/route";
-import type { BucketService } from "@routes/storage/buckets/service";
+import { createRoute } from "@lib/helpers";
+import { createBucket, listBuckets } from "@routes/storage/buckets/service";
 
-export class StorageBucketRoute extends Route<BucketService> {
-	public override GET = async () => {
-		const buckets = await this.service.listBuckets();
+export const GET = createRoute({
+	method: "GET",
+	callback: async () => {
+		const buckets = await listBuckets();
 		return Response.json(buckets);
-	};
+	},
+});
 
-	public override POST = async ({ request }: { request: Request }) => {
+export const POST = createRoute({
+	method: "POST",
+	callback: async ({ request }) => {
 		const body: { name: string } = (await request.json()) as { name: string };
-		const bucket = await this.service.createBucket(body.name);
+		const bucket = await createBucket(body.name);
 		return Response.json(bucket);
-	};
-}
+	},
+});

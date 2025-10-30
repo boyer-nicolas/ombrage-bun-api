@@ -3,15 +3,13 @@ import { dirname, join, relative, sep } from "node:path";
 import { AppConfig } from "@lib/config";
 import type { OpenAPIV3_1 } from "openapi-types";
 import packageJson from "../package.json";
-import type { Route } from "./route";
 
 interface RouteModule {
 	path: string;
 	routeFile?: string;
 	serviceFile?: string;
 	specFile?: string;
-	route?: Route<unknown>;
-	service?: unknown;
+	routes?: Record<string, unknown>;
 	spec?: unknown;
 }
 
@@ -120,51 +118,22 @@ export class FileRouter {
 	 * Load a specific route module
 	 */
 	private async loadRouteModule(routeModule: RouteModule): Promise<void> {
-		// Load service first if it exists
-		if (routeModule.serviceFile) {
-			const serviceModule = await import(routeModule.serviceFile);
-			const ServiceClass = this.findExportedClass(serviceModule);
-			if (ServiceClass) {
-				routeModule.service = new ServiceClass();
-			}
-		}
-
 		// Load spec if it exists
 		if (routeModule.specFile) {
-			routeModule.spec = await import(routeModule.specFile);
+			const specModule = await import(routeModule.specFile);
+			// Get the default export or first exported object
+			routeModule.spec = specModule.default || this.getSpecData(specModule);
 		}
 
-		// Load route and instantiate with service
+		// Load route functions if route file exists
 		if (routeModule.routeFile) {
 			const routeModuleImport = await import(routeModule.routeFile);
-			const RouteClass = this.findExportedClass(routeModuleImport);
-			if (RouteClass) {
-				routeModule.route = new RouteClass(
-					routeModule.service,
-				) as Route<unknown>;
-			}
+			routeModule.routes = routeModuleImport;
 		}
 	}
 
 	/**
-	 * Find the first exported class in a module
-	 */
-	private findExportedClass(
-		module: Record<string, unknown>,
-	): (new (...args: unknown[]) => unknown) | null {
-		for (const key in module) {
-			const exported = module[key];
-			if (typeof exported === "function" && exported.prototype) {
-				return exported as new (
-					...args: unknown[]
-				) => unknown;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Handle an HTTP request using the file-based routing
+	 * Find the best matching route for a given path
 	 */
 	async handleRequest(request: Request): Promise<Response> {
 		const url = new URL(request.url);
@@ -172,7 +141,7 @@ export class FileRouter {
 
 		// Find matching route
 		const routeModule = this.findMatchingRoute(path);
-		if (!routeModule || !routeModule.route) {
+		if (!routeModule || !routeModule.routes) {
 			return Response.json(
 				{
 					error: "Not Found",
@@ -183,10 +152,10 @@ export class FileRouter {
 			);
 		}
 
-		const method = request.method as keyof Route<unknown>;
-		const handler = routeModule.route[method];
+		const method = request.method;
+		const handler = routeModule.routes[method];
 
-		if (!handler || typeof handler !== "function") {
+		if (!handler || typeof handler !== "object") {
 			return Response.json(
 				{
 					error: "Method Not Allowed",
@@ -198,7 +167,22 @@ export class FileRouter {
 		}
 
 		try {
-			return await handler({ request });
+			// Extract the callback from the route object
+			const routeObject = handler as {
+				callback?: (props: { request: Request }) => Promise<Response>;
+			};
+			if (!routeObject.callback || typeof routeObject.callback !== "function") {
+				return Response.json(
+					{
+						error: "Method Not Allowed",
+						message: `Method ${method} not implemented for ${path}`,
+						status: 405,
+					},
+					{ status: 405 },
+				);
+			}
+
+			return await routeObject.callback({ request });
 		} catch (error) {
 			console.error(`Error handling ${method} ${path}:`, error);
 			return Response.json(
@@ -286,18 +270,10 @@ export class FileRouter {
 		// Combine all spec files into the paths object
 		for (const [path, routeModule] of this.routes) {
 			if (routeModule.spec) {
-				// Check if spec is a valid OpenAPI PathsObject by checking for expected properties
-				const specData = this.getSpecData(routeModule.spec);
-				if (!specData || typeof specData !== "object") {
-					console.warn(
-						`Spec for route ${path} is not a valid OpenAPI PathsObject`,
-					);
-					continue;
-				}
 				try {
-					// Get the first exported object from the spec module
-					const specData = this.getSpecData(routeModule.spec);
-					if (specData) {
+					// The spec is now the direct export from the spec file
+					const specData = routeModule.spec;
+					if (specData && typeof specData === "object") {
 						Object.assign(baseSpec.paths, specData);
 						// Assign a 500 response to all operations if not already defined
 						for (const routePath in specData as Record<string, unknown>) {

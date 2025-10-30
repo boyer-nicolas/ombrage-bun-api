@@ -1,6 +1,6 @@
-import type { OpenAPIV3_1 } from "openapi-types";
+import { defineSpec } from "@lib/helpers";
 
-export const bucketSpec: OpenAPIV3_1.PathsObject = {
+export default defineSpec({
 	"/storage/buckets": {
 		get: {
 			summary: "List all storage buckets",
@@ -73,4 +73,4 @@ export const bucketSpec: OpenAPIV3_1.PathsObject = {
 			},
 		},
 	},
-};
+});
