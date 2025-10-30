@@ -33,7 +33,6 @@ export type OpenAPISpec = {
 export class FileRouter {
   private routes: Map<string, RouteModule> = new Map();
   private basePath: string;
-  public openapiSpec: OpenAPISpec;
 
   constructor(basePath: string = "./routes") {
     this.basePath = basePath;
@@ -387,9 +386,9 @@ export class FileRouter {
     }
 
     if (pathname === "/api-docs.json") {
-      this.openapiSpec = this.generateOpenAPISpec();
+      const openapiSpec = this.generateOpenAPISpec();
 
-      return Response.json(this.openapiSpec);
+      return Response.json(openapiSpec);
     }
 
     return null;
