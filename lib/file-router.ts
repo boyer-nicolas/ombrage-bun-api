@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { AppConfig } from "@lib/config";
-import type { OpenAPIV3_1 } from "openapi-types";
 import packageJson from "../package.json";
 import type { Route } from "./route";
+import type { OpenAPIV3_1 } from "openapi-types";
 
 interface RouteModule {
 	path: string;
@@ -286,6 +286,14 @@ export class FileRouter {
 		// Combine all spec files into the paths object
 		for (const [path, routeModule] of this.routes) {
 			if (routeModule.spec) {
+				// Check if spec is a valid OpenAPI PathsObject by checking for expected properties
+				const specData = this.getSpecData(routeModule.spec);
+				if (!specData || typeof specData !== "object") {
+					console.warn(
+						`Spec for route ${path} is not a valid OpenAPI PathsObject`,
+					);
+					continue;
+				}
 				try {
 					// Get the first exported object from the spec module
 					const specData = this.getSpecData(routeModule.spec);
