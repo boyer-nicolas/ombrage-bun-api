@@ -274,43 +274,47 @@ export class FileRouter {
 					// The spec is now the direct export from the spec file
 					const specData = routeModule.spec;
 					if (specData && typeof specData === "object") {
-						Object.assign(baseSpec.paths, specData);
-						// Assign a 500 response to all operations if not already defined
-						for (const routePath in specData as Record<string, unknown>) {
-							const methods = (specData as Record<string, unknown>)[
-								routePath
-							] as Record<string, unknown>;
-							for (const method in methods) {
-								const operation = methods[method] as Record<string, unknown>;
-								if (
-									!operation.responses ||
-									!(operation.responses as Record<string, unknown>)["500"]
-								) {
-									if (!operation.responses) {
-										operation.responses = {};
-									}
-									(operation.responses as Record<string, unknown>)["500"] = {
-										description: "Internal server error",
-										content: {
-											"application/json": {
-												schema: {
-													type: "object",
-													properties: {
-														error: {
-															type: "string",
-														},
-														message: {
-															type: "string",
-															default: "An unexpected error occurred",
-														},
+						// Create a deep copy of the spec data to avoid readonly issues
+						const processedSpecData = JSON.parse(JSON.stringify(specData));
+
+						// Add 500 response to all operations if not already defined
+						for (const method in processedSpecData as Record<string, unknown>) {
+							const operation = (processedSpecData as Record<string, unknown>)[
+								method
+							] as Record<string, unknown> & {
+								responses?: Record<string, unknown>;
+							};
+							if (!operation.responses || !operation.responses["500"]) {
+								if (!operation.responses) {
+									operation.responses = {};
+								}
+								operation.responses["500"] = {
+									description: "Internal server error",
+									content: {
+										"application/json": {
+											schema: {
+												type: "object",
+												properties: {
+													error: {
+														type: "string",
+													},
+													message: {
+														type: "string",
+														default: "An unexpected error occurred",
 													},
 												},
 											},
 										},
-									};
-								}
+									},
+								};
 							}
 						}
+
+						// Use the folder structure path as the OpenAPI path
+						if (!baseSpec.paths[path]) {
+							baseSpec.paths[path] = {};
+						}
+						Object.assign(baseSpec.paths[path], processedSpecData);
 					}
 				} catch (error) {
 					console.warn(`Failed to process spec for route ${path}:`, error);

@@ -191,13 +191,11 @@ describe("router.ts", () => {
 
 		test("should include route specs in generated OpenAPI spec", () => {
 			const mockSpec = {
-				"/test": {
-					get: {
-						summary: "Test endpoint",
-						responses: {
-							"200": {
-								description: "Success",
-							},
+				get: {
+					summary: "Test endpoint",
+					responses: {
+						"200": {
+							description: "Success",
 						},
 					},
 				},
@@ -211,18 +209,18 @@ describe("router.ts", () => {
 
 			const spec = router.generateOpenAPISpec();
 
-			expect(spec.paths).toMatchObject(mockSpec);
+			expect(spec.paths).toMatchObject({
+				"/test": mockSpec,
+			});
 		});
 
 		test("should add 500 error response to operations without one", () => {
 			const mockSpec = {
-				"/test": {
-					get: {
-						summary: "Test endpoint",
-						responses: {
-							"200": {
-								description: "Success",
-							},
+				get: {
+					summary: "Test endpoint",
+					responses: {
+						"200": {
+							description: "Success",
 						},
 					},
 				},

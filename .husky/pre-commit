@@ -1,1 +1,9 @@
-bunx lint-staged
+#!/usr/bin/env bash
+set -euo pipefail
+
+bun run ./scripts/generate-env.ts
+bun run lint:fix
+bun run check
+bun run test
+
+git add .
