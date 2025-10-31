@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.5.1
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-api/compare/v1.5.0...v1.5.1)
+
+### 🩹 Fixes
+
+- Repo url ([910b596](https://github.com/boyer-nicolas/ombrage-api/commit/910b596))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v1.5.0
 
 [compare changes](https://git.ombrage.space/salokain/bun-api-framework/compare/v1.4.0...v1.5.0)
