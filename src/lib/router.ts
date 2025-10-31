@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { AppConfig } from "@lib/config";
 import type { OpenAPIV3_1 } from "openapi-types";
-import packageJson from "../package.json";
+import packageJson from "../../package.json";
 
 interface RouteModule {
 	path: string;

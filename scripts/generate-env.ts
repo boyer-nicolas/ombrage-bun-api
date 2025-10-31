@@ -13,7 +13,7 @@ export async function generateEnvDocumentation(): Promise<string> {
 	lines.push("");
 
 	// Vars are defined in a .d.ts file to use Bun's type system. Let's parse that file.
-	const fileContents = await fs.readFile("./app.d.ts", "utf-8");
+	const fileContents = await fs.readFile("./src/app.d.ts", "utf-8");
 	const envInterfaceMatch = fileContents.match(/interface Env \{([\s\S]*?)\}/);
 	if (!envInterfaceMatch) {
 		throw new Error("Could not find Env interface in app.d.ts");

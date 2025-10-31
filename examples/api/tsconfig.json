@@ -6,15 +6,13 @@
     "module": "Preserve",
     "moduleDetection": "force",
     "jsx": "react-jsx",
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "allowJs": false,
+    "allowJs": true,
 
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": false,
+    "noEmit": true,
 
     // Best practices
     "strict": true,
@@ -26,13 +24,6 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
-    "baseUrl": ".",
-    "rootDir": "src",
-    "paths": {
-      "@lib/*": ["./src/lib/*"],
-      "@routes/*": ["./src/routes/*"]
-    }
-  },
-  "include": ["src"]
+    "noPropertyAccessFromIndexSignature": false
+  }
 }
