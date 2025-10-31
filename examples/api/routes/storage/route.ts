@@ -13,9 +13,8 @@ export const POST = createRoute({
 	method: "POST",
 	callback: async ({ body }) => {
 		const bucket = createBucket(body.name);
-		return {
+		return Response.json(bucket, {
 			status: 201,
-			body: bucket,
-		};
+		});
 	},
 });
