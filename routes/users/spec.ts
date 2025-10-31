@@ -2,11 +2,11 @@ import { defineSpec } from "@lib/helpers";
 
 export default defineSpec({
 	get: {
-		summary: "List all storage buckets",
-		description: "Retrieves a list of all available storage buckets",
+		summary: "List all users",
+		description: "Retrieves a list of all available users",
 		responses: {
 			"200": {
-				description: "List of bucket names",
+				description: "List of user names",
 				content: {
 					"application/json": {
 						schema: {
@@ -21,8 +21,8 @@ export default defineSpec({
 		},
 	},
 	post: {
-		summary: "Create a new storage bucket",
-		description: "Creates a new storage bucket with the specified name",
+		summary: "Create a new user",
+		description: "Creates a new user with the specified name",
 		requestBody: {
 			required: true,
 			content: {
@@ -32,7 +32,7 @@ export default defineSpec({
 						properties: {
 							name: {
 								type: "string",
-								description: "The name of the bucket to create",
+								description: "The name of the user to create",
 							},
 						},
 						required: ["name"],
@@ -42,7 +42,7 @@ export default defineSpec({
 		},
 		responses: {
 			"201": {
-				description: "Bucket created successfully",
+				description: "User created successfully",
 				content: {
 					"application/json": {
 						schema: {

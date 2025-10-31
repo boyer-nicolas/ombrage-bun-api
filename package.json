@@ -2,6 +2,7 @@
   "name": "framework",
   "module": "index.ts",
   "version": "1.0.0",
+  "packageManager": "bun@1.3.0",
   "type": "module",
   "scripts": {
     "dev": "bun run --hot index.ts",
