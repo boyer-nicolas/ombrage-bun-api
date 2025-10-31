@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.5.3
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-api/compare/v1.5.2...v1.5.3)
+
+### 🩹 Fixes
+
+- Readme ([2c8830f](https://github.com/boyer-nicolas/ombrage-api/commit/2c8830f))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v1.5.2
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-api/compare/v1.5.1...v1.5.2)
