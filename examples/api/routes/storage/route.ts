@@ -1,5 +1,6 @@
 import { createRoute } from "../../../../";
 import { createBucket } from "./service";
+import spec from "./spec";
 
 export const GET = createRoute({
 	method: "GET",
@@ -7,6 +8,7 @@ export const GET = createRoute({
 		const buckets = ["bucket1", "bucket2", "bucket3"];
 		return Response.json(buckets);
 	},
+	spec,
 });
 
 export const POST = createRoute({
@@ -17,4 +19,5 @@ export const POST = createRoute({
 			status: 201,
 		});
 	},
+	spec,
 });

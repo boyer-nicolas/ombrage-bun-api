@@ -5,6 +5,5 @@ await Bun.build({
 	minify: true,
 	format: "cjs",
 	target: "bun",
-	bytecode: true,
 });
 export {};
