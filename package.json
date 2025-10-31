@@ -4,7 +4,7 @@
   "repository": {
     "url": "https://git.ombrage.space/salokain/bun-api-framework"
   },
-  "version": "1.4.0",
+  "version": "1.5.0",
   "packageManager": "bun@1.3.0",
   "type": "module",
   "main": "dist/index.js",

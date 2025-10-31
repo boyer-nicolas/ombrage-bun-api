@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.5.0
+
+[compare changes](https://git.ombrage.space/salokain/bun-api-framework/compare/v1.4.0...v1.5.0)
+
+### 🚀 Enhancements
+
+- Repo (ebe743d)
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v1.4.0
 
 [compare changes](https://git.ombrage.space/salokain/bun-api-framework/compare/v1.3.0...v1.4.0)
