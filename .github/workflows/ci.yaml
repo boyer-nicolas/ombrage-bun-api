@@ -27,15 +27,15 @@ jobs:
       - name: Run checks
         run: |
           bun run check
-          bun run build
           bun run lint
           bun run test:coverage
+          bun run build
 
       - name: Run example integration tests
         working-directory: example
         run: |
           bun install --frozen-lockfile --ignore-scripts
-          bun run test
+          bun test
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
