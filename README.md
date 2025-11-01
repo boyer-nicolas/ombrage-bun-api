@@ -120,15 +120,13 @@ routes/
   users/
     [id]/
       route.ts
-      spec.ts
     profile/
       route.ts
-      spec.ts
 ```
 
 ### Parameter Definition
 
-Use Zod schemas to define route parameters in your `spec.ts` files:
+Use Zod schemas to define route parameters in your route specs. Ombrage API supports three types of parameters that are automatically extracted and validated:
 
 ```typescript
 import { defineSpec } from "ombrage-api";
@@ -136,48 +134,15 @@ import { z } from "zod";
 
 export default defineSpec({
   get: {
-    summary: "Get user by ID",
-    parameters: z.object({
-      id: z.string().describe("The unique user identifier"),
-    }),
-    responses: {
-      "200": {
-        description: "User data",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                id: { type: "string" },
-                name: { type: "string" },
-                email: { type: "string" },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-});
-```
-
-### Parameter Types
-
-Define different parameter types using nested Zod objects:
-
-```typescript
-import { z } from "zod";
-
-export default defineSpec({
-  get: {
-    summary: "Search users with filters",
+    summary: "Get user by ID with optional filters",
     parameters: z.object({
       // Path parameters (from dynamic routes like [id])
       path: z.object({
-        categoryId: z.string().describe("Category identifier"),
+        id: z.string().describe("The unique user identifier"),
+        categoryId: z.string().optional().describe("Optional category filter"),
       }),
 
-      // Query parameters (?limit=10&offset=0)
+      // Query parameters (?limit=10&offset=0&search=john)
       query: z.object({
         limit: z
           .number()
@@ -191,16 +156,18 @@ export default defineSpec({
           .default(0)
           .describe("Number of results to skip"),
         search: z.string().optional().describe("Search term to filter users"),
+        active: z.boolean().default(true).describe("Filter by active status"),
       }),
 
       // Header parameters
       headers: z.object({
         "x-api-key": z.string().describe("API authentication key"),
+        "accept-language": z.string().optional().describe("Preferred language"),
       }),
     }),
     responses: {
       "200": {
-        description: "List of users",
+        description: "User data with filters applied",
         // ... response schema
       },
     },
@@ -208,68 +175,265 @@ export default defineSpec({
 });
 ```
 
-### Supported Parameter Types
+#### Parameter Types
 
-Ombrage API automatically converts Zod schemas to OpenAPI parameter definitions:
+| Parameter Type | Location         | Example                 | Description                     |
+| -------------- | ---------------- | ----------------------- | ------------------------------- |
+| **Path**       | URL segments     | `/users/[id]`           | Dynamic route segments          |
+| **Query**      | URL query string | `?limit=10&search=john` | Optional filters and pagination |
+| **Headers**    | HTTP headers     | `x-api-key: abc123`     | Authentication and metadata     |
 
-- **String**: `z.string()`
-- **Number**: `z.number()`
-- **Boolean**: `z.boolean()`
-- **Date**: `z.date()`
-- **Enum**: `z.enum(["value1", "value2"])`
-- **Array**: `z.array(z.string())`
-- **Optional**: `.optional()`
-- **Default values**: `.default(value)`
-- **Descriptions**: `.describe("Parameter description")`
+#### Accessing Parameters in Routes
 
-### Example: Complete Route with Parameters
+Parameters are automatically parsed and provided to your route handlers:
 
 ```typescript
-// routes/storage/[id]/route.ts
+export const GET = createRoute({
+  method: "GET",
+  callback: async ({ params, query, headers, request }) => {
+    // Path parameters
+    const { id } = params; // From /users/[id]
+
+    // Query parameters (with defaults applied)
+    const { limit, offset, search } = query;
+
+    // Headers
+    const apiKey = headers["x-api-key"];
+
+    // Use parameters in your logic
+    const users = await getUsersWithFilters({
+      id,
+      limit,
+      offset,
+      search,
+      apiKey,
+    });
+
+    return Response.json(users);
+  },
+  spec: spec.get,
+});
+```
+
+### Supported Parameter Types & Validation
+
+Ombrage API automatically converts Zod schemas to OpenAPI parameter definitions and provides runtime validation:
+
+#### Basic Types
+
+```typescript
+z.string(); // String parameter
+z.number(); // Numeric parameter
+z.boolean(); // Boolean parameter (true/false)
+z.date(); // Date parameter (ISO string)
+```
+
+#### Advanced Types
+
+```typescript
+// Enums with specific values
+z.enum(["active", "inactive", "pending"]);
+
+// Arrays (query: ?tags=frontend,backend,api)
+z.array(z.string());
+
+// Optional parameters
+z.string().optional();
+
+// Parameters with default values
+z.number().default(10);
+
+// Parameters with validation
+z.string().min(3).max(50);
+z.number().min(1).max(100);
+z.string().email();
+z.string().uuid();
+
+// Parameters with descriptions (for OpenAPI docs)
+z.string().describe("User's unique identifier");
+```
+
+#### Type Coercion & Validation
+
+The framework automatically:
+
+- **Converts types**: Strings to numbers, "true"/"false" to booleans
+- **Validates constraints**: Min/max values, string patterns, required fields
+- **Applies defaults**: Missing optional parameters get default values
+- **Generates errors**: Returns 400 Bad Request for invalid parameters
+
+```typescript
+// Example with comprehensive validation
+query: z.object({
+  page: z.number().min(1).default(1).describe("Page number"),
+  size: z.number().min(10).max(100).default(20).describe("Items per page"),
+  sort: z.enum(["name", "date", "popularity"]).default("name"),
+  filter: z.string().min(2).optional().describe("Search filter"),
+  active: z.boolean().default(true),
+  tags: z.array(z.string()).optional(),
+});
+```
+
+})
+
+````
+
+#### Error Handling
+
+When parameter validation fails, the framework automatically returns structured error responses:
+
+```json
+{
+  "error": "Parameter validation failed",
+  "details": [
+    {
+      "code": "too_small",
+      "minimum": 1,
+      "type": "number",
+      "inclusive": true,
+      "exact": false,
+      "message": "Number must be greater than or equal to 1",
+      "path": ["query", "page"]
+    }
+  ]
+}
+````
+
+### Complete Example: Advanced Route with Parameters
+
+```typescript
+// routes/users/[id]/route.ts
 import { createRoute } from "ombrage-api";
 import spec from "./spec";
 
 export const GET = createRoute({
   method: "GET",
-  callback: async ({ params }) => {
-    const { id } = params; // TypeScript knows this is a string
-    // Fetch and return storage data
-    return Response.json({ id, data: "storage content" });
+  callback: async ({ params, query, headers }) => {
+    // All parameters are typed and validated
+    const { id } = params; // string (required)
+    const { include, limit } = query; // string[] | undefined, number
+    const apiKey = headers["x-api-key"]; // string
+
+    try {
+      const user = await getUserById(id, {
+        include,
+        limit,
+        apiKey,
+      });
+
+      return Response.json(user);
+    } catch (error) {
+      if (error.code === "USER_NOT_FOUND") {
+        return Response.json({ error: "User not found" }, { status: 404 });
+      }
+      throw error; // Let framework handle other errors
+    }
   },
   spec: spec.get,
 });
 ```
 
 ```typescript
-// routes/storage/[id]/spec.ts
+// routes/users/[id]/spec.ts
 import { defineSpec } from "ombrage-api";
 import { z } from "zod";
 
 export default defineSpec({
   get: {
-    summary: "Get storage bucket by ID",
+    summary: "Get user by ID with optional includes",
+    description: "Retrieve a specific user with optional related data",
     parameters: z.object({
-      id: z.string().describe("The bucket ID"),
+      path: z.object({
+        id: z.string().uuid().describe("User's UUID"),
+      }),
+      query: z.object({
+        include: z
+          .array(z.enum(["profile", "posts", "followers"]))
+          .optional()
+          .describe("Related data to include"),
+        limit: z
+          .number()
+          .min(1)
+          .max(50)
+          .default(10)
+          .describe("Limit for included items"),
+      }),
+      headers: z.object({
+        "x-api-key": z.string().describe("API authentication key"),
+      }),
     }),
     responses: {
       "200": {
-        description: "Storage bucket data",
+        description: "User data successfully retrieved",
         content: {
           "application/json": {
             schema: {
               type: "object",
               properties: {
-                id: { type: "string" },
-                data: { type: "string" },
+                id: { type: "string", format: "uuid" },
+                name: { type: "string" },
+                email: { type: "string", format: "email" },
+                profile: { type: "object" },
+                posts: { type: "array" },
+                followers: { type: "array" },
               },
             },
           },
         },
       },
+      "400": {
+        description: "Invalid parameters",
+      },
+      "404": {
+        description: "User not found",
+      },
     },
   },
 });
 ```
+
+#### Best Practices for Parameter Definition
+
+1. **Always provide descriptions** for clear API documentation:
+
+   ```typescript
+   id: z.string().uuid().describe("User's unique identifier");
+   ```
+
+2. **Use appropriate validation** for data integrity:
+
+   ```typescript
+   email: z.string().email().describe("User's email address");
+   limit: z.number().min(1).max(100).describe("Results per page");
+   ```
+
+3. **Provide sensible defaults** for optional parameters:
+
+   ```typescript
+   page: z.number().min(1).default(1);
+   sortOrder: z.enum(["asc", "desc"]).default("asc");
+   ```
+
+4. **Group related parameters** logically:
+
+   ```typescript
+   parameters: z.object({
+     path: z.object({
+       /* path params */
+     }),
+     query: z.object({
+       /* query params */
+     }),
+     headers: z.object({
+       /* headers */
+     }),
+   });
+   ```
+
+5. **Use enums for controlled values** instead of free-form strings:
+   ```typescript
+   status: z.enum(["active", "inactive", "suspended"]);
+   ```
 
 The framework automatically:
 
