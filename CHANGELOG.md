@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.8
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.7...v0.0.8)
+
+### 📖 Documentation
+
+- How to use body param ([b178e2c](https://github.com/boyer-nicolas/ombrage-bun-api/commit/b178e2c))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v0.0.7
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.6...v0.0.7)
