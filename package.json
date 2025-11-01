@@ -1,6 +1,9 @@
 {
   "name": "ombrage-api",
   "module": "src/index.ts",
+  "author": {
+    "name": "Nicolas Boyer"
+  },
   "repository": {
     "url": "https://github.com/boyer-nicolas/ombrage-api"
   },

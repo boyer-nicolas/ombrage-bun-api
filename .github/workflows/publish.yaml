@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
+
 env:
   TZ: Europe/Paris
 
@@ -16,6 +20,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup NPM authentication
+        if: env.NPM_TOKEN != ''
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
 
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
@@ -30,25 +49,34 @@ jobs:
           bun run check
           bun run lint
           bun run test:coverage
+          bun run build
 
-      - name: Build package
-        run: bun run build
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
 
-      - name: Configure Git
+      - name: Generate and update coverage badge
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          # Generate coverage percentage and update README
+          bun run scripts/generate-coverage-badge.ts coverage/lcov.info README.md
 
-      - name: Setup NPM authentication
-        if: env.NPM_TOKEN != ''
-        run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Generate HTML coverage report
+          bun run scripts/generate-coverage-report.ts
 
       - name: Check for changes since last tag
         id: changes
         run: |
+          # Check if the latest commit is just a coverage badge update with [skip ci]
+          LATEST_COMMIT_MSG=$(git log -1 --pretty=%s)
+          if [[ "$LATEST_COMMIT_MSG" == *"[skip ci]"* ]]; then
+            echo "Latest commit has [skip ci], will not publish"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           # Get the latest tag
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
@@ -64,6 +92,7 @@ jobs:
             else
               # Check if there are changes since last tag
               CHANGES=$(git rev-list $LATEST_TAG..HEAD --count)
+              
               if [ "$CHANGES" -gt 0 ]; then
                 echo "Found $CHANGES commits since last release, will publish"
                 echo "should_publish=true" >> $GITHUB_OUTPUT
@@ -87,6 +116,17 @@ jobs:
           echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "New version: v$NEW_VERSION"
 
+      - name: Commit coverage badge update
+        run: |
+          # Check if README was modified (coverage badge)
+          if ! git diff --quiet README.md; then
+            echo "Committing updated coverage badge"
+            git add README.md
+            git commit -m "chore: update coverage badge [skip ci]"
+          else
+            echo "No coverage badge changes to commit"
+          fi
+
       - name: Publish to NPM
         if: steps.changes.outputs.should_publish == 'true' && env.NPM_TOKEN != ''
         run: |
@@ -95,12 +135,11 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push changes and tags
-        if: steps.changes.outputs.should_publish == 'true'
         run: |
           # Pull latest changes to avoid conflicts
           git pull origin main --rebase
 
-          # Push changes and tags
+          # Push all changes (coverage badge + version bump if applicable)
           git push origin main --follow-tags
 
       - name: Create GitHub Release

@@ -462,7 +462,7 @@ The project automatically generates coverage reports during testing. You can:
 - **Generate Coverage Badge**: Run `bun run coverage:badge` to update the README badge
 - **Generate Coverage Report**: Run `bun run coverage:report` to create the HTML report
 
-The coverage badge in this README is automatically updated on every push to the main branch via GitHub Actions.
+The coverage badge in this README is automatically updated on every push to the main branch as part of the publish workflow.
 
 ## Publishing
 
@@ -470,10 +470,17 @@ The package is automatically published to NPM when changes are pushed to the `ma
 
 ### Automated Publishing (Recommended)
 
-1. **Push to main branch**: The CI/CD pipeline automatically handles publishing
-2. **Changelog generation**: Uses `changelogen` to generate changelog and bump version
-3. **NPM publishing**: Publishes to NPM with public access
-4. **GitHub releases**: Creates GitHub releases with generated release notes
+1. **Push to main branch**: The publish workflow automatically handles everything
+2. **Coverage updates**: Updates coverage badge and generates reports
+3. **Changelog generation**: Uses `changelogen` to generate changelog and bump version
+4. **NPM publishing**: Publishes to NPM with public access
+5. **GitHub releases**: Creates GitHub releases with generated release notes
+
+The workflow intelligently:
+
+- Skips publishing if only coverage badge updates (marked with `[skip ci]`)
+- Updates coverage badges on every run
+- Only publishes when there are actual code changes since the last release
 
 ### Manual Publishing
 
