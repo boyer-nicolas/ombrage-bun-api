@@ -1,0 +1,20 @@
+{
+  "name": "ombrage-example",
+  "version": "1.0.0",
+  "description": "Example API using ombrage-bun-api library",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
+    "test": "bun test",
+    "test:integration": "bun test tests/"
+  },
+  "dependencies": {
+    "ombrage-bun-api": "file:../",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.1",
+    "typescript": "^5.9.3"
+  }
+}

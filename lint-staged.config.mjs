@@ -11,5 +11,8 @@ export default {
 		"bun run check",
 		"bun run build"
 	],
+	"**/example/*.ts": () => [
+		"bun run test --cwd example --findRelatedTests",
+	],
 };
 

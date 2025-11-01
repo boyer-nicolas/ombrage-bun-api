@@ -1,4 +1,3 @@
-import Bun from "bun";
 import { z } from "zod";
 
 const booleanFromString = z
@@ -83,40 +82,48 @@ export class AppConfig {
 
 	static load(): void {
 		const rawConfig: unknown = {
-			...(Bun.env.PORT || Bun.env.HOST || Bun.env.LOG_LEVEL
+			...(process.env.PORT || process.env.HOST || process.env.LOG_LEVEL
 				? {
 						server: {
-							...(Bun.env.PORT ? { port: Bun.env.PORT } : {}),
-							...(Bun.env.HOST ? { host: Bun.env.HOST } : {}),
-							...(Bun.env.LOG_LEVEL ? { logLevel: Bun.env.LOG_LEVEL } : {}),
+							...(process.env.PORT ? { port: process.env.PORT } : {}),
+							...(process.env.HOST ? { host: process.env.HOST } : {}),
+							...(process.env.LOG_LEVEL
+								? { logLevel: process.env.LOG_LEVEL }
+								: {}),
 						},
 					}
 				: {}),
-			...(Bun.env.SWAGGER_ENABLED || Bun.env.SWAGGER_PATH
+			...(process.env.SWAGGER_ENABLED || process.env.SWAGGER_PATH
 				? {
 						swagger: {
-							...(Bun.env.SWAGGER_ENABLED
-								? { enabled: Bun.env.SWAGGER_ENABLED }
+							...(process.env.SWAGGER_ENABLED
+								? { enabled: process.env.SWAGGER_ENABLED }
 								: {}),
-							...(Bun.env.SWAGGER_PATH ? { path: Bun.env.SWAGGER_PATH } : {}),
+							...(process.env.SWAGGER_PATH
+								? { path: process.env.SWAGGER_PATH }
+								: {}),
 						},
 					}
 				: {}),
-			...(Bun.env.AUTH_ENABLED || Bun.env.AUTH_SECRET
+			...(process.env.AUTH_ENABLED || process.env.AUTH_SECRET
 				? {
 						auth: {
-							...(Bun.env.AUTH_ENABLED
-								? { enabled: Bun.env.AUTH_ENABLED }
+							...(process.env.AUTH_ENABLED
+								? { enabled: process.env.AUTH_ENABLED }
 								: {}),
-							...(Bun.env.AUTH_SECRET ? { secret: Bun.env.AUTH_SECRET } : {}),
+							...(process.env.AUTH_SECRET
+								? { secret: process.env.AUTH_SECRET }
+								: {}),
 						},
 					}
 				: {}),
-			...(Bun.env.API_TITLE ? { title: Bun.env.API_TITLE } : {}),
-			...(Bun.env.API_DESCRIPTION
-				? { description: Bun.env.API_DESCRIPTION }
+			...(process.env.API_TITLE ? { title: process.env.API_TITLE } : {}),
+			...(process.env.API_DESCRIPTION
+				? { description: process.env.API_DESCRIPTION }
 				: {}),
-			...(Bun.env.ENVIRONMENT ? { environment: Bun.env.ENVIRONMENT } : {}),
+			...(process.env.ENVIRONMENT
+				? { environment: process.env.ENVIRONMENT }
+				: {}),
 		};
 
 		// Let Zod parse and apply defaults for any missing values

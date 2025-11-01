@@ -748,6 +748,50 @@ The framework automatically:
 - Generates OpenAPI documentation with proper parameter definitions
 - Provides type-safe access in your route handlers
 
+## Complete Example
+
+Check out the [`/example`](./example/) directory for a complete working API that demonstrates all the features of Ombrage API.
+
+### Example Features
+
+The example API includes:
+
+- **Health Check Endpoint** (`/healthz`): Simple health check with echo functionality
+- **Users API** (`/users`): Full CRUD operations with filtering and pagination
+- **Dynamic Routes** (`/users/[id]`): Path parameters with validation
+- **Auto-generated Documentation**: Complete OpenAPI specs with Swagger UI
+- **Type-safe Validation**: All endpoints use Zod schemas for validation
+
+### Running the Example
+
+```bash
+cd example
+bun install
+bun run dev  # Development with hot reload
+# or
+bun run start  # Production mode
+```
+
+Visit http://localhost:8080 to see the Swagger UI documentation and test all endpoints.
+
+### Example Integration Tests
+
+The example includes comprehensive integration tests that demonstrate how to test APIs built with Ombrage:
+
+```bash
+cd example
+bun run test
+```
+
+The integration tests cover:
+
+- Health check endpoints
+- User CRUD operations
+- Query parameter validation
+- Request body validation
+- Error handling scenarios
+- OpenAPI documentation generation
+
 ## Environment Variables
 
 [See Environment Variables Documentation](./env.md)
@@ -812,3 +856,11 @@ To enable automated publishing, configure these GitHub repository secrets:
 2. Go to Access Tokens in your account settings
 3. Generate a new token with "Automation" type
 4. Add it as `NPM_TOKEN` in your GitHub repository secrets
+
+## Example
+
+Check out the [`/example`](./example/) directory for a complete working API that demonstrates all the features of Ombrage API.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.

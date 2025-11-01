@@ -63,6 +63,12 @@ jobs:
           echo "🧪 Running tests with coverage..."
           bun run test:coverage
 
+          echo "🧪 Running tests for the example app..."
+          cd example
+          bun install --frozen-lockfile
+          bun test
+          cd ..
+
           echo "🏗️ Building package..."
           bun run build
 

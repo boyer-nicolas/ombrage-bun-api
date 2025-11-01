@@ -31,6 +31,12 @@ jobs:
           bun run lint
           bun run test:coverage
 
+      - name: Run example integration tests
+        run: |
+          cd example
+          bun install --frozen-lockfile
+          bun test
+
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
         with:

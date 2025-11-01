@@ -31,8 +31,8 @@ describe("config.ts", () => {
 			}
 		});
 
-		// Clear Bun.env properties individually (can't reassign the object)
-		Object.keys(Bun.env).forEach((key) => {
+		// Clear process.env properties individually (can't reassign the object)
+		Object.keys(process.env).forEach((key) => {
 			if (
 				key.startsWith("APP_") ||
 				[
@@ -48,7 +48,7 @@ describe("config.ts", () => {
 					"ENVIRONMENT",
 				].includes(key)
 			) {
-				delete Bun.env[key];
+				delete process.env[key];
 			}
 		});
 	});
@@ -183,19 +183,21 @@ describe("config.ts", () => {
 		});
 
 		test("should load config from environment variables", () => {
-			(Bun.env as Record<string, string | undefined>).PORT = "3000";
-			(Bun.env as Record<string, string | undefined>).HOST = "localhost";
-			(Bun.env as Record<string, string | undefined>).LOG_LEVEL = "debug";
-			(Bun.env as Record<string, string | undefined>).SWAGGER_ENABLED = "false";
-			(Bun.env as Record<string, string | undefined>).SWAGGER_PATH =
+			(process.env as Record<string, string | undefined>).PORT = "3000";
+			(process.env as Record<string, string | undefined>).HOST = "localhost";
+			(process.env as Record<string, string | undefined>).LOG_LEVEL = "debug";
+			(process.env as Record<string, string | undefined>).SWAGGER_ENABLED =
+				"false";
+			(process.env as Record<string, string | undefined>).SWAGGER_PATH =
 				"/api-docs";
-			(Bun.env as Record<string, string | undefined>).AUTH_ENABLED = "true";
-			(Bun.env as Record<string, string | undefined>).AUTH_SECRET =
+			(process.env as Record<string, string | undefined>).AUTH_ENABLED = "true";
+			(process.env as Record<string, string | undefined>).AUTH_SECRET =
 				"super-secret-key";
-			(Bun.env as Record<string, string | undefined>).API_TITLE = "Custom API";
-			(Bun.env as Record<string, string | undefined>).API_DESCRIPTION =
+			(process.env as Record<string, string | undefined>).API_TITLE =
+				"Custom API";
+			(process.env as Record<string, string | undefined>).API_DESCRIPTION =
 				"Custom API description";
-			(Bun.env as Record<string, string | undefined>).ENVIRONMENT =
+			(process.env as Record<string, string | undefined>).ENVIRONMENT =
 				"production";
 
 			AppConfig.load();
@@ -228,14 +230,14 @@ describe("config.ts", () => {
 		});
 
 		test("should throw error for invalid configuration", () => {
-			(Bun.env as Record<string, string | undefined>).PORT = "invalid";
+			(process.env as Record<string, string | undefined>).PORT = "invalid";
 
 			expect(() => AppConfig.load()).toThrow("Invalid configuration");
 		});
 
 		test("should handle partial environment variables with defaults", () => {
-			Bun.env.PORT = 4000;
-			Bun.env.API_TITLE = "Partial Config API";
+			(process.env as Record<string, string>).PORT = "4000";
+			(process.env as Record<string, string>).API_TITLE = "Partial Config API";
 
 			AppConfig.load();
 			const config = AppConfig.get();
@@ -247,8 +249,8 @@ describe("config.ts", () => {
 		});
 
 		test("should handle boolean environment variables correctly", () => {
-			Bun.env.SWAGGER_ENABLED = true;
-			Bun.env.AUTH_ENABLED = false;
+			(process.env as Record<string, string>).SWAGGER_ENABLED = "true";
+			(process.env as Record<string, string>).AUTH_ENABLED = "false";
 
 			AppConfig.load();
 			const config = AppConfig.get();
@@ -257,11 +259,9 @@ describe("config.ts", () => {
 			expect(config.auth.enabled).toBe(false);
 		});
 
-		test("should handle string 'false' as boolean false", () => {
-			// @ts-expect-error - Setting string value for testing --- IGNORE ---
-			Bun.env.SWAGGER_ENABLED = "false";
-			// @ts-expect-error - Setting string value for testing --- IGNORE ---
-			Bun.env.AUTH_ENABLED = "false";
+		test('should handle string "false" as boolean false', () => {
+			(process.env as Record<string, string>).SWAGGER_ENABLED = "false";
+			(process.env as Record<string, string>).AUTH_ENABLED = "false";
 
 			AppConfig.load();
 			const config = AppConfig.get();
@@ -271,15 +271,23 @@ describe("config.ts", () => {
 		});
 
 		test("should reload config when load() is called multiple times", () => {
+			// First load
+			(process.env as Record<string, string>).PORT = "3000";
+			(process.env as Record<string, string>).SWAGGER_ENABLED = "true";
 			AppConfig.load();
-			const firstConfig = AppConfig.get();
+			const config1 = AppConfig.get();
 
-			Bun.env.PORT = 5000;
+			// Change env and reload
+			(process.env as Record<string, string>).PORT = "5000";
+			(process.env as Record<string, string>).SWAGGER_ENABLED = "false";
 			AppConfig.load();
-			const secondConfig = AppConfig.get();
+			const config2 = AppConfig.get();
 
-			expect(firstConfig.server.port).toBe(8080);
-			expect(secondConfig.server.port).toBe(5000);
+			// Verify the configs are different
+			expect(config1.server.port).toBe(3000);
+			expect(config1.swagger.enabled).toBe(true);
+			expect(config2.server.port).toBe(5000);
+			expect(config2.swagger.enabled).toBe(false);
 		});
 	});
 });
