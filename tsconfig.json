@@ -35,6 +35,6 @@
       "@dev/*": ["./dev/*"]
     }
   },
-  "include": ["src", "dev", "tests"],
+  "include": ["src", "dev", "tests", "scripts"],
   "exclude": ["node_modules", "dist"]
 }

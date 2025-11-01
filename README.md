@@ -1,5 +1,8 @@
 # [Ombrage API](https://www.npmjs.com/package/ombrage-api)
 
+[![CI](https://github.com/boyer-nicolas/ombrage-api/actions/workflows/ci.yaml/badge.svg)](https://github.com/boyer-nicolas/ombrage-api/actions/workflows/ci.yaml)
+[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](./coverage/)
+
 A powerful file-based routing system built with Bun, featuring automatic API documentation generation with Swagger UI.
 
 ## Features
@@ -275,3 +278,21 @@ The framework automatically:
 ## Environment Variables
 
 [See Environment Variables Documentation](./env.md)
+
+## Development & Testing
+
+### Running Tests
+
+```bash
+bun test
+```
+
+### Coverage Reports
+
+The project automatically generates coverage reports during testing. You can:
+
+- **View HTML Coverage Report**: Open `coverage/index.html` in your browser after running tests
+- **Generate Coverage Badge**: Run `bun run coverage:badge` to update the README badge
+- **Generate Coverage Report**: Run `bun run coverage:report` to create the HTML report
+
+The coverage badge in this README is automatically updated on every push to the main branch via GitHub Actions.
