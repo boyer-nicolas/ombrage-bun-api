@@ -15,7 +15,6 @@ const booleanFromString = z
 		return Boolean(val);
 	});
 
-// Custom number coercion from string
 const numberFromString = z.union([z.number(), z.string()]).transform((val) => {
 	if (typeof val === "number") return val;
 	if (typeof val === "string") {
