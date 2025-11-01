@@ -34,7 +34,7 @@ jobs:
       - name: Run example integration tests
         working-directory: example
         run: |
-          bun install --frozen-lockfile
+          bun install --frozen-lockfile --ignore-scripts
           bun run test
 
       - name: Upload coverage report

@@ -68,7 +68,7 @@ jobs:
 
           echo "🧪 Running tests for the example app..."
           cd example
-          bun install --frozen-lockfile
+          bun install --frozen-lockfile --ignore-scripts
           bun test
           cd ..
 
