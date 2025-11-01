@@ -32,8 +32,8 @@ jobs:
           bun run test:coverage
 
       - name: Run example integration tests
+        working-directory: example
         run: |
-          cd example
           bun install --frozen-lockfile
           bun test
 
