@@ -15,7 +15,7 @@ env:
 
 jobs:
   publish:
-    name: "Publish to NPM"
+    name: "Publish"
     runs-on: ubuntu-latest
 
     steps:
@@ -25,11 +25,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup NPM authentication
-        if: env.NPM_TOKEN != ''
+        if: env.NPM_CONFIG_TOKEN != ''
         run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_CONFIG_TOKEN" > ~/.npmrc
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -144,13 +144,13 @@ jobs:
           fi
 
       - name: Publish to NPM
-        if: steps.changes.outputs.should_publish == 'true' && env.NPM_TOKEN != ''
+        if: steps.changes.outputs.should_publish == 'true' && env.NPM_CONFIG_TOKEN != ''
         run: |
           echo "� Publishing to NPM..."
           bun publish --access public --tag latest --ignore-scripts
           echo "✅ Successfully published to NPM!"
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push changes and tags
         run: |
