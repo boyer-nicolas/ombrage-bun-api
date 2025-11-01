@@ -21,7 +21,7 @@ export class Server {
 			console.debug("Discovered routes:");
 			console.debug(this.fileRouter.getRouteInfo());
 
-			console.log("Configuration:", JSON.stringify(this.config, null, 2));
+			console.log("Configuration:", this.config);
 		}
 
 		const self = this;

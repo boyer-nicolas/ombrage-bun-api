@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { AppConfig, type Config, ConfigSchema } from "../src/lib/config";
+import { AppConfig, type Config, ConfigSchema } from "../../src/lib/config";
 
 describe("config.ts", () => {
 	// Store original environment variables

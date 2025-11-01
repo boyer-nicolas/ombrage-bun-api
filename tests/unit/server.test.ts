@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { AppConfig } from "../src/lib/config";
-import { Server } from "../src/lib/server";
+import { AppConfig } from "../../src/lib/config";
+import { Server } from "../../src/lib/server";
 
 describe("server.ts", () => {
 	let server: Server;

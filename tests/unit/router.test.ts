@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, mock, test } from "bun:test";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { FileRouter } from "../src/lib/router";
+import { FileRouter } from "../../src/lib/router";
 
 describe("router.ts", () => {
 	let router: FileRouter;

@@ -38,10 +38,10 @@
   "include": [
     "src",
     "dev",
-    "tests/config.test.ts",
-    "tests/helpers.test.ts",
-    "tests/router.test.ts",
-    "tests/server.test.ts",
-    "tests/spec-validation.test.ts"
+    "tests/unit/config.test.ts",
+    "tests/unit/helpers.test.ts",
+    "tests/unit/router.test.ts",
+    "tests/unit/server.test.ts",
+    "tests/unit/spec-validation.test.ts"
   ]
 }

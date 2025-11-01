@@ -278,6 +278,19 @@ export function customSpecToOpenAPI(
 			if (parameters.length > 0) {
 				operationObject.parameters = parameters;
 			}
+
+			// Handle body parameters (convert to requestBody)
+			if (specItem.parameters.body) {
+				const bodySchema = specItem.parameters.body;
+				operationObject.requestBody = {
+					required: true,
+					content: {
+						[specItem.format === "json" ? "application/json" : "text/plain"]: {
+							schema: zodToOpenAPISchema(bodySchema),
+						},
+					},
+				};
+			}
 		}
 
 		// Initialize the path object if it doesn't exist

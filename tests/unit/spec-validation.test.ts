@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import z from "zod";
-import { createRoute, type SpecItem } from "../src/lib/helpers";
+import { createRoute, type SpecItem } from "../../src/lib/helpers";
 
 describe("createRoute with spec validation", () => {
 	test("should throw error when response status doesn't match spec", async () => {

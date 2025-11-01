@@ -12,7 +12,7 @@ import {
 	type RouteProps,
 	type SpecItem,
 	zodToOpenAPISchema,
-} from "../src/lib/helpers";
+} from "../../src/lib/helpers";
 
 describe("helpers.ts", () => {
 	describe("createRoute", () => {
@@ -427,6 +427,158 @@ describe("helpers.ts", () => {
 			if (pathItem) {
 				expect(pathItem.get).toBeDefined();
 				expect(pathItem.post).toBeDefined();
+			}
+		});
+
+		test("should convert CustomSpec with body parameters", () => {
+			const customSpec: CustomSpec = {
+				post: {
+					format: "json",
+					parameters: {
+						body: z.object({
+							name: z.string().describe("The name of the item"),
+							description: z
+								.string()
+								.optional()
+								.describe("Optional description"),
+						}),
+					},
+					responses: {
+						201: {
+							summary: "Created",
+							description: "Successfully created item",
+							schema: z.object({
+								id: z.string(),
+								name: z.string(),
+							}),
+						},
+					},
+				},
+			};
+
+			const result = customSpecToOpenAPI(customSpec);
+
+			expect(result["/"]).toBeDefined();
+			const pathItem = result["/"];
+			expect(pathItem?.post).toBeDefined();
+
+			const postOperation = pathItem?.post;
+			expect(postOperation?.requestBody).toBeDefined();
+
+			const requestBody =
+				postOperation?.requestBody as OpenAPIV3_1.RequestBodyObject;
+			expect(requestBody.required).toBe(true);
+			expect(requestBody.content).toBeDefined();
+			expect(requestBody.content["application/json"]).toBeDefined();
+
+			const jsonContent = requestBody.content["application/json"];
+			if (!jsonContent) {
+				throw new Error("jsonContent is undefined");
+			}
+			expect(jsonContent.schema).toBeDefined();
+			expect(jsonContent.schema).toEqual({
+				type: "object",
+				properties: {
+					name: {
+						type: "string",
+						description: "The name of the item",
+					},
+					description: {
+						type: "string",
+						description: "Optional description",
+					},
+				},
+				required: ["name"],
+			});
+		});
+
+		test("should handle mixed parameters including body", () => {
+			const customSpec: CustomSpec = {
+				post: {
+					format: "json",
+					parameters: {
+						path: z.object({
+							id: z.string().describe("The item ID"),
+						}),
+						query: z.object({
+							validate: z.boolean().optional().describe("Whether to validate"),
+						}),
+						headers: z.object({
+							"x-api-key": z.string().describe("API key"),
+						}),
+						body: z.object({
+							name: z.string().describe("Item name"),
+							description: z.string().optional().describe("Item description"),
+						}),
+					},
+					responses: {
+						200: {
+							summary: "Updated",
+							description: "Successfully updated item",
+							schema: z.object({
+								id: z.string(),
+								name: z.string(),
+							}),
+						},
+					},
+				},
+			};
+
+			const result = customSpecToOpenAPI(customSpec);
+
+			const pathItem = result["/"];
+			const postOperation = pathItem?.post;
+
+			// Check that both regular parameters and requestBody are present
+			expect(postOperation?.parameters).toBeDefined();
+			expect(postOperation?.requestBody).toBeDefined();
+
+			// Verify parameters (path, query, headers)
+			const parameters =
+				postOperation?.parameters as OpenAPIV3_1.ParameterObject[];
+			expect(parameters).toHaveLength(3);
+
+			const pathParam = parameters.find(
+				(p) => p.in === "path" && p.name === "id",
+			);
+			expect(pathParam).toBeDefined();
+			expect(pathParam?.required).toBe(true);
+
+			const queryParam = parameters.find(
+				(p) => p.in === "query" && p.name === "validate",
+			);
+			expect(queryParam).toBeDefined();
+			expect(queryParam?.required).toBe(false);
+
+			const headerParam = parameters.find(
+				(p) => p.in === "header" && p.name === "x-api-key",
+			);
+			expect(headerParam).toBeDefined();
+			expect(headerParam?.required).toBe(true);
+
+			// Verify requestBody
+			const requestBody =
+				postOperation?.requestBody as OpenAPIV3_1.RequestBodyObject;
+			expect(requestBody.required).toBe(true);
+			expect(requestBody.content["application/json"]).toBeDefined();
+
+			const jsonContent = requestBody.content["application/json"];
+			if (jsonContent) {
+				expect(jsonContent.schema).toBeDefined();
+				expect(jsonContent.schema).toEqual({
+					type: "object",
+					properties: {
+						name: {
+							type: "string",
+							description: "Item name",
+						},
+						description: {
+							type: "string",
+							description: "Item description",
+						},
+					},
+					required: ["name"],
+				});
 			}
 		});
 	});

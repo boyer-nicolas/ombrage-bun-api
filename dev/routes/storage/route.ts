@@ -14,7 +14,7 @@ export const GET = createRoute({
 		return Response.json(buckets);
 	},
 	spec: {
-		format: "json" as const,
+		format: "json",
 		responses: {
 			200: {
 				summary: "List all storage items",
