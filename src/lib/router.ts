@@ -3,14 +3,16 @@ import { dirname, join, relative, sep } from "node:path";
 import { AppConfig } from "@lib/config";
 import type { OpenAPIV3_1 } from "openapi-types";
 import packageJson from "../../package.json";
+import {
+	type CustomSpec,
+	generateOpenAPIFromCustomSpec,
+	type SpecItem,
+} from "./helpers";
 
 interface RouteModule {
 	path: string;
 	routeFile?: string;
-	serviceFile?: string;
-	specFile?: string;
 	routes?: Record<string, unknown>;
-	spec?: unknown;
 }
 
 const config = AppConfig.get();
@@ -36,12 +38,12 @@ export class FileRouter {
 	 */
 	private async scanDirectory(dirPath: string): Promise<void> {
 		try {
-			try {
-				await fs.access(dirPath);
-			} catch {
-				return; // Directory doesn't exist
-			}
+			await fs.access(dirPath);
+		} catch {
+			throw new Error(`Directory ${dirPath} does not exist`);
+		}
 
+		try {
 			const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
 			for (const entry of entries) {
@@ -49,12 +51,7 @@ export class FileRouter {
 
 				if (entry.isDirectory()) {
 					await this.scanDirectory(fullPath);
-				} else if (
-					entry.isFile() &&
-					(entry.name === "route.ts" ||
-						entry.name === "service.ts" ||
-						entry.name === "spec.ts")
-				) {
+				} else if (entry.isFile() && entry.name === "route.ts") {
 					await this.processRouteFile(fullPath, entry.name);
 				}
 			}
@@ -79,26 +76,64 @@ export class FileRouter {
 			this.routes.set(routePath, routeModule);
 		}
 
-		// Set the file path based on the file type
-		switch (fileName) {
-			case "route.ts":
-				routeModule.routeFile = filePath;
-				break;
-			case "service.ts":
-				routeModule.serviceFile = filePath;
-				break;
-			case "spec.ts":
-				routeModule.specFile = filePath;
-				break;
+		// Set the file path for route files only
+		if (fileName === "route.ts") {
+			routeModule.routeFile = filePath;
 		}
 	}
 
 	/**
-	 * Convert file system path to route path
+	 * Convert file system path to route path and extract parameter names
 	 */
 	private getRoutePath(dirPath: string): string {
 		const relativePath = relative(this.basePath, dirPath);
 		return `/${relativePath.split(sep).join("/")}`;
+	}
+
+	/**
+	 * Convert a route path with [param] syntax to a regex pattern
+	 */
+	private routeToRegex(routePath: string): {
+		regex: RegExp;
+		paramNames: string[];
+	} {
+		const paramNames: string[] = [];
+
+		// Replace [param] with named capture groups
+		const regexPattern = routePath.replace(
+			/\[([^\]]+)\]/g,
+			(_match, paramName) => {
+				paramNames.push(paramName);
+				return "([^/]+)";
+			},
+		);
+
+		// Ensure exact match
+		const regex = new RegExp(`^${regexPattern}$`);
+
+		return { regex, paramNames };
+	}
+
+	/**
+	 * Extract parameters from a URL path using the route pattern
+	 */
+	private extractParams(
+		requestPath: string,
+		routePath: string,
+	): Record<string, string> {
+		const { regex, paramNames } = this.routeToRegex(routePath);
+		const match = requestPath.match(regex);
+
+		if (!match) {
+			return {};
+		}
+
+		const params: Record<string, string> = {};
+		paramNames.forEach((name, index) => {
+			params[name] = match[index + 1] || "";
+		});
+
+		return params;
 	}
 
 	/**
@@ -118,13 +153,6 @@ export class FileRouter {
 	 * Load a specific route module
 	 */
 	private async loadRouteModule(routeModule: RouteModule): Promise<void> {
-		// Load spec if it exists
-		if (routeModule.specFile) {
-			const specModule = await import(routeModule.specFile);
-			// Get the default export or first exported object
-			routeModule.spec = specModule.default || this.getSpecData(specModule);
-		}
-
 		// Load route functions if route file exists
 		if (routeModule.routeFile) {
 			const routeModuleImport = await import(routeModule.routeFile);
@@ -140,8 +168,8 @@ export class FileRouter {
 		const path = url.pathname;
 
 		// Find matching route
-		const routeModule = this.findMatchingRoute(path);
-		if (!routeModule || !routeModule.routes) {
+		const routeMatch = this.findMatchingRoute(path);
+		if (!routeMatch || !routeMatch.module.routes) {
 			return Response.json(
 				{
 					error: "Not Found",
@@ -153,7 +181,7 @@ export class FileRouter {
 		}
 
 		const method = request.method;
-		const handler = routeModule.routes[method];
+		const handler = routeMatch.module.routes[method];
 
 		if (!handler || typeof handler !== "object") {
 			return Response.json(
@@ -169,7 +197,13 @@ export class FileRouter {
 		try {
 			// Extract the callback from the route object
 			const routeObject = handler as {
-				callback?: (props: { request: Request }) => Promise<Response>;
+				callback?: (props: {
+					request: Request;
+					params?: Record<string, string>;
+					body?: unknown;
+					query?: Record<string, string>;
+					headers?: Record<string, string>;
+				}) => Promise<Response>;
 			};
 			if (!routeObject.callback || typeof routeObject.callback !== "function") {
 				return Response.json(
@@ -182,7 +216,35 @@ export class FileRouter {
 				);
 			}
 
-			return await routeObject.callback({ request });
+			// Parse query parameters
+			const query: Record<string, string> = {};
+			url.searchParams.forEach((value, key) => {
+				query[key] = value;
+			});
+
+			// Extract headers as a simple object
+			const headers: Record<string, string> = {};
+			request.headers.forEach((value, key) => {
+				headers[key] = value;
+			});
+
+			// Parse request body if present
+			let body: unknown;
+			if (request.headers.get("content-type")?.includes("application/json")) {
+				try {
+					body = await request.json();
+				} catch {
+					// Ignore JSON parsing errors, body will remain undefined
+				}
+			}
+
+			return await routeObject.callback({
+				request,
+				params: routeMatch.params,
+				body,
+				query,
+				headers,
+			});
 		} catch (error) {
 			console.error(`Error handling ${method} ${path}:`, error);
 			return Response.json(
@@ -199,18 +261,37 @@ export class FileRouter {
 	/**
 	 * Find the best matching route for a given path
 	 */
-	private findMatchingRoute(requestPath: string): RouteModule | undefined {
-		// First try exact match
+	private findMatchingRoute(
+		requestPath: string,
+	): { module: RouteModule; params: Record<string, string> } | undefined {
+		// Try exact match first
 		const exactMatch = this.routes.get(requestPath);
 		if (exactMatch) {
-			return exactMatch;
+			return { module: exactMatch, params: {} };
 		}
 
-		// Try to find the closest parent route
+		// Try dynamic routes
+		for (const [routePath, routeModule] of this.routes) {
+			// Check if route has dynamic segments
+			if (routePath.includes("[") && routePath.includes("]")) {
+				const { regex } = this.routeToRegex(routePath);
+				if (regex.test(requestPath)) {
+					const params = this.extractParams(requestPath, routePath);
+					return { module: routeModule, params };
+				}
+			}
+		}
+
+		// Fall back to prefix matching for backward compatibility
 		let bestMatch: RouteModule | undefined;
 		let bestMatchLength = 0;
 
 		for (const [routePath, routeModule] of this.routes) {
+			// Skip dynamic routes in prefix matching
+			if (routePath.includes("[") && routePath.includes("]")) {
+				continue;
+			}
+
 			if (
 				requestPath.startsWith(routePath) &&
 				routePath.length > bestMatchLength
@@ -220,7 +301,7 @@ export class FileRouter {
 			}
 		}
 
-		return bestMatch;
+		return bestMatch ? { module: bestMatch, params: {} } : undefined;
 	}
 
 	/**
@@ -236,19 +317,31 @@ export class FileRouter {
 	getRouteInfo(): Array<{
 		path: string;
 		hasRoute: boolean;
-		hasService: boolean;
 		hasSpec: boolean;
 	}> {
 		return Array.from(this.routes.entries()).map(([path, module]) => ({
 			path,
 			hasRoute: !!module.routeFile,
-			hasService: !!module.serviceFile,
-			hasSpec: !!module.specFile,
+			hasSpec: this.hasInlineSpec(module),
 		}));
 	}
 
 	/**
-	 * Generate OpenAPI specification from all spec files
+	 * Check if a route module has inline specs
+	 */
+	private hasInlineSpec(routeModule: RouteModule): boolean {
+		if (!routeModule.routes) return false;
+
+		for (const route of Object.values(routeModule.routes)) {
+			if (route && typeof route === "object" && "spec" in route && route.spec) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Generate OpenAPI specification from inline specs in route files
 	 */
 	generateOpenAPISpec(): OpenAPIV3_1.Document {
 		const baseSpec: OpenAPIV3_1.Document = {
@@ -267,37 +360,124 @@ export class FileRouter {
 			paths: {},
 		};
 
-		// Combine all spec files into the paths object
+		// Extract specs from route definitions
 		for (const [path, routeModule] of this.routes) {
-			if (routeModule.spec) {
+			if (routeModule.routes) {
 				try {
-					// The spec is now the direct export from the spec file
-					const specData = routeModule.spec;
-					if (specData && typeof specData === "object") {
-						// Create a deep copy of the spec data to avoid readonly issues
-						const processedSpecData = JSON.parse(JSON.stringify(specData));
+					const methodSpecs: Record<string, unknown> = {};
 
-						// Add 500 response to all operations if not already defined
-						for (const method in processedSpecData as Record<string, unknown>) {
-							const operation = (processedSpecData as Record<string, unknown>)[
-								method
-							] as Record<string, unknown> & {
-								responses?: Record<string, unknown>;
-							};
-							if (!operation.responses || !operation.responses["500"]) {
-								if (!operation.responses) {
-									operation.responses = {};
+					// Iterate through all exported route handlers
+					for (const [exportName, routeHandler] of Object.entries(
+						routeModule.routes,
+					)) {
+						// Skip non-HTTP method exports
+						const httpMethod = exportName.toLowerCase();
+						if (
+							![
+								"get",
+								"post",
+								"put",
+								"delete",
+								"patch",
+								"head",
+								"options",
+							].includes(httpMethod)
+						) {
+							continue;
+						}
+
+						// Check if this route handler has a spec
+						if (
+							routeHandler &&
+							typeof routeHandler === "object" &&
+							"spec" in routeHandler
+						) {
+							const spec = (routeHandler as { spec?: unknown }).spec;
+							if (spec) {
+								methodSpecs[httpMethod] = spec;
+							}
+						}
+					}
+
+					// If we found any specs, process them
+					if (Object.keys(methodSpecs).length > 0) {
+						this.processInlineSpecs(path, methodSpecs, baseSpec);
+					}
+				} catch (error) {
+					console.warn(
+						`Failed to process inline specs for route ${path}:`,
+						error,
+					);
+				}
+			}
+		}
+
+		return baseSpec;
+	}
+
+	/**
+	 * Process inline specs and add them to the OpenAPI document
+	 */
+	private processInlineSpecs(
+		routePath: string,
+		methodSpecs: Record<string, unknown>,
+		baseSpec: OpenAPIV3_1.Document,
+	): void {
+		// Create a CustomSpec-like object from the method specs
+		const customSpec: CustomSpec = {};
+
+		for (const [method, spec] of Object.entries(methodSpecs)) {
+			if (spec && typeof spec === "object") {
+				customSpec[method] = spec as SpecItem;
+			}
+		}
+
+		if (Object.keys(customSpec).length === 0) {
+			return;
+		}
+
+		// Convert CustomSpec to OpenAPI format
+		const openAPIFromCustom = generateOpenAPIFromCustomSpec(customSpec, {
+			title: config.title,
+			version: packageJson.version,
+			description: config.description,
+		});
+
+		// Merge the paths from the converted spec
+		if (openAPIFromCustom.paths && baseSpec.paths) {
+			for (const [specPath, pathItem] of Object.entries(
+				openAPIFromCustom.paths,
+			)) {
+				// Use the route path instead of the default "/"
+				let actualPath = specPath === "/" ? routePath : routePath + specPath;
+				// Convert [param] syntax to {param} for OpenAPI
+				actualPath = actualPath.replace(/\[([^\]]+)\]/g, "{$1}");
+
+				if (!baseSpec.paths[actualPath]) {
+					baseSpec.paths[actualPath] = {};
+				}
+
+				if (pathItem && baseSpec.paths[actualPath]) {
+					// Add 500 response to all operations if not already defined
+					for (const [, operation] of Object.entries(pathItem)) {
+						if (
+							operation &&
+							typeof operation === "object" &&
+							"responses" in operation
+						) {
+							const op = operation as { responses?: Record<string, unknown> };
+							if (!op.responses || !op.responses["500"]) {
+								if (!op.responses) {
+									op.responses = {};
 								}
-								operation.responses["500"] = {
+								op.responses["500"] = {
 									description: "Internal server error",
 									content: {
 										"application/json": {
 											schema: {
 												type: "object",
 												properties: {
-													error: {
-														type: "string",
-													},
+													error: { type: "string" },
 													message: {
 														type: "string",
 														default: "An unexpected error occurred",
@@ -309,41 +489,15 @@ export class FileRouter {
 								};
 							}
 						}
-
-						// Use the folder structure path as the OpenAPI path
-						if (!baseSpec.paths[path]) {
-							baseSpec.paths[path] = {};
-						}
-						Object.assign(baseSpec.paths[path], processedSpecData);
 					}
-				} catch (error) {
-					console.warn(`Failed to process spec for route ${path}:`, error);
+
+					Object.assign(
+						baseSpec.paths[actualPath] as Record<string, unknown>,
+						pathItem,
+					);
 				}
 			}
 		}
-
-		return baseSpec;
-	}
-
-	/**
-	 * Extract spec data from a spec module
-	 */
-	private getSpecData(specModule: unknown): unknown {
-		// Type guard to check if specModule has string keys
-		if (typeof specModule !== "object" || specModule === null) {
-			return null;
-		}
-
-		const typedSpecModule = specModule as Record<string, unknown>;
-
-		// Try to find exported spec data
-		for (const key in specModule) {
-			const exported = typedSpecModule[key];
-			if (typeof exported === "object" && exported !== null) {
-				return exported;
-			}
-		}
-		return null;
 	}
 
 	/**

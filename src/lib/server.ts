@@ -2,8 +2,8 @@ import { AppConfig, type Config } from "@lib/config";
 import { FileRouter } from "@lib/router";
 
 export class Server {
-	private config: Config;
-	private fileRouter: FileRouter;
+	public config: Config;
+	public fileRouter: FileRouter;
 	static server?: Bun.Server<undefined>;
 
 	constructor(routesPath: string = "./routes") {
@@ -21,7 +21,7 @@ export class Server {
 			console.debug("Discovered routes:");
 			console.debug(this.fileRouter.getRouteInfo());
 
-			console.log("Configuration:", JSON.stringify(this.config, null, 2));
+			console.log("Configuration:", this.config);
 		}
 
 		const self = this;
@@ -47,8 +47,29 @@ export class Server {
 
 				// Use file-based router for all other requests
 				const response = await self.fileRouter.handleRequest(request);
+				if (response.status === 404) {
+					console.log(
+						`==> ${Bun.color("red", "ansi")}${request.method}  ${url.pathname} ${Bun.color("white", "ansi")} - ${
+							Date.now() - startTime
+						}ms (status: ${Bun.color("red", "ansi")} ${response.status} ${Bun.color("white", "ansi")})`,
+					);
+					return response;
+				}
+
+				if (response.status >= 400) {
+					console.log(
+						`==> ${Bun.color("yellow", "ansi")}${request.method} ${Bun.color(
+							"cyan",
+							"ansi",
+						)} ${url.pathname} ${Bun.color("white", "ansi")} - ${
+							Date.now() - startTime
+						}ms (status: ${Bun.color("yellow", "ansi")} ${response.status} ${Bun.color("white", "ansi")})`,
+					);
+					return response;
+				}
+
 				console.log(
-					`==> ${Bun.color("green", "ansi")}${request.method} ${Bun.color("cyan", "ansi")} ${url.pathname} ${Bun.color("white", "ansi")} - ${Date.now() - startTime}ms `,
+					`==> ${Bun.color("green", "ansi")}${request.method} ${Bun.color("cyan", "ansi")} ${url.pathname} ${Bun.color("white", "ansi")} - ${Date.now() - startTime}ms (status: ${response.status})`,
 				);
 				return response;
 			},

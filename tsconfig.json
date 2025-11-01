@@ -28,11 +28,13 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
     "baseUrl": ".",
-    "rootDir": "src",
+    "rootDir": ".",
     "paths": {
       "@lib/*": ["./src/lib/*"],
-      "@routes/*": ["./src/routes/*"]
+      "@routes/*": ["./src/routes/*"],
+      "@dev/*": ["./dev/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "dev", "tests", "scripts"],
+  "exclude": ["node_modules", "dist"]
 }

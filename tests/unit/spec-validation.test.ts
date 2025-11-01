@@ -1,12 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { createRoute } from "./helpers";
+import z from "zod";
+import { createRoute, type SpecItem } from "../../src/lib/helpers";
 
 describe("createRoute with spec validation", () => {
 	test("should throw error when response status doesn't match spec", async () => {
-		const mockSpec = {
+		const mockSpec: SpecItem = {
+			format: "json",
 			responses: {
-				"201": {
+				201: {
+					summary: "Created",
 					description: "Created successfully",
+					schema: z.object({
+						success: z.boolean(),
+					}),
 				},
 			},
 		};
@@ -25,18 +31,29 @@ describe("createRoute with spec validation", () => {
 		// This should throw an error in development environment
 		process.env.ENVIRONMENT = "development";
 
-		await expect(async () => {
-			if (route.callback) {
-				await route.callback({ request });
-			}
-		}).toThrow();
+		// Test the callback directly as an async function
+		if (route.callback) {
+			const mockProps = {
+				request,
+				params: {},
+				query: {},
+				headers: {},
+				body: undefined,
+			};
+			await expect(route.callback(mockProps)).rejects.toThrow();
+		}
 	});
 
 	test("should not throw error when response status matches spec", async () => {
-		const mockSpec = {
+		const mockSpec: SpecItem = {
+			format: "json",
 			responses: {
 				"200": {
-					description: "Success",
+					summary: "Success",
+					description: "Success response",
+					schema: z.object({
+						success: z.boolean(),
+					}),
 				},
 			},
 		};
@@ -56,7 +73,14 @@ describe("createRoute with spec validation", () => {
 		let response: Response | undefined;
 		await expect(async () => {
 			if (route.callback) {
-				response = await route.callback({ request });
+				const mockProps = {
+					request,
+					params: {},
+					query: {},
+					headers: {},
+					body: undefined,
+				};
+				response = await route.callback(mockProps);
 			}
 		}).not.toThrow();
 
@@ -78,7 +102,14 @@ describe("createRoute with spec validation", () => {
 		let response: Response | undefined;
 		await expect(async () => {
 			if (route.callback) {
-				response = await route.callback({ request });
+				const mockProps = {
+					request,
+					params: {},
+					query: {},
+					headers: {},
+					body: undefined,
+				};
+				response = await route.callback(mockProps);
 			}
 		}).not.toThrow();
 

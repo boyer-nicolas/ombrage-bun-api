@@ -1,7 +1,6 @@
 import Bun from "bun";
 import { z } from "zod";
 
-// Custom boolean coercion that properly handles string "false"
 const booleanFromString = z
 	.union([z.boolean(), z.string()])
 	.transform((val) => {
