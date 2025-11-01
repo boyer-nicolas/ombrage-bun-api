@@ -1,5 +1,5 @@
-import { createRoute } from "@lib/helpers";
 import { z } from "zod";
+import { createRoute } from "../../../src";
 import {
 	bucketListSchema,
 	createBucket,

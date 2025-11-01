@@ -1,3 +1,3 @@
-import { Server } from "@lib/server";
+import { Server } from "../src";
 
 new Server("./dev/routes").start();

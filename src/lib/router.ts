@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
-import { dirname, join, relative, sep } from "node:path";
-import { AppConfig } from "@lib/config";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import type { OpenAPIV3_1 } from "openapi-types";
 import packageJson from "../../package.json";
+import { AppConfig } from "./config";
 import {
 	type CustomSpec,
 	generateOpenAPIFromCustomSpec,
@@ -22,7 +22,7 @@ export class FileRouter {
 	public basePath: string;
 
 	constructor(basePath: string = "./routes") {
-		this.basePath = basePath;
+		this.basePath = resolve(basePath);
 	}
 
 	/**
@@ -314,30 +314,8 @@ export class FileRouter {
 	/**
 	 * Get route information for debugging
 	 */
-	getRouteInfo(): Array<{
-		path: string;
-		hasRoute: boolean;
-		hasSpec: boolean;
-	}> {
-		return Array.from(this.routes.entries()).map(([path, module]) => ({
-			path,
-			hasRoute: !!module.routeFile,
-			hasSpec: this.hasInlineSpec(module),
-		}));
-	}
-
-	/**
-	 * Check if a route module has inline specs
-	 */
-	private hasInlineSpec(routeModule: RouteModule): boolean {
-		if (!routeModule.routes) return false;
-
-		for (const route of Object.values(routeModule.routes)) {
-			if (route && typeof route === "object" && "spec" in route && route.spec) {
-				return true;
-			}
-		}
-		return false;
+	getRouteInfo(): string[] {
+		return Array.from(this.routes.entries()).map(([path]) => path);
 	}
 
 	/**

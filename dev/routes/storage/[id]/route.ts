@@ -1,6 +1,6 @@
-import { getBucketById, singleBucketSchema } from "@dev/lib/storage";
-import { createRoute } from "src";
 import { z } from "zod";
+import { createRoute } from "../../../../src";
+import { getBucketById, singleBucketSchema } from "../../../lib/storage";
 
 export const GET = createRoute({
 	method: "GET",

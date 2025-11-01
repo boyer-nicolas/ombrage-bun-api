@@ -1,4 +1,4 @@
-import { AppConfig, type Config, ConfigSchema } from "@lib/config";
+import { AppConfig, type Config, ConfigSchema } from "./lib/config";
 import {
 	type CreateRouteProps,
 	createRoute,
@@ -6,9 +6,9 @@ import {
 	createTypedResponse,
 	type RouteDefinition,
 	type RouteProps,
-} from "@lib/helpers";
-import { FileRouter } from "@lib/router";
-import { Server } from "@lib/server";
+} from "./lib/helpers";
+import { FileRouter } from "./lib/router";
+import { Server } from "./lib/server";
 
 export {
 	Server,

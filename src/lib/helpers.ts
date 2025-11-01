@@ -60,8 +60,21 @@ export function zodToOpenAPISchema(
 	zodSchema: z.ZodType,
 ): OpenAPIV3_1.SchemaObject {
 	try {
+		// Check if zodSchema is valid
+		if (!zodSchema || typeof zodSchema !== "object" || !zodSchema._def) {
+			console.warn("Invalid Zod schema provided:", zodSchema);
+			return { type: "object" };
+		}
+
 		const def = zodSchema._def as unknown as Record<string, unknown>;
 		const type = def.type as string;
+
+		// Check if type is defined
+		if (!type) {
+			console.warn("Zod schema missing type:", def);
+			return { type: "object" };
+		}
+
 		const description = (zodSchema as z.ZodType & { description?: string })
 			.description;
 

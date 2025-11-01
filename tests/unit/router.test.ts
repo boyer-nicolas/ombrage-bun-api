@@ -447,18 +447,7 @@ describe("router.ts", () => {
 
 			const routeInfo = router.getRouteInfo();
 
-			expect(routeInfo).toEqual([
-				{
-					path: "/test",
-					hasRoute: true,
-					hasSpec: true,
-				},
-				{
-					path: "/test2",
-					hasRoute: true,
-					hasSpec: false,
-				},
-			]);
+			expect(routeInfo).toEqual(["/test", "/test2"]);
 		});
 
 		test("should return empty array when no routes discovered", () => {

@@ -25,7 +25,7 @@ describe("server.ts", () => {
 
 		await fs.writeFile(
 			path.join(testRouteDir, "route.ts"),
-			`import { createRoute } from "../../src/lib/helpers";
+			`import { createRoute } from "../../../src/index.js";
 			import { z } from "zod";
 			export const GET = createRoute({
 				method: "GET",
@@ -43,7 +43,6 @@ describe("server.ts", () => {
 				}
 			});`,
 		);
-
 		server = new Server(routesDir);
 	});
 

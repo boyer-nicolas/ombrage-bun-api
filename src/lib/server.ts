@@ -1,5 +1,5 @@
-import { AppConfig, type Config } from "@lib/config";
-import { FileRouter } from "@lib/router";
+import { AppConfig, type Config } from "./config";
+import { FileRouter } from "./router";
 
 export class Server {
 	public config: Config;
