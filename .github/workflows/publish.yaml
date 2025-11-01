@@ -46,10 +46,19 @@ jobs:
 
       - name: Run checks
         run: |
+          echo "🔍 Running type checks..."
           bun run check
+
+          echo "🧹 Running linter..."
           bun run lint
+
+          echo "🧪 Running tests with coverage..."
           bun run test:coverage
+
+          echo "🏗️ Building package..."
           bun run build
+
+          echo "✅ All checks passed successfully!"
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
@@ -69,36 +78,43 @@ jobs:
       - name: Check for changes since last tag
         id: changes
         run: |
+          echo "🔍 Checking if we should publish..."
+
           # Check if the latest commit is just a coverage badge update with [skip ci]
           LATEST_COMMIT_MSG=$(git log -1 --pretty=%s)
+          echo "Latest commit: $LATEST_COMMIT_MSG"
+
           if [[ "$LATEST_COMMIT_MSG" == *"[skip ci]"* ]]; then
-            echo "Latest commit has [skip ci], will not publish"
+            echo "⏭️ Latest commit has [skip ci], will not publish"
             echo "should_publish=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
           # Get the latest tag
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "Latest tag: ${LATEST_TAG:-'(none)'}"
 
           if [ -z "$LATEST_TAG" ]; then
-            echo "No previous tags found, will publish"
+            echo "🎉 No previous tags found, will publish first release"
             echo "should_publish=true" >> $GITHUB_OUTPUT
             echo "is_first_release=true" >> $GITHUB_OUTPUT
           else
             # Check if current commit is already tagged
             if git describe --tags --exact-match HEAD 2>/dev/null; then
-              echo "Current commit is already tagged, skipping publish"
+              CURRENT_TAG=$(git describe --tags --exact-match HEAD)
+              echo "🏷️ Current commit is already tagged ($CURRENT_TAG), skipping publish"
               echo "should_publish=false" >> $GITHUB_OUTPUT
             else
               # Check if there are changes since last tag
               CHANGES=$(git rev-list $LATEST_TAG..HEAD --count)
+              echo "Changes since last tag: $CHANGES commits"
               
               if [ "$CHANGES" -gt 0 ]; then
-                echo "Found $CHANGES commits since last release, will publish"
+                echo "🚀 Found $CHANGES commits since last release, will publish"
                 echo "should_publish=true" >> $GITHUB_OUTPUT
                 echo "is_first_release=false" >> $GITHUB_OUTPUT
               else
-                echo "No changes since last release, skipping publish"
+                echo "⏭️ No changes since last release, skipping publish"
                 echo "should_publish=false" >> $GITHUB_OUTPUT
               fi
             fi
@@ -130,7 +146,9 @@ jobs:
       - name: Publish to NPM
         if: steps.changes.outputs.should_publish == 'true' && env.NPM_TOKEN != ''
         run: |
+          echo "� Publishing to NPM..."
           bun publish --access public --tag latest --ignore-scripts
+          echo "✅ Successfully published to NPM!"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
