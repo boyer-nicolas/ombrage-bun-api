@@ -35,7 +35,7 @@ jobs:
         working-directory: example
         run: |
           bun install --frozen-lockfile
-          bun test
+          bun run test
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
