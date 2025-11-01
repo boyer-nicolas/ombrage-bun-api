@@ -25,18 +25,22 @@ describe("server.ts", () => {
 
 		await fs.writeFile(
 			path.join(testRouteDir, "route.ts"),
-			`import { createRoute } from "ombrage-bun-api/helpers";
+			`import { createRoute } from "../../src/lib/helpers";
+			import { z } from "zod";
 			export const GET = createRoute({
 				method: "GET",
-				callback: async () => Response.json({ message: "test" })
-			});`,
-		);
-
-		await fs.writeFile(
-			path.join(testRouteDir, "spec.ts"),
-			`import { defineSpec } from "ombrage-bun-api/helpers";
-			export default defineSpec({
-				get: { summary: "Test route", responses: { "200": { description: "OK" } } }
+				callback: async () => Response.json({ message: "test" }),
+				spec: {
+					summary: "Test route",
+					responses: {
+						"200": {
+							description: "Successful response",
+							schema: z.object({
+								message: z.string()
+							})
+						}
+					}
+				}
 			});`,
 		);
 

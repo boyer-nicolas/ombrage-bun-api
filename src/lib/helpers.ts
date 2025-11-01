@@ -52,14 +52,6 @@ export type CustomSpec = {
 	[key: string]: SpecItem;
 };
 
-export function defineSpec(spec: CustomSpec): CustomSpec {
-	if (!spec || Object.keys(spec).length === 0) {
-		throw new Error("Spec object cannot be empty");
-	}
-
-	return spec;
-}
-
 /**
  * Converts a Zod schema to OpenAPI 3.1 JSON Schema
  * Based on the actual Zod runtime structure inspection

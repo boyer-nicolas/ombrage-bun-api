@@ -4,7 +4,6 @@ import {
 	createRoute,
 	createRouteCollection,
 	createTypedResponse,
-	defineSpec,
 	type RouteDefinition,
 	type RouteProps,
 } from "@lib/helpers";
@@ -16,7 +15,6 @@ export {
 	ConfigSchema,
 	type Config,
 	AppConfig,
-	defineSpec,
 	type RouteProps,
 	type CreateRouteProps,
 	type RouteDefinition,

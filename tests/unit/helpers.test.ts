@@ -7,7 +7,6 @@ import {
 	createRoute,
 	createTypedResponse,
 	customSpecToOpenAPI,
-	defineSpec,
 	generateOpenAPIFromCustomSpec,
 	type RouteProps,
 	type SpecItem,
@@ -62,84 +61,6 @@ describe("helpers.ts", () => {
 				const result = createRoute({ method });
 				expect(result.method).toBe(method);
 			}
-		});
-	});
-
-	describe("defineSpec", () => {
-		test("should return the same CustomSpec object for valid spec", () => {
-			const mockSpec: CustomSpec = {
-				get: {
-					format: "json",
-					responses: {
-						200: {
-							summary: "Success",
-							description: "Successful response",
-							schema: z.object({
-								id: z.string(),
-								name: z.string(),
-							}),
-						},
-					},
-				},
-			};
-
-			const result = defineSpec(mockSpec);
-
-			expect(result).toBe(mockSpec);
-			expect(result).toEqual(mockSpec);
-		});
-
-		test("should throw error for empty spec object", () => {
-			const emptySpec: CustomSpec = {};
-
-			expect(() => defineSpec(emptySpec)).toThrow(
-				"Spec object cannot be empty",
-			);
-		});
-
-		test("should handle complex spec with multiple methods", () => {
-			const complexSpec: CustomSpec = {
-				get: {
-					format: "json",
-					responses: {
-						200: {
-							summary: "List users",
-							description: "Array of users",
-							schema: z.array(
-								z.object({
-									id: z.string(),
-									name: z.string(),
-								}),
-							),
-						},
-					},
-				},
-				post: {
-					format: "json",
-					responses: {
-						201: {
-							summary: "User created",
-							description: "Successfully created user",
-							schema: z.object({
-								id: z.string(),
-								name: z.string(),
-							}),
-						},
-						400: {
-							summary: "Bad request",
-							description: "Invalid input data",
-							schema: z.object({
-								error: z.string(),
-							}),
-						},
-					},
-				},
-			};
-
-			const result = defineSpec(complexSpec);
-
-			expect(result).toBe(complexSpec);
-			expect(result).toEqual(complexSpec);
 		});
 	});
 

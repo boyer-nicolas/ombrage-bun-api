@@ -10,7 +10,7 @@ A powerful file-based routing system built with Bun, featuring automatic API doc
 ## Features
 
 - 🚀 **File-based routing**: Routes auto-discovered from filesystem structure
-- 📁 **Structured organization**: Separate `route.ts` and `spec.ts` files
+- 📁 **Structured organization**: A simple `route.ts` file
 - 📖 **Auto-generated docs**: Swagger UI with OpenAPI 3.0 specifications
 - 🔄 **Hot reload**: Development server with instant updates
 - 🛡️ **JSON error responses**: Consistent error handling with structured responses
@@ -128,11 +128,26 @@ routes/
 Use Zod schemas to define route parameters in your route specs. Ombrage API supports three types of parameters that are automatically extracted and validated:
 
 ```typescript
-import { defineSpec } from "ombrage-bun-api";
-import { z } from "zod";
+export const GET = createRoute({
+  method: "GET",
+  callback: async ({ params, query, request }) => {
+    // Path parameters
+    const { id } = params; // From /users/[id]
 
-export default defineSpec({
-  get: {
+    // Query parameters (with defaults applied)
+    const { limit, offset, search } = query;
+
+    // Use parameters in your logic
+    const users = await getUsersWithFilters({
+      id,
+      limit,
+      offset,
+      search,
+    });
+
+    return Response.json(users);
+  },
+  spec: {
     summary: "Get user by ID with optional filters",
     parameters: z.object({
       // Path parameters (from dynamic routes like [id])
@@ -157,12 +172,6 @@ export default defineSpec({
         search: z.string().optional().describe("Search term to filter users"),
         active: z.boolean().default(true).describe("Filter by active status"),
       }),
-
-      // Header parameters
-      headers: z.object({
-        "x-api-key": z.string().describe("API authentication key"),
-        "accept-language": z.string().optional().describe("Preferred language"),
-      }),
     }),
     responses: {
       "200": {
@@ -176,11 +185,11 @@ export default defineSpec({
 
 #### Parameter Types
 
-| Parameter Type | Location         | Example                 | Description                     |
-| -------------- | ---------------- | ----------------------- | ------------------------------- |
-| **Path**       | URL segments     | `/users/[id]`           | Dynamic route segments          |
-| **Query**      | URL query string | `?limit=10&search=john` | Optional filters and pagination |
-| **Headers**    | HTTP headers     | `x-api-key: abc123`     | Authentication and metadata     |
+| Parameter Type | Location         | Example                 | Description                      |
+| -------------- | ---------------- | ----------------------- | -------------------------------- |
+| **Path**       | URL segments     | `/users/[id]`           | Dynamic route segments           |
+| **Query**      | URL query string | `?limit=10&search=john` | Optional filters and pagination  |
+| **Headers**    | HTTP headers     | `accept-language: en`   | Content negotiation and metadata |
 
 #### Accessing Parameters in Routes
 
@@ -249,7 +258,57 @@ z.string().email();
 z.string().uuid();
 
 // Parameters with descriptions (for OpenAPI docs)
+// Parameters with descriptions (for OpenAPI docs)
 z.string().describe("User's unique identifier");
+```
+
+#### Type Coercion & Validation
+
+The framework automatically:
+
+- **Converts types**: Strings to numbers, "true"/"false" to booleans
+- **Validates constraints**: Min/max values, string patterns, required fields
+- **Applies defaults**: Missing optional parameters get default values
+- **Generates errors**: Returns 400 Bad Request for invalid parameters
+
+```typescript
+// Example with comprehensive validation
+query: z.object({
+  page: z.number().min(1).default(1).describe("Page number"),
+  size: z.number().min(10).max(100).default(20).describe("Items per page"),
+  sort: z.enum(["name", "date", "popularity"]).default("name"),
+  filter: z.string().min(2).optional().describe("Search filter"),
+  active: z.boolean().default(true),
+  tags: z.array(z.string()).optional(),
+});
+```
+
+#### Error Handling
+
+When parameter validation fails, the framework automatically returns structured error responses:
+
+```json
+{
+  "error": "Parameter validation failed",
+  "details": [
+    {
+      "code": "too_small",
+      "minimum": 1,
+      "type": "number",
+      "inclusive": true,
+      "exact": false,
+      "message": "Number must be greater than or equal to 1",
+      "path": ["query", "page"]
+    }
+  ]
+}
+```
+
+### Complete Example: Advanced Route with Parameters
+
+```typescript
+// routes/users/[id]/route.ts
+import { createRoute } from "ombrage-bun-api";
 ```
 
 #### Type Coercion & Validation
@@ -296,26 +355,19 @@ When parameter validation fails, the framework automatically returns structured 
 }
 ```
 
-### Complete Example: Advanced Route with Parameters
-
+````typescript
 ```typescript
-// routes/users/[id]/route.ts
-import { createRoute } from "ombrage-bun-api";
-import spec from "./spec";
-
 export const GET = createRoute({
   method: "GET",
-  callback: async ({ params, query, headers }) => {
+  callback: async ({ params, query }) => {
     // All parameters are typed and validated
     const { id } = params; // string (required)
     const { include, limit } = query; // string[] | undefined, number
-    const apiKey = headers["x-api-key"]; // string
 
     try {
       const user = await getUserById(id, {
         include,
         limit,
-        apiKey,
       });
 
       return Response.json(user);
@@ -326,17 +378,7 @@ export const GET = createRoute({
       throw error; // Let framework handle other errors
     }
   },
-  spec: spec.get,
-});
-```
-
-```typescript
-// routes/users/[id]/spec.ts
-import { defineSpec } from "ombrage-bun-api";
-import { z } from "zod";
-
-export default defineSpec({
-  get: {
+  spec: {
     summary: "Get user by ID with optional includes",
     description: "Retrieve a specific user with optional related data",
     parameters: z.object({
@@ -354,9 +396,6 @@ export default defineSpec({
           .max(50)
           .default(10)
           .describe("Limit for included items"),
-      }),
-      headers: z.object({
-        "x-api-key": z.string().describe("API authentication key"),
       }),
     }),
     responses: {
@@ -387,7 +426,7 @@ export default defineSpec({
     },
   },
 });
-```
+````
 
 #### Best Practices for Parameter Definition
 
