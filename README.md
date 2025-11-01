@@ -1,7 +1,6 @@
 # [Ombrage API](https://www.npmjs.com/package/ombrage-bun-api)
 
-[![CI](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/ci.yaml/badge.svg)](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/ci.yaml)
-[![Publish](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/publish.yaml/badge.svg)](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/publish.yaml)
+[![CI](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/publish.yaml/badge.svg)](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/publish.yaml)
 [![NPM Version](https://img.shields.io/npm/v/ombrage-bun-api)](https://www.npmjs.com/package/ombrage-bun-api)
 [![NPM Downloads](https://img.shields.io/npm/dm/ombrage-bun-api)](https://www.npmjs.com/package/ombrage-bun-api)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](./coverage/)
