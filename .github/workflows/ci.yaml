@@ -26,16 +26,25 @@ jobs:
 
       - name: Run checks
         run: |
+          echo "🔍 Running type checks..."
           bun run check
+
+          echo "🧹 Running linter..."
           bun run lint
+
+          echo "🧪 Running tests with coverage..."
           bun run test:coverage
+
+          echo "🏗️ Building package..."
           bun run build
 
-      - name: Run example integration tests
-        working-directory: example
-        run: |
+          echo "🧪 Running tests for the example app..."
+          cd example
           bun install --frozen-lockfile --ignore-scripts
           bun test
+          cd ..
+
+          echo "✅ All checks passed successfully!"
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
