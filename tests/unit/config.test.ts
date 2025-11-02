@@ -65,6 +65,7 @@ describe("config.ts", () => {
 					port: 3000,
 					host: "localhost",
 					logLevel: "info",
+					routesDir: "./routes",
 				},
 				swagger: {
 					enabled: true,
@@ -97,6 +98,7 @@ describe("config.ts", () => {
 						port: 8080,
 						host: "0.0.0.0",
 						logLevel: "info",
+						routesDir: "./routes",
 					},
 					swagger: {
 						enabled: true,
@@ -166,6 +168,7 @@ describe("config.ts", () => {
 					port: 8080,
 					host: "0.0.0.0",
 					logLevel: "info",
+					routesDir: "./routes",
 				},
 				swagger: {
 					enabled: true,
@@ -208,6 +211,7 @@ describe("config.ts", () => {
 					port: 3000,
 					host: "localhost",
 					logLevel: "debug",
+					routesDir: "./routes",
 				},
 				swagger: {
 					enabled: false,

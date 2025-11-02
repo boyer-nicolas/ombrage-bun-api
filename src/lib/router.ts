@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import type { OpenAPIV3_1 } from "openapi-types";
 import packageJson from "../../package.json";
-import { AppConfig } from "./config";
+import type { Config } from "./config";
 import {
 	type CustomSpec,
 	generateOpenAPIFromCustomSpec,
@@ -15,14 +15,14 @@ interface RouteModule {
 	routes?: Record<string, unknown>;
 }
 
-const config = AppConfig.get();
-
 export class FileRouter {
 	public routes: Map<string, RouteModule> = new Map();
 	public basePath: string;
+	public config: Config;
 
-	constructor(basePath: string = "./routes") {
-		this.basePath = resolve(basePath);
+	constructor(config: Config) {
+		this.basePath = resolve(config.server.routesDir);
+		this.config = config;
 	}
 
 	/**
@@ -322,16 +322,22 @@ export class FileRouter {
 	 * Generate OpenAPI specification from inline specs in route files
 	 */
 	generateOpenAPISpec(): OpenAPIV3_1.Document {
+		// Handle 0.0.0.0 as localhost for server URL, since the browser cannot reach
+		// that address in Swagger UI
+		let serverHost = this.config.server.host;
+		if (serverHost === "0.0.0.0") {
+			serverHost = "localhost";
+		}
 		const baseSpec: OpenAPIV3_1.Document = {
 			openapi: "3.1.0",
 			info: {
-				title: config.title,
-				description: config.description,
+				title: this.config.title,
+				description: this.config.description,
 				version: packageJson.version,
 			},
 			servers: [
 				{
-					url: `http://localhost:${config.server.port}`,
+					url: `http://${serverHost}:${this.config.server.port}`,
 					description: "Development server",
 				},
 			],
@@ -416,9 +422,9 @@ export class FileRouter {
 
 		// Convert CustomSpec to OpenAPI format
 		const openAPIFromCustom = generateOpenAPIFromCustomSpec(customSpec, {
-			title: config.title,
+			title: this.config.title,
 			version: packageJson.version,
-			description: config.description,
+			description: this.config.description,
 		});
 
 		// Merge the paths from the converted spec
@@ -489,7 +495,7 @@ export class FileRouter {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="SwaggerUI" />
-  <title>${config.title} Documentation</title>
+  <title>${this.config.title} Documentation</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
 </head>
 <body>

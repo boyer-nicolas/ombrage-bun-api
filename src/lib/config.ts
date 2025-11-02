@@ -32,11 +32,13 @@ export const ConfigSchema = z.object({
 			port: numberFromString.pipe(z.number().min(1).max(65535)).default(8080),
 			host: z.string().default("0.0.0.0"),
 			logLevel: z.enum(["debug", "info", "warn", "error"]).default("info"),
+			routesDir: z.string().default("./routes"),
 		})
 		.default({
 			port: 8080,
 			host: "0.0.0.0",
 			logLevel: "info" as const,
+			routesDir: "./routes",
 		}),
 	swagger: z
 		.object({

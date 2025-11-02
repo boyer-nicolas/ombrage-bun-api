@@ -43,7 +43,12 @@ describe("server.ts", () => {
 				}
 			});`,
 		);
-		server = new Server(routesDir);
+		server = new Server({
+			server: {
+				routesDir,
+				port: 0,
+			},
+		});
 	});
 
 	afterEach(async () => {
@@ -63,7 +68,13 @@ describe("server.ts", () => {
 			// Set info log level
 			process.env.LOG_LEVEL = "info";
 			AppConfig.load();
-			const infoServer = new Server(routesDir);
+			const infoServer = new Server({
+				server: {
+					routesDir,
+					logLevel: "info",
+					port: 0,
+				},
+			});
 
 			await infoServer.init();
 
@@ -210,7 +221,13 @@ describe("server.ts", () => {
 
 	describe("server fetch function", () => {
 		test("should have fetch function defined", async () => {
-			const server = new Server(routesDir);
+			const server = new Server({
+				server: {
+					routesDir,
+					logLevel: "info",
+					port: 0,
+				},
+			});
 			const options = await server.init();
 
 			expect(options.fetch).toBeDefined();
@@ -222,7 +239,13 @@ describe("server.ts", () => {
 			const logMock = mock(() => {});
 			console.log = logMock;
 
-			const server = new Server(routesDir);
+			const server = new Server({
+				server: {
+					routesDir,
+					logLevel: "info",
+					port: 0,
+				},
+			});
 
 			// Test 404 responses
 			const originalHandleRequest404 = server.fileRouter.handleRequest;
@@ -255,7 +278,13 @@ describe("server.ts", () => {
 		});
 
 		test("should have swagger request handling", async () => {
-			const server = new Server(routesDir);
+			const server = new Server({
+				server: {
+					routesDir,
+					logLevel: "info",
+					port: 0,
+				},
+			});
 			const options = await server.init();
 
 			// Mock swagger response

@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { AppConfig } from "../../src/lib/config";
-import { Server } from "../../src/lib/server";
+import { type OmbrageServer, Server } from "../../src/lib/server";
 
 describe("Server Integration Tests", () => {
-	let server: Bun.Server<undefined>;
+	let server: OmbrageServer;
 	let baseURL: string;
 
 	beforeAll(async () => {
@@ -15,9 +15,15 @@ describe("Server Integration Tests", () => {
 		AppConfig.load();
 
 		// Start server with dev routes on a random available port
-		const serverInstance = new Server("./dev/routes");
+		const serverInstance = new Server({
+			server: {
+				routesDir: "./dev/routes",
+				port: 0,
+			},
+		});
 
 		server = await serverInstance.start();
+
 		baseURL = `http://${server.hostname}:${server.port}`;
 
 		console.log(`Test server started at ${baseURL}`);

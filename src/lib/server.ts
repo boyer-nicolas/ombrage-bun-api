@@ -3,14 +3,55 @@ import { FileRouter } from "./router";
 
 export type OmbrageServer = Bun.Server<undefined>;
 
+// Helper type for deep partial configuration
+type DeepPartial<T> = {
+	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
 export class Server {
 	public config: Config;
 	public fileRouter: FileRouter;
 	static instance?: OmbrageServer;
 
-	constructor(routesPath: string = "./routes") {
-		this.fileRouter = new FileRouter(routesPath);
+	constructor(config: DeepPartial<Config>) {
 		this.config = AppConfig.get();
+		if (config) {
+			this.config = this.mergeConfig(this.config, config);
+		}
+		this.fileRouter = new FileRouter(this.config);
+	}
+
+	private mergeConfig(
+		defaultConfig: Config,
+		partialConfig: DeepPartial<Config>,
+	): Config {
+		const merged = { ...defaultConfig };
+
+		if (partialConfig.server) {
+			merged.server = { ...merged.server, ...partialConfig.server };
+		}
+
+		if (partialConfig.swagger) {
+			merged.swagger = { ...merged.swagger, ...partialConfig.swagger };
+		}
+
+		if (partialConfig.auth) {
+			merged.auth = { ...merged.auth, ...partialConfig.auth };
+		}
+
+		if (partialConfig.title !== undefined) {
+			merged.title = partialConfig.title;
+		}
+
+		if (partialConfig.description !== undefined) {
+			merged.description = partialConfig.description;
+		}
+
+		if (partialConfig.environment !== undefined) {
+			merged.environment = partialConfig.environment;
+		}
+
+		return merged;
 	}
 
 	async init(): Promise<Bun.Serve.Options<undefined, string>> {

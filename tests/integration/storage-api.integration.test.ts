@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import type { OpenAPIV3_1 } from "openapi-types";
 import { AppConfig } from "../../src/lib/config";
-import { Server } from "../../src/lib/server";
+import { type OmbrageServer, Server } from "../../src/lib/server";
 
 describe("Storage API Integration Tests", () => {
-	let server: Bun.Server<undefined>;
+	let server: OmbrageServer;
 	let baseURL: string;
 
 	beforeAll(async () => {
@@ -17,11 +17,15 @@ describe("Storage API Integration Tests", () => {
 		AppConfig.load();
 
 		// Start server with dev routes on a random available port
-		const serverInstance = new Server("./dev/routes");
-		const options = await serverInstance.init();
-		options.port = 0; // Use random available port
+		const serverInstance = new Server({
+			server: {
+				routesDir: "./dev/routes",
+				port: 0,
+			},
+		});
 
-		server = Bun.serve(options);
+		server = await serverInstance.start();
+
 		baseURL = `http://${server.hostname}:${server.port}`;
 
 		console.log(`Test server started at ${baseURL}`);
