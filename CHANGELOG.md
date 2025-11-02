@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.14
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.13...v0.0.14)
+
+### 🩹 Fixes
+
+- Ci checks permissions ([#21](https://github.com/boyer-nicolas/ombrage-bun-api/pull/21))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.0.13
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.12...v0.0.13)
