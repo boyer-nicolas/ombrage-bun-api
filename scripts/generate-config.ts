@@ -1,11 +1,13 @@
 import fs from "node:fs/promises";
+import { AppConfig } from "../src";
 
-const envDocPath = "./env.md";
+const envDocPath = "./configuration.md";
 
 export async function generateEnvDocumentation(): Promise<string> {
 	console.log("Generating environment variable documentation...");
 	const lines: string[] = [];
-	lines.push("# Environment Variables");
+	lines.push("# Configuration Options");
+	lines.push("## Through Environment Variables");
 	lines.push("");
 	lines.push(
 		"The following environment variables can be used to configure the application:",
@@ -37,6 +39,23 @@ export async function generateEnvDocumentation(): Promise<string> {
 		lines.push("");
 	}
 
+	// App Config options
+	lines.push("## Through AppConfig");
+	lines.push("");
+	lines.push(
+		"You can also configure the application using the `AppConfig` class:",
+	);
+	lines.push("");
+	lines.push("```ts");
+	const config = AppConfig.get();
+	lines.push("import { Server } from 'ombrage-bun-api';");
+	lines.push("");
+	lines.push(`new Server(${JSON.stringify(config, null, 2)}).start();`);
+	lines.push("");
+	lines.push("// Server is now configured with the above options");
+	lines.push("```");
+	lines.push("");
+
 	return lines.join("\n");
 }
 
@@ -44,5 +63,5 @@ export async function generateEnvDocumentation(): Promise<string> {
 if (import.meta.main) {
 	const docContent = await generateEnvDocumentation();
 	await fs.writeFile(envDocPath, docContent, "utf-8");
-	console.log(`Environment variable documentation generated at ${envDocPath}`);
+	console.log(`Configuration docs generated at ${envDocPath}`);
 }

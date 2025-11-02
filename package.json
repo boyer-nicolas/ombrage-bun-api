@@ -31,7 +31,7 @@
     "test:coverage": "bun run ./scripts/test-with-coverage.ts",
     "coverage:badge": "bun run ./scripts/generate-coverage-badge.ts",
     "coverage:report": "bun run ./scripts/generate-coverage-report.ts",
-    "generate:env-docs": "bun run ./scripts/generate-env.ts",
+    "generate:config": "bun run ./scripts/generate-config.ts",
     "build:js": "bun run ./build.ts",
     "build:types": "dts-bundle-generator -o dist/index.d.ts --no-check --external-inlines --inline-declare-externals src/index.ts",
     "build:clean": "rm -rf dist",

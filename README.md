@@ -13,6 +13,8 @@ A powerful file-based routing system built with Bun, featuring automatic API doc
 - 📁 **Structured organization**: A simple `route.ts` file
 - 📖 **Auto-generated docs**: Swagger UI with OpenAPI 3.1 specifications
 - 🛡️ **JSON error responses**: Consistent error handling with structured responses
+- 🔍 **Health checks**: Built-in health check endpoint
+- ⚙️ **Configurable**: Flexible server and route configurations through class options and/or environment variables
 
 ## Getting Started
 
@@ -28,7 +30,11 @@ bun install ombrage-bun-api
 // index.ts
 import { Server } from "ombrage-bun-api";
 
-new Server("./routes").start();
+new Server({
+  server: {
+    routesDir: "./routes", // Directory containing your route files
+  },
+}).start();
 ```
 
 3. Create your first route
@@ -49,6 +55,11 @@ export const GET = createRoute({
 ```bash
 bun run index.ts
 ```
+
+## Configuration
+
+The server can be configured via options passed to the `Server` constructor or through environment variables.
+See the [Environment Variables Documentation](https://github.com/boyer-nicolas/ombrage-bun-api/blob/main/env.md) for a complete list of available configurations.
 
 ## API Documentation
 
