@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.13
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.12...v0.0.13)
+
+### 🚀 Enhancements
+
+- **#15:** Dependabot ([#20](https://github.com/boyer-nicolas/ombrage-bun-api/pull/20))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.0.12
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.11...v0.0.12)
