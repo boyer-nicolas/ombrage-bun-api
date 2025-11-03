@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.19
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.18...v0.0.19)
+
+### 🩹 Fixes
+
+- Bypass favicon logging ([#31](https://github.com/boyer-nicolas/ombrage-bun-api/pull/31))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.0.18
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.17...v0.0.18)
