@@ -19,6 +19,7 @@ export const GET = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Users"],
 		parameters: {
 			path: z.object({
 				id: z.string().describe("User ID"),
@@ -58,6 +59,7 @@ export const PUT = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Users"],
 		parameters: {
 			path: z.object({
 				id: z.string().describe("User ID to update"),

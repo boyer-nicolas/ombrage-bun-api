@@ -35,6 +35,7 @@ export const GET = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Users"],
 		parameters: {
 			query: z.object({
 				limit: z.coerce
@@ -86,6 +87,7 @@ export const POST = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Users"],
 		parameters: {
 			body: z.object({
 				name: z.string().min(1).max(100).describe("User's full name"),

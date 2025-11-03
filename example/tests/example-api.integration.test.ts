@@ -10,8 +10,12 @@ describe("Example API Integration Tests", () => {
 		AppConfig.load();
 
 		// Create server instance using the example routes
-		const routesPath = path.join(__dirname, "..", "routes");
-		const serverInstance = new Server(routesPath);
+		const routesDir = path.join(__dirname, "..", "routes");
+		const serverInstance = new Server({
+			server: {
+				routesDir,
+			},
+		});
 
 		server = await serverInstance.start();
 		baseUrl = `http://${server.hostname}:${server.port}`;

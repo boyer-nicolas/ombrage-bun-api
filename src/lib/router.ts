@@ -344,6 +344,9 @@ export class FileRouter {
 			paths: {},
 		};
 
+		// Collect all unique tags from routes
+		const allTags = new Set<string>();
+
 		// Extract specs from route definitions
 		for (const [path, routeModule] of this.routes) {
 			if (routeModule.routes) {
@@ -379,6 +382,18 @@ export class FileRouter {
 							const spec = (routeHandler as { spec?: unknown }).spec;
 							if (spec) {
 								methodSpecs[httpMethod] = spec;
+
+								// Collect tags from this spec
+								if (
+									typeof spec === "object" &&
+									spec !== null &&
+									"tags" in spec &&
+									Array.isArray(spec.tags)
+								) {
+									for (const tag of spec.tags) {
+										allTags.add(tag);
+									}
+								}
 							}
 						}
 					}
@@ -394,6 +409,16 @@ export class FileRouter {
 					);
 				}
 			}
+		}
+
+		// Add tags section to the OpenAPI spec if we have any tags
+		if (allTags.size > 0) {
+			baseSpec.tags = Array.from(allTags)
+				.sort()
+				.map((tag) => ({
+					name: tag,
+					description: `Operations related to ${tag.toLowerCase()}`,
+				}));
 		}
 
 		return baseSpec;
