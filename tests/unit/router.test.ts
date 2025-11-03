@@ -391,6 +391,97 @@ describe("router.ts", () => {
 				},
 			});
 		});
+
+		test("should collect and include tags in OpenAPI spec", () => {
+			const mockRoutesWithTags = {
+				GET: {
+					method: "GET",
+					callback: async () => Response.json({}),
+					spec: {
+						format: "json",
+						tags: ["Users", "Authentication"],
+						responses: {
+							200: {
+								summary: "Get users",
+								description: "Get all users",
+								schema: { type: "object" },
+							},
+						},
+					},
+				},
+				POST: {
+					method: "POST",
+					callback: async () => Response.json({}),
+					spec: {
+						format: "json",
+						tags: ["Users"],
+						responses: {
+							201: {
+								summary: "Create user",
+								description: "User created",
+								schema: { type: "object" },
+							},
+						},
+					},
+				},
+			};
+
+			const mockHealthRoutes = {
+				GET: {
+					method: "GET",
+					callback: async () => Response.json({}),
+					spec: {
+						format: "json",
+						tags: ["Health"],
+						responses: {
+							200: {
+								summary: "Health check",
+								description: "Health status",
+								schema: { type: "object" },
+							},
+						},
+					},
+				},
+			};
+
+			router.routes.set("/users", {
+				path: "/users",
+				routeFile: "/path/to/users/route.ts",
+				routes: mockRoutesWithTags,
+			});
+
+			router.routes.set("/health", {
+				path: "/health",
+				routeFile: "/path/to/health/route.ts",
+				routes: mockHealthRoutes,
+			});
+
+			const spec = router.generateOpenAPISpec();
+
+			// Check that tags section exists
+			expect(spec.tags).toBeDefined();
+			expect(spec.tags).toHaveLength(3);
+
+			// Check that tags are sorted alphabetically
+			const expectedTags = [
+				{
+					name: "Authentication",
+					description: "Operations related to authentication",
+				},
+				{ name: "Health", description: "Operations related to health" },
+				{ name: "Users", description: "Operations related to users" },
+			];
+			expect(spec.tags).toEqual(expectedTags);
+
+			// Check that operations have the correct tags
+			const usersGetOp = spec.paths?.["/users"]?.get;
+			const usersPostOp = spec.paths?.["/users"]?.post;
+			const healthGetOp = spec.paths?.["/health"]?.get;
+
+			expect(usersGetOp?.tags).toEqual(["Users", "Authentication"]);
+			expect(usersPostOp?.tags).toEqual(["Users"]);
+			expect(healthGetOp?.tags).toEqual(["Health"]);
+		});
 	});
 
 	describe("handleSwaggerRequest", () => {

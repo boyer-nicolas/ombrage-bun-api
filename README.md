@@ -759,6 +759,78 @@ The framework automatically:
 - Generates OpenAPI documentation with proper parameter definitions
 - Provides type-safe access in your route handlers
 
+## OpenAPI Groups with Tags
+
+Organize your API operations into logical groups using OpenAPI tags. Tags help categorize operations in the Swagger UI and make your API documentation more organized and user-friendly.
+
+### Adding Tags to Routes
+
+Add the optional `tags` array to your route specification:
+
+```typescript
+export const GET = createRoute({
+  method: "GET",
+  callback: async () => {
+    // Route logic here
+    return Response.json({ message: "Success" });
+  },
+  spec: {
+    format: "json",
+    tags: ["Users", "Authentication"], // Multiple tags supported
+    responses: {
+      200: {
+        summary: "Get user data",
+        description: "Retrieve user information",
+        schema: z.object({
+          message: z.string(),
+        }),
+      },
+    },
+  },
+});
+```
+
+### Tag Features
+
+- **Multiple Tags**: Operations can belong to multiple groups by specifying multiple tags
+- **Automatic Generation**: The framework automatically generates the global tags section with descriptions
+- **Swagger UI Integration**: Tags appear as collapsible sections in Swagger UI
+- **Alphabetical Sorting**: Tags are automatically sorted alphabetically in the documentation
+
+### Example Usage
+
+```typescript
+// User management operations
+export const GET = createRoute({
+  spec: {
+    tags: ["Users"],
+    // ... rest of spec
+  },
+});
+
+// Authentication operations
+export const POST = createRoute({
+  spec: {
+    tags: ["Authentication", "Users"], // Multiple categories
+    // ... rest of spec
+  },
+});
+
+// Health check operations
+export const GET = createRoute({
+  spec: {
+    tags: ["Health"],
+    // ... rest of spec
+  },
+});
+```
+
+The generated OpenAPI specification will include:
+
+- A global `tags` section with descriptions for each tag
+- Each operation tagged with the specified categories
+- Organized sections in Swagger UI for better navigation
+
 ## Complete Example
 
 Check out the [`/example`](./example/) directory for a complete working API that demonstrates all the features of Ombrage API.

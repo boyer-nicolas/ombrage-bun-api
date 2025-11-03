@@ -502,6 +502,58 @@ describe("helpers.ts", () => {
 				});
 			}
 		});
+
+		test("should handle tags in CustomSpec", () => {
+			const customSpec: CustomSpec = {
+				get: {
+					format: "json",
+					tags: ["Users", "Authentication"],
+					responses: {
+						200: {
+							summary: "Success",
+							description: "Successful response",
+							schema: z.object({
+								message: z.string(),
+							}),
+						},
+					},
+				},
+				post: {
+					format: "json",
+					tags: ["Users"],
+					parameters: {
+						body: z.object({
+							name: z.string(),
+						}),
+					},
+					responses: {
+						201: {
+							summary: "Created",
+							description: "Resource created",
+							schema: z.object({
+								id: z.string(),
+								name: z.string(),
+							}),
+						},
+					},
+				},
+			};
+
+			const result = customSpecToOpenAPI(customSpec);
+
+			expect(result["/"]).toBeDefined();
+			const pathItem = result["/"];
+
+			// Check GET operation has tags
+			if (pathItem?.get) {
+				expect(pathItem.get.tags).toEqual(["Users", "Authentication"]);
+			}
+
+			// Check POST operation has tags
+			if (pathItem?.post) {
+				expect(pathItem.post.tags).toEqual(["Users"]);
+			}
+		});
 	});
 
 	describe("generateOpenAPIFromCustomSpec", () => {

@@ -34,6 +34,7 @@ type ExtractBodyType<TSpec extends SpecItem> = TSpec["parameters"] extends {
 
 export type SpecItem = {
 	format: "json" | "text";
+	tags?: string[];
 	parameters?: {
 		path?: z.ZodType;
 		query?: z.ZodType;
@@ -221,6 +222,11 @@ export function customSpecToOpenAPI(
 		const operationObject: OpenAPIV3_1.OperationObject = {
 			responses,
 		};
+
+		// Add tags if they exist
+		if (specItem.tags && specItem.tags.length > 0) {
+			operationObject.tags = specItem.tags;
+		}
 
 		// Add parameters if they exist
 		if (specItem.parameters) {

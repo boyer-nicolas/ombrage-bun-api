@@ -15,6 +15,7 @@ export const GET = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Storage"],
 		responses: {
 			200: {
 				summary: "List all storage items",
@@ -35,6 +36,7 @@ export const POST = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Storage"],
 		parameters: {
 			body: z.object({
 				name: z.string().describe("The name of the storage bucket"),

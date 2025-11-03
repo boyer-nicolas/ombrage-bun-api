@@ -13,6 +13,7 @@ export const GET = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Health"],
 		responses: {
 			200: {
 				summary: "Service is healthy",
@@ -40,6 +41,7 @@ export const POST = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Health"],
 		parameters: {
 			body: z.object({
 				message: z.string().describe("Message to echo back"),

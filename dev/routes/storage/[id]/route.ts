@@ -15,6 +15,7 @@ export const GET = createRoute({
 	},
 	spec: {
 		format: "json",
+		tags: ["Storage"],
 		parameters: {
 			path: z.object({
 				id: z.string().describe("The bucket ID"),
