@@ -88,6 +88,11 @@ export class Server {
 					return swaggerResponse;
 				}
 
+				// Bypass logging for favicon requests
+				if (url.pathname === "/favicon.ico") {
+					return new Response(null, { status: 204 });
+				}
+
 				// Use file-based router for all other requests
 				const response = await self.fileRouter.handleRequest(request);
 				if (response.status === 404) {
