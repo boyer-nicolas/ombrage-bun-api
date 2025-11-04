@@ -9,6 +9,6 @@ const server = new Api({
 			dir: "./routes",
 		},
 	},
-	title: "Example API Server",
+	title: "Example API",
 });
 server.start();

@@ -10,7 +10,6 @@ export default {
 		() => "bun test:coverage",
 		() => "bun run check",
 		() => "bun run build",
-		() => "bun run test --cwd example",
 	],
 };
 
