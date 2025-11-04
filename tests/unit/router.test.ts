@@ -2,14 +2,19 @@ import { beforeEach, describe, expect, mock, test } from "bun:test";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { AppConfig } from "../../src";
 import { FileRouter } from "../../src/lib/router";
 
 describe("router.ts", () => {
 	let router: FileRouter;
 
 	beforeEach(() => {
-		router = new FileRouter(AppConfig.get());
+		router = new FileRouter({
+			server: {
+				routes: {
+					dir: "./dev/routes",
+				}
+			}
+		});
 	});
 
 	describe("FileRouter constructor", () => {
@@ -19,10 +24,10 @@ describe("router.ts", () => {
 
 		test("should initialize with custom routes path", () => {
 			const customRouter = new FileRouter({
-				...AppConfig.get(),
 				server: {
-					...AppConfig.get().server,
-					routesDir: "/custom/routes",
+					routes: {
+						dir: "./custom/routes",
+					}
 				},
 			});
 			expect(customRouter).toBeInstanceOf(FileRouter);
@@ -559,10 +564,10 @@ describe("router.ts", () => {
 			// Create a temporary directory structure for testing
 			const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "router-test-"));
 			const router = new FileRouter({
-				...AppConfig.get(),
 				server: {
-					...AppConfig.get().server,
-					routesDir: tempDir,
+					routes: {
+						dir: tempDir,
+					}
 				},
 			});
 
@@ -579,10 +584,10 @@ describe("router.ts", () => {
 			// Create a temporary directory structure for testing
 			const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "router-test-"));
 			const router = new FileRouter({
-				...AppConfig.get(),
 				server: {
-					...AppConfig.get().server,
-					routesDir: tempDir,
+					routes: {
+						dir: tempDir
+					},
 				},
 			});
 
