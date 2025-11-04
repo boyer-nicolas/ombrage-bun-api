@@ -43,7 +43,7 @@
     "prepare": "husky",
     "check": "tsc --noEmit",
     "test": "bun test",
-    "test:coverage": "bun run ./scripts/test-with-coverage.ts",
+    "test:coverage": "bun test && bun run ./scripts/handle-coverage.ts",
     "coverage:badge": "bun run ./scripts/generate-coverage-badge.ts",
     "coverage:report": "bun run ./scripts/generate-coverage-report.ts",
     "generate:config": "bun run ./scripts/generate-config.ts",

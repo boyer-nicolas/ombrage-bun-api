@@ -1,4 +1,4 @@
-import { validateConfig, type Config, type ConfigInput } from "./config";
+import { type Config, type ConfigInput, validateConfig } from "./config";
 import { getLogger, type Logger } from "./logger";
 import { FileRouter } from "./router";
 

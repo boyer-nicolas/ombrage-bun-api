@@ -10,8 +10,8 @@ describe("createRoute with spec validation", () => {
 			server: {
 				routes: {
 					dir: "./test-routes",
-				}
-			}
+				},
+			},
 		});
 	});
 

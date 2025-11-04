@@ -29,54 +29,52 @@ const numberFromString = z.union([z.number(), z.string()]).transform((val) => {
 });
 
 export const ConfigSchema = z.object({
-	server: z.object({
-		port: numberFromString
-			.pipe(z.number("Please provide a valid port number").min(0).max(65535))
-			.default(8080),
-		host: z.string("Please provide a valid host").default("0.0.0.0"),
-		logLevel: z
-			.enum(
-				["debug", "info", "warning", "error", "trace", "fatal"],
-				"Please provide a valid log level",
-			)
-			.default("info"),
-		routes: z.object({
-			dir: z
-				.string("Please provide a valid routes directory")
-				.default("./routes"),
-			basePath: z
-				.string("Please provide a valid base path")
-				.default("/"),
-		}).default({ dir: "./routes", basePath: "/" }),
-		static: z
-			.object({
-				dir: z
-					.string("Please provide a valid static files directory")
-					.default("./static"),
-				enabled: booleanFromString.default(false),
-				basePath: z
-					.string("Please provide a valid static files base path")
-					.default("/static"),
-			})
-			.default({ dir: "./static", enabled: false, basePath: "/static" }),
-	}).default({
-		port: 8080,
-		host: "0.0.0.0",
-		logLevel: "info",
-		routes: { dir: "./routes", basePath: "/" },
-		static: { dir: "./static", enabled: false, basePath: "/static" }
-	}),
+	server: z
+		.object({
+			port: numberFromString
+				.pipe(z.number("Please provide a valid port number").min(0).max(65535))
+				.default(8080),
+			host: z.string("Please provide a valid host").default("0.0.0.0"),
+			logLevel: z
+				.enum(
+					["debug", "info", "warning", "error", "trace", "fatal"],
+					"Please provide a valid log level",
+				)
+				.default("info"),
+			routes: z
+				.object({
+					dir: z
+						.string("Please provide a valid routes directory")
+						.default("./routes"),
+					basePath: z.string("Please provide a valid base path").default("/"),
+				})
+				.default({ dir: "./routes", basePath: "/" }),
+			static: z
+				.object({
+					dir: z
+						.string("Please provide a valid static files directory")
+						.default("./static"),
+					enabled: booleanFromString.default(false),
+					basePath: z
+						.string("Please provide a valid static files base path")
+						.default("/static"),
+				})
+				.default({ dir: "./static", enabled: false, basePath: "/static" }),
+		})
+		.default({
+			port: 8080,
+			host: "0.0.0.0",
+			logLevel: "info",
+			routes: { dir: "./routes", basePath: "/" },
+			static: { dir: "./static", enabled: false, basePath: "/static" },
+		}),
 	swagger: z
 		.object({
 			enabled: booleanFromString.default(true),
-			path: z
-				.string("Please provide a valid Swagger UI path")
-				.default("/"),
+			path: z.string("Please provide a valid Swagger UI path").default("/"),
 		})
 		.default({ enabled: true, path: "/" }),
-	title: z
-		.string("Please provide a valid API title")
-		.default("My API"),
+	title: z.string("Please provide a valid API title").default("My API"),
 	description: z
 		.string("Please provide a valid API description")
 		.default("Auto-generated API documentation from route specifications"),

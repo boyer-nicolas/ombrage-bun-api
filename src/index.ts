@@ -1,3 +1,4 @@
+import { Api, type OmbrageServer } from "./lib/api";
 import { type Config, ConfigSchema, getConfig } from "./lib/config";
 import {
 	type CreateRouteProps,
@@ -8,7 +9,6 @@ import {
 	type RouteProps,
 } from "./lib/helpers";
 import { FileRouter } from "./lib/router";
-import { type OmbrageServer, Api } from "./lib/api";
 
 export {
 	Api,

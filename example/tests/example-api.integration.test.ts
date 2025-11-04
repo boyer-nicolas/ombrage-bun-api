@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import path from "node:path";
-import { type OmbrageServer, Api } from "ombrage-bun-api";
+import { Api, type OmbrageServer } from "ombrage-bun-api";
 
 describe("Example API Integration Tests", () => {
 	let server: OmbrageServer;
@@ -11,7 +11,10 @@ describe("Example API Integration Tests", () => {
 		const routesDir = path.join(__dirname, "..", "routes");
 		const serverInstance = new Api({
 			server: {
-				routesDir,
+				routes: {
+					dir: routesDir,
+				},
+				port: 0, // Use random available port
 			},
 		});
 
@@ -50,8 +53,8 @@ describe("Example API Integration Tests", () => {
 
 			// Built-in healthz endpoint returns 200 OK for any method
 			expect(response.status).toBe(200);
-			const text = await response.text();
-			expect(text).toBe("OK");
+			const res = await response.json();
+			expect(res).toEqual({ echo: testMessage });
 		});
 	});
 

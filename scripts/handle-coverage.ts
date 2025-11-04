@@ -6,23 +6,23 @@
  */
 
 import { $ } from "bun";
+import { generateBadge } from "./generate-coverage-badge";
+import { generateCoverageIndex } from "./generate-coverage-report";
 
 console.log("🧪 Running tests with coverage...");
 
 try {
 	// Run tests
-	await $`bun test`;
-	console.log("✅ Tests passed");
 
 	console.log("📊 Generating coverage report...");
 
 	// Generate HTML coverage report
-	await $`bun run scripts/generate-coverage-report.ts`;
+	generateCoverageIndex();
 
 	console.log("📈 Updating coverage badge...");
 
 	// Update coverage badge
-	await $`bun run scripts/generate-coverage-badge.ts`;
+	generateBadge();
 
 	console.log("🎉 All coverage artifacts generated successfully!");
 	console.log(

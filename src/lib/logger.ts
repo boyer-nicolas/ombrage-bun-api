@@ -1,38 +1,50 @@
 import type { Config } from "./config";
 
 export const getLogger = (level?: Config["server"]["logLevel"]) => {
-	const levels = ["debug", "info", "warning", "error", "trace", "fatal", "http"];
+	const levels = [
+		"debug",
+		"info",
+		"warning",
+		"error",
+		"trace",
+		"fatal",
+		"http",
+	];
 	const currentLevelIndex = levels.indexOf(level || "info");
 
 	// Color codes for different log levels
 	const colors = {
-		debug: "\x1b[36m",    // Cyan
-		info: "\x1b[32m",     // Green
-		warning: "\x1b[33m",  // Yellow
-		error: "\x1b[31m",    // Red
-		trace: "\x1b[35m",    // Magenta
-		fatal: "\x1b[41m",    // Red background
-		http: "\x1b[34m",     // Blue
-		reset: "\x1b[0m"      // Reset
+		debug: "\x1b[36m", // Cyan
+		info: "\x1b[32m", // Green
+		warning: "\x1b[33m", // Yellow
+		error: "\x1b[31m", // Red
+		trace: "\x1b[35m", // Magenta
+		fatal: "\x1b[41m", // Red background
+		http: "\x1b[34m", // Blue
+		reset: "\x1b[0m", // Reset
 	};
 
 	const log = (msgLevel: string, ...args: unknown[]) => {
 		if (levels.indexOf(msgLevel) >= currentLevelIndex) {
 			const color = colors[msgLevel as keyof typeof colors] || "";
 			const levelLabel = `[${msgLevel.toUpperCase()}]`;
-			
+
 			// Map log levels to valid console methods
-			const consoleMethod = 
-				msgLevel === "fatal" ? "error" :
-				msgLevel === "warning" ? "warn" :
-				msgLevel === "trace" ? "log" :
-				msgLevel === "http" ? "info" :
-				msgLevel as keyof typeof console;
-			
+			const consoleMethod =
+				msgLevel === "fatal"
+					? "error"
+					: msgLevel === "warning"
+						? "warn"
+						: msgLevel === "trace"
+							? "log"
+							: msgLevel === "http"
+								? "info"
+								: (msgLevel as keyof typeof console);
+
 			// biome-ignore lint/suspicious/noExplicitAny: Logging utility
 			(console as any)[consoleMethod](
 				`${color}${levelLabel}${colors.reset}`,
-				...args
+				...args,
 			);
 		}
 	};

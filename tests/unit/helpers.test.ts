@@ -1,6 +1,7 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, beforeAll, describe, expect, test } from "bun:test";
 import type { OpenAPIV3_1 } from "openapi-types";
 import { z } from "zod";
+import { resetConfig, validateConfig } from "../../src/lib/config";
 import {
 	type CreateRouteProps,
 	type CustomSpec,
@@ -14,6 +15,17 @@ import {
 } from "../../src/lib/helpers";
 
 describe("helpers.ts", () => {
+	beforeAll(() => {
+		// Initialize config for tests
+		validateConfig({});
+	});
+
+	afterEach(() => {
+		// Reset config state after each test
+		resetConfig();
+		validateConfig({});
+	});
+
 	describe("createRoute", () => {
 		test("should create a route object with method and callback", () => {
 			const mockCallback = async () => {

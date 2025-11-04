@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { type Config, ConfigSchema, getConfig, resetConfig } from "../../src/lib/config";
+import {
+	type Config,
+	ConfigSchema,
+	getConfig,
+	resetConfig,
+} from "../../src/lib/config";
 
 describe("config.ts", () => {
 	afterEach(() => {
@@ -110,7 +115,7 @@ describe("config.ts", () => {
 			// First, need to validate a config to load it
 			const testConfig = {};
 			const config = ConfigSchema.parse(testConfig);
-			
+
 			expect(config).toEqual({
 				server: {
 					port: 8080,

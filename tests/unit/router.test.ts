@@ -13,8 +13,8 @@ describe("router.ts", () => {
 			server: {
 				routes: {
 					dir: "./dev/routes",
-				}
-			}
+				},
+			},
 		});
 		router = new FileRouter(config);
 	});
@@ -29,7 +29,7 @@ describe("router.ts", () => {
 				server: {
 					routes: {
 						dir: "./custom/routes",
-					}
+					},
 				},
 			});
 			const customRouter = new FileRouter(config);
@@ -570,7 +570,7 @@ describe("router.ts", () => {
 				server: {
 					routes: {
 						dir: tempDir,
-					}
+					},
 				},
 			});
 			const router = new FileRouter(config);
@@ -590,7 +590,7 @@ describe("router.ts", () => {
 			const config = validateConfig({
 				server: {
 					routes: {
-						dir: tempDir
+						dir: tempDir,
 					},
 				},
 			});

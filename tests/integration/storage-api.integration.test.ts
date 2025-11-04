@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import type { OpenAPIV3_1 } from "openapi-types";
-import { type OmbrageServer, Api } from "../../src/lib/api";
+import { Api, type OmbrageServer } from "../../src/lib/api";
 
 describe("Storage API Integration Tests", () => {
 	let server: OmbrageServer;

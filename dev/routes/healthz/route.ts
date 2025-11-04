@@ -1,6 +1,5 @@
-
-import { createRoute } from "../../../src";
 import z from "zod";
+import { createRoute } from "../../../src";
 
 export const GET = createRoute({
 	method: "GET",

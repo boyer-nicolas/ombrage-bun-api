@@ -5,24 +5,16 @@ import { z } from "zod";
 export const GET = createRoute({
 	method: "GET",
 	callback: async () => {
-		return Response.json({
-			status: "healthy",
-			timestamp: new Date().toISOString(),
-			service: "example-api",
-		});
+		return new Response("OK");
 	},
 	spec: {
-		format: "json",
+		format: "text",
 		tags: ["Health"],
 		summary: "Service is healthy",
 		description: "Health check endpoint that returns service status",
 		responses: {
 			200: {
-				schema: z.object({
-					status: z.string(),
-					timestamp: z.string(),
-					service: z.string(),
-				}),
+				schema: z.string().default("OK"),
 			},
 		},
 	},
@@ -36,14 +28,13 @@ export const POST = createRoute({
 
 		return Response.json({
 			echo: message,
-			receivedAt: new Date().toISOString(),
 		});
 	},
 	spec: {
 		format: "json",
 		tags: ["Health"],
 		summary: "Echo message",
-		description: "Echo back a message with timestamp",
+		description: "Echo back a message",
 		parameters: {
 			body: z.object({
 				message: z.string().describe("Message to echo back"),
@@ -53,7 +44,6 @@ export const POST = createRoute({
 			200: {
 				schema: z.object({
 					echo: z.string(),
-					receivedAt: z.string(),
 				}),
 			},
 		},
