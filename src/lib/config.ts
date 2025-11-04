@@ -37,7 +37,7 @@ export const ConfigSchema = z.object({
 		host: z.string("Please provide a valid host").default("0.0.0.0").optional(),
 		logLevel: z
 			.enum(
-				["debug", "info", "warn", "error"],
+				["debug", "info", "warning", "error", "trace", "fatal"],
 				"Please provide a valid log level",
 			)
 			.default("info")

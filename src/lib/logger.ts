@@ -1,50 +1,29 @@
-import {
-	pino,
-	type Logger as PinoLogger,
-	type TransportSingleOptions,
-} from "pino";
-import { getConfig } from "./config";
+import type { Config } from "./config";
 
-export type Logger = PinoLogger & {
-	http: (request: Request, response: Response, elapsedTime: number) => void;
+export const getLogger = (level?: Config["server"]["logLevel"]) => {
+	const levels = ["debug", "info", "warning", "error", "trace", "fatal"];
+	const currentLevelIndex = levels.indexOf(level || "info");
+
+	const log = (msgLevel: string, ...args: unknown[]) => {
+		if (levels.indexOf(msgLevel) >= currentLevelIndex) {
+			// biome-ignore lint/suspicious/noExplicitAny: Logging utility
+			(console as any)[msgLevel === "fatal" ? "error" : msgLevel](...args);
+		}
+	};
+
+	return {
+		debug: (...args: unknown[]) => log("debug", ...args),
+		info: (...args: unknown[]) => log("info", ...args),
+		warning: (...args: unknown[]) => log("warning", ...args),
+		error: (...args: unknown[]) => log("error", ...args),
+		trace: (...args: unknown[]) => log("trace", ...args),
+		fatal: (...args: unknown[]) => log("fatal", ...args),
+		http: (request: Request, response: Response, duration: number) => {
+			const { method, url } = request;
+			const status = response.status;
+			log("info", `${method} ${url} - ${status} - ${duration}ms`);
+		},
+	};
 };
 
-let logger: Logger;
-
-export function getLogger() {
-	const config = getConfig();
-	if (logger) {
-		return logger;
-	}
-	let transport: TransportSingleOptions | undefined = {
-		target: "pino-pretty",
-		options: {
-			colorize: true,
-		},
-	};
-
-	if (config.environment === "production") {
-		transport = undefined;
-	}
-	logger = pino({
-		level: config.server.logLevel,
-		transport,
-		formatters: {
-			bindings: () => {
-				return {};
-			},
-			level: (label) => {
-				return { level: label.toUpperCase() };
-			},
-		},
-		timestamp: undefined,
-	}) as Logger;
-
-	logger.http = (request: Request, response: Response, elapsedTime: number) => {
-		const { method, url } = request;
-		const { status } = response;
-		logger.info(`${method} ${url} - ${status} - ${elapsedTime ?? 0}ms`);
-	};
-
-	return logger;
-}
+export type Logger = ReturnType<typeof getLogger>;

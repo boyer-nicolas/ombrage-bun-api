@@ -13,7 +13,7 @@ export class Api {
 	constructor(config: Config) {
 		this.config = validateConfig(config);
 		this.fileRouter = new FileRouter(this.config);
-		this.logger = getLogger();
+		this.logger = getLogger(config.server.logLevel);
 	}
 
 	async init(): Promise<Bun.Serve.Options<undefined, string>> {
@@ -84,7 +84,7 @@ export class Api {
 		try {
 			Api.instance?.stop();
 		} catch (error) {
-			logger.error(error, "Error stopping server:");
+			logger.error("Error stopping server:", error);
 		} finally {
 			logger.info("Server stopped.");
 			process.exit();
