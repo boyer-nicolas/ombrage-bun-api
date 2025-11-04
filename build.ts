@@ -5,7 +5,7 @@ await Bun.build({
 	outdir: "./dist",
 	sourcemap: false,
 	packages: "external",
-	minify: true,
+	minify: false,
 	format: "cjs",
 	target: "bun",
 })

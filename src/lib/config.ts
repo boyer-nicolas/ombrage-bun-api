@@ -31,7 +31,7 @@ const numberFromString = z.union([z.number(), z.string()]).transform((val) => {
 export const ConfigSchema = z.object({
 	server: z.object({
 		port: numberFromString
-			.pipe(z.number("Please provide a valid port number").min(1).max(65535))
+			.pipe(z.number("Please provide a valid port number").min(0).max(65535))
 			.default(8080)
 			.optional(),
 		host: z.string("Please provide a valid host").default("0.0.0.0").optional(),
@@ -67,7 +67,7 @@ export const ConfigSchema = z.object({
 	}),
 	swagger: z
 		.object({
-			enabled: booleanFromString.default(true).optional,
+			enabled: booleanFromString.default(true).optional(),
 			path: z
 				.string("Please provide a valid Swagger UI path")
 				.default("/")

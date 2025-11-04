@@ -1,13 +1,31 @@
 import type { Config } from "./config";
 
 export const getLogger = (level?: Config["server"]["logLevel"]) => {
-	const levels = ["debug", "info", "warning", "error", "trace", "fatal"];
+	const levels = ["debug", "info", "warning", "error", "trace", "fatal", "http"];
 	const currentLevelIndex = levels.indexOf(level || "info");
+
+	// Color codes for different log levels
+	const colors = {
+		debug: "\x1b[36m",    // Cyan
+		info: "\x1b[32m",     // Green
+		warning: "\x1b[33m",  // Yellow
+		error: "\x1b[31m",    // Red
+		trace: "\x1b[35m",    // Magenta
+		fatal: "\x1b[41m",    // Red background
+		http: "\x1b[34m",     // Blue
+		reset: "\x1b[0m"      // Reset
+	};
 
 	const log = (msgLevel: string, ...args: unknown[]) => {
 		if (levels.indexOf(msgLevel) >= currentLevelIndex) {
+			const color = colors[msgLevel as keyof typeof colors] || "";
+			const levelLabel = `[${msgLevel.toUpperCase()}]`;
+			
 			// biome-ignore lint/suspicious/noExplicitAny: Logging utility
-			(console as any)[msgLevel === "fatal" ? "error" : msgLevel](...args);
+			(console as any)[msgLevel === "fatal" ? "error" : msgLevel === "http" ? "info" : msgLevel](
+				`${color}${levelLabel}${colors.reset}`,
+				...args
+			);
 		}
 	};
 
@@ -15,13 +33,14 @@ export const getLogger = (level?: Config["server"]["logLevel"]) => {
 		debug: (...args: unknown[]) => log("debug", ...args),
 		info: (...args: unknown[]) => log("info", ...args),
 		warning: (...args: unknown[]) => log("warning", ...args),
+		warn: (...args: unknown[]) => log("warning", ...args),
 		error: (...args: unknown[]) => log("error", ...args),
 		trace: (...args: unknown[]) => log("trace", ...args),
 		fatal: (...args: unknown[]) => log("fatal", ...args),
 		http: (request: Request, response: Response, duration: number) => {
 			const { method, url } = request;
 			const status = response.status;
-			log("info", `${method} ${url} - ${status} - ${duration}ms`);
+			log("http", `${method} ${url} => ${status} (${duration}ms)`);
 		},
 	};
 };

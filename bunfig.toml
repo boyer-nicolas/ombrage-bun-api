@@ -6,5 +6,5 @@ coverage = true
 coverageThreshold = { line = 0.7, function = 0.8, statement = 0.9 }
 coverageDir = "./coverage"
 coverageReporter  = ["text", "lcov"]
-rerunEach = 3
+rerunEach = 1
 coveragePathIgnorePatterns = ["/node_modules/", "/tests/fixtures/", "dev/**/*.ts"]
