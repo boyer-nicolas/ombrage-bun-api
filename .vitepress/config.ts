@@ -53,7 +53,6 @@ export default defineConfig({
 	title: "Ombrage Bun API",
 	description: "A File-based routing API framework",
 	themeConfig: {
-		// https://vitepress.dev/reference/default-theme-config
 		nav: [
 			{ text: "Home", link: "/" },
 			{ text: "Getting Started", link: "/getting-started" },
