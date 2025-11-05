@@ -47,6 +47,9 @@ jobs:
           bun test
           cd ..
 
+          echo "📚 Building documentation site..."
+          bun run docs:build
+
           echo "✅ All checks passed successfully!"
 
       - name: Upload coverage report
