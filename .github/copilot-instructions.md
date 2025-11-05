@@ -73,9 +73,16 @@ bun run test:coverage  # Tests with coverage reports
 ```
 
 ### Environment Setup
-Two development modes available:
+Available development modes:
 - **Library development**: `dev/index.ts` with `dev/routes/` for testing core functionality
-- **Example application**: `example/src/index.ts` with `example/routes/` for integration testing
+Start the dev server with `&` to run in background:
+```bash
+bun run dev &
+```
+Always kill background server before publishing or running tests:
+```bash
+kill $(lsof -t -i:8080)  # Adjust port as needed
+```
 
 ### Key Scripts & Tools
 - **`scripts/test-with-coverage.ts`**: Automated test pipeline (tests → coverage → badge generation)
@@ -86,7 +93,7 @@ Two development modes available:
 ### Project Structure Rules
 - **`src/`**: Main library code (never edit files outside exports)
 - **`dev/`**: Development sandbox (`routes/`, `lib/`, `public/`)
-- **`example/`**: Complete working implementation with independent package.json
+- **`examples/`**: Complete working implementations with independent package.json
 - **`tests/`**: Split into `unit/` and `integration/` directories
 - **`dist/`**: Built output (auto-generated, git-ignored)
 

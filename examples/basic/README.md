@@ -152,26 +152,6 @@ curl -X POST http://localhost:8080/healthz \
   -d '{"message": "Hello from the API!"}'
 ```
 
-## Directory Structure
-
-```
-example/
-├── package.json          # Dependencies and scripts
-├── src/
-│   └── index.ts          # Server entry point
-├── tests/
-│   └── example-api.integration.test.ts  # Integration tests
-└── routes/               # API routes
-    ├── healthz/
-    │   └── route.ts      # Health check endpoints
-    ├── health/
-    │   └── route.ts      # Custom health endpoints
-    └── users/
-        ├── route.ts      # User collection endpoints
-        └── [id]/
-            └── route.ts  # Individual user endpoints
-```
-
 ## Integration Tests
 
 The example includes comprehensive integration tests that demonstrate how to test APIs built with Ombrage:

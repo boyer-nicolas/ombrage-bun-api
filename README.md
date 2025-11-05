@@ -79,22 +79,9 @@ Visit [http://localhost:3000](http://localhost:3000) to see your API documentati
 
 📚 **[Complete Documentation](./docs/index.md)**
 
-## Example API
+## Example APIs
 
-Check out the [`/example`](./example/) directory for a complete working API that demonstrates:
-
-- **Health Check Endpoint** (`/healthz`): Simple health check with echo functionality
-- **Users API** (`/users`): Full CRUD operations with filtering and pagination
-- **Dynamic Routes** (`/users/[id]`): Path parameters with validation
-- **Auto-generated Documentation**: Complete OpenAPI specs with Swagger UI
-
-### Running the Example
-
-```bash
-cd example
-bun install
-bun run dev  # Development with hot reload
-```
+Check out the [`/examples`](./examples/) directory for working API examples.
 
 ## Publishing
 

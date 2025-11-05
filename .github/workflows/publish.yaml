@@ -67,10 +67,10 @@ jobs:
           bun run build
 
           echo "🧪 Running tests for the example app..."
-          cd example
+          cd examples/basic
           bun install --frozen-lockfile --ignore-scripts
           bun test
-          cd ..
+          cd ../..
 
           echo "✅ All checks passed successfully!"
 
