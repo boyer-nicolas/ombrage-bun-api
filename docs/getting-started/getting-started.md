@@ -36,8 +36,8 @@ your-api/
 
 ## Next Steps
 
-- Learn about [routing](/routing) and file organization
-- Explore [OpenAPI integration](/openapi) features
-- See [examples](/examples) of common patterns
+- Learn about [routing](/getting-started/routing) and file organization
+- Explore [OpenAPI integration](/core-concepts/openapi) features
+- See [examples](/examples-patterns/examples) of common patterns
 
 > **Note**: This documentation is powered by a simple Bun-based static site generator built specifically for this project!

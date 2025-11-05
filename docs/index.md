@@ -9,10 +9,10 @@ hero:
   actions:
     - theme: brand
       text: Getting Started
-      link: /getting-started
+      link: /getting-started/getting-started
     - theme: alt
       text: Examples
-      link: /examples
+      link: /examples-patterns/examples
 
 features:
   - title: 🚀 File-based Routing
@@ -23,23 +23,25 @@ features:
     details: Built with TypeScript and Zod for runtime validation, type safety, and excellent developer experience.
 ---
 
+<br/>
+
 # Documentation
 
 ## Getting Started
 
-- **[Getting Started](/getting-started)** - Installation, setup, and your first route
-- **[Routing Guide](/routing)** - File-based routing patterns and best practices
+- **[Getting Started](/getting-started/getting-started)** - Installation, setup, and your first route
+- **[Routing Guide](/getting-started/routing)** - File-based routing patterns and best practices
 
 ## Core Concepts
 
-- **[Route Parameters](/parameters)** - Path, query, body, and header parameter validation with Zod
-- **[Configuration](/configuration)** - Server configuration options and environment variables
-- **[OpenAPI Integration](/openapi)** - Automatic documentation generation and Swagger UI
+- **[Route Parameters](/core-concepts/parameters)** - Path, query, body, and header parameter validation with Zod
+- **[Configuration](/core-concepts/configuration)** - Server configuration options and environment variables
+- **[OpenAPI Integration](/core-concepts/openapi)** - Automatic documentation generation and Swagger UI
+- **[Proxy Configuration](/examples-patterns/proxy)** - Advanced proxy setup and configuration
 
 ## Examples & Patterns
 
-- **[Examples](/examples)** - Common patterns, CRUD operations, authentication, and file uploads
-- **[Proxy Configuration](/proxy)** - Advanced proxy setup and configuration
+- **[Examples](/examples-patterns/examples)** - Common patterns, CRUD operations, authentication, and file uploads
 
 ## Additional Resources
 
