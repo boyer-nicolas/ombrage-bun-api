@@ -122,8 +122,11 @@ export default defineConfig({
 	themeConfig: {
 		nav: [
 			{ text: "Home", link: "/" },
-			{ text: "Getting Started", link: "/getting-started/getting-started" },
-			{ text: "Examples", link: "/examples-patterns/examples" },
+			{ text: "Docs", link: "/getting-started/getting-started" },
+			{
+				text: "Examples",
+				link: "https://github.com/boyer-nicolas/ombrage-bun-api/tree/main/examples",
+			},
 		],
 		sidebar: buildSidebar(),
 
