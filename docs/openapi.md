@@ -87,6 +87,78 @@ spec: {
 
 Tags are automatically collected and added to the OpenAPI specification.
 
+### OpenAPI Groups with Tags
+
+Organize your API operations into logical groups using OpenAPI tags. Tags help categorize operations in the Swagger UI and make your API documentation more organized and user-friendly.
+
+#### Adding Tags to Routes
+
+Add the optional `tags` array to your route specification:
+
+```typescript
+export const GET = createRoute({
+  method: "GET",
+  callback: async () => {
+    // Route logic here
+    return Response.json({ message: "Success" });
+  },
+  spec: {
+    format: "json",
+    tags: ["Users", "Authentication"], // Multiple tags supported
+    summary: "Get user data",
+    description: "Retrieve user information",
+    responses: {
+      200: {
+        schema: z.object({
+          message: z.string(),
+        }),
+      },
+    },
+  },
+});
+```
+
+#### Tag Features
+
+- **Multiple Tags**: Operations can belong to multiple groups by specifying multiple tags
+- **Automatic Generation**: The framework automatically generates the global tags section with descriptions
+- **Swagger UI Integration**: Tags appear as collapsible sections in Swagger UI
+- **Alphabetical Sorting**: Tags are automatically sorted alphabetically in the documentation
+
+#### Example Usage
+
+```typescript
+// User management operations
+export const GET = createRoute({
+  spec: {
+    tags: ["Users"],
+    // ... rest of spec
+  },
+});
+
+// Authentication operations
+export const POST = createRoute({
+  spec: {
+    tags: ["Authentication", "Users"], // Multiple categories
+    // ... rest of spec
+  },
+});
+
+// Health check operations
+export const GET = createRoute({
+  spec: {
+    tags: ["Health"],
+    // ... rest of spec
+  },
+});
+```
+
+The generated OpenAPI specification will include:
+
+- A global `tags` section with descriptions for each tag
+- Each operation tagged with the specified categories
+- Organized sections in Swagger UI for better navigation
+
 ## Validation
 
 In development mode, responses are validated against their schemas to ensure your API matches the documentation.

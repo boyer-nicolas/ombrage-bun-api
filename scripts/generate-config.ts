@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { ConfigSchema } from "../src";
 
-const envDocPath = "./configuration.md";
+const envDocPath = "./docs/configuration.md";
 
 export async function generateEnvDocumentation(): Promise<string> {
 	const config = ConfigSchema.parse({});

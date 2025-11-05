@@ -23,6 +23,10 @@ new Server({
       "basePath": "/static"
     }
   },
+  "proxy": {
+    "enabled": false,
+    "configs": []
+  },
   "swagger": {
     "enabled": true,
     "path": "/"

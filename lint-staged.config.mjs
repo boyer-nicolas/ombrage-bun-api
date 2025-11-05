@@ -4,7 +4,7 @@
  * @type {import('lint-staged').Configuration}
  */
 export default {
-	"src/app.d.ts": [() => "bun run ./scripts/generate-env.ts"],
+	"*": [() => "bun run ./scripts/generate-config.ts"],
 	"**/*.ts": [
 		() => "bun run lint:fix",
 		() => "bun test:coverage",
