@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v0.1.1
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.50...v0.1.1)
+
+### 🚀 Enhancements
+
+- Better styling for docs website ([#37](https://github.com/boyer-nicolas/ombrage-bun-api/pull/37))
+- First minor version ([bacfd83](https://github.com/boyer-nicolas/ombrage-bun-api/commit/bacfd83))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.0.50
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/0.0.49...v0.0.50)
