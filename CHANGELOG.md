@@ -528,3 +528,8 @@
 ### Changes
 - Automated release
 
+## v0.0.25 (2025-11-06)
+
+### Changes
+- API package updates
+
