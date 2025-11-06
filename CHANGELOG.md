@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.2
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.1...v0.0.2)
+
+### 🩹 Fixes
+
+- Docs build & concurrency ([5bfb37a](https://github.com/boyer-nicolas/ombrage-bun-api/commit/5bfb37a))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v0.0.1
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.20...v0.0.1)
