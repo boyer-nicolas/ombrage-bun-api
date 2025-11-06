@@ -119,6 +119,7 @@ export default defineConfig({
 	title: "Ombrage Bun API",
 	description: "A File-based routing API framework",
 	base: "/ombrage-bun-api/",
+	ignoreDeadLinks: [/^http?:\/\/localhost/],
 	lastUpdated: true,
 	themeConfig: {
 		search: {

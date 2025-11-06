@@ -11,5 +11,6 @@ export default {
 		() => "bun run --filter ombrage-bun-api test:coverage",
 		() => "bun run check",
 	],
+	"docs/**/*.md": ["bun run docs:build"],
 };
 
