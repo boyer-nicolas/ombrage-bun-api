@@ -140,26 +140,45 @@ jobs:
         if: steps.changes.outputs.should_publish == 'true'
         id: release
         run: |
-          # Generate changelog and bump version
-          bun run changelogen --release --bump
+          # Manually bump the API package version
+          cd packages/api
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current API version: $CURRENT_VERSION"
 
-          # Get the new version from package.json
+          # Use npm version to bump (patch by default)
+          npm version patch --no-git-tag-version
+
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "New version: v$NEW_VERSION"
+          echo "New API version: v$NEW_VERSION"
+
+          # Generate changelog from root but for the API package
+          cd ../..
+          echo "Generating changelog for API package release v$NEW_VERSION" >> CHANGELOG.md
 
       - name: Publish to NPM
         if: steps.changes.outputs.should_publish == 'true' && env.NPM_CONFIG_TOKEN != ''
         run: |
-          echo "📦 Publishing to NPM..."
+          echo "📦 Publishing ombrage-bun-api to NPM..."
+          cd packages/api
           bun publish --access public --tag latest --ignore-scripts
-          echo "✅ Successfully published to NPM!"
+          echo "✅ Successfully published ombrage-bun-api to NPM!"
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push version changes and create tag
         if: steps.changes.outputs.should_publish == 'true'
         run: |
+          # Get the new version
+          NEW_VERSION=$(node -p "require('./packages/api/package.json').version")
+
+          # Commit the version bump
+          git add packages/api/package.json CHANGELOG.md
+          git commit -m "chore(release): v$NEW_VERSION"
+
+          # Create the tag
+          git tag "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+
           # Pull latest changes to avoid conflicts
           git pull origin main --rebase
 
