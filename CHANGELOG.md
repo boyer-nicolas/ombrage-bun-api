@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.3
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/0.1.2...v0.1.3)
+
+### 🏡 Chore
+
+- Fix release immutability release ([01ef0d8](https://github.com/boyer-nicolas/ombrage-bun-api/commit/01ef0d8))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v0.1.2
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.1.1...v0.1.2)
