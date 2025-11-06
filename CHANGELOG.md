@@ -1,6 +1,40 @@
 # Changelog
 
 
+## v0.0.12
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.1...v0.0.12)
+
+### 🚀 Enhancements
+
+- Split workflows to prevent CI auto-triggering ([2f2ba57](https://github.com/boyer-nicolas/ombrage-bun-api/commit/2f2ba57))
+- Release flow ([0f45641](https://github.com/boyer-nicolas/ombrage-bun-api/commit/0f45641))
+
+### 🩹 Fixes
+
+- Docs build & concurrency ([5bfb37a](https://github.com/boyer-nicolas/ombrage-bun-api/commit/5bfb37a))
+- Ci ([02b185b](https://github.com/boyer-nicolas/ombrage-bun-api/commit/02b185b))
+- Ci? ([311870e](https://github.com/boyer-nicolas/ombrage-bun-api/commit/311870e))
+- Coverage report ([b44434e](https://github.com/boyer-nicolas/ombrage-bun-api/commit/b44434e))
+
+### 🏡 Chore
+
+- **release:** V0.0.2 ([d7ba067](https://github.com/boyer-nicolas/ombrage-bun-api/commit/d7ba067))
+- **release:** V0.0.3 ([052a68a](https://github.com/boyer-nicolas/ombrage-bun-api/commit/052a68a))
+- **release:** V0.0.4 ([6d38b60](https://github.com/boyer-nicolas/ombrage-bun-api/commit/6d38b60))
+- **release:** V0.0.5 ([e7ab4fb](https://github.com/boyer-nicolas/ombrage-bun-api/commit/e7ab4fb))
+- **release:** V0.0.6 ([ca77afd](https://github.com/boyer-nicolas/ombrage-bun-api/commit/ca77afd))
+- **release:** V0.0.7 ([4ab8d24](https://github.com/boyer-nicolas/ombrage-bun-api/commit/4ab8d24))
+- **release:** V0.0.8 ([2e7ed30](https://github.com/boyer-nicolas/ombrage-bun-api/commit/2e7ed30))
+- **release:** V0.0.9 ([54ae790](https://github.com/boyer-nicolas/ombrage-bun-api/commit/54ae790))
+- **release:** V0.0.10 ([71af69e](https://github.com/boyer-nicolas/ombrage-bun-api/commit/71af69e))
+- **release:** V0.0.11 ([6120d8f](https://github.com/boyer-nicolas/ombrage-bun-api/commit/6120d8f))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+- Release Publisher Bot ([@bot](https://github.com/bot))
+
 ## v0.0.11
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.1...v0.0.11)
