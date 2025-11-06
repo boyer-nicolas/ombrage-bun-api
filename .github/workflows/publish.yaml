@@ -9,6 +9,8 @@ on:
 permissions:
   contents: write
   packages: write
+  pages: write
+  id-token: write
 
 env:
   TZ: Europe/Paris
@@ -47,32 +49,28 @@ jobs:
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.3.0
+          bun-version: 1.3.1
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile --ignore-scripts
+        run: |
+          bun install --frozen-lockfile --ignore-scripts --prefer-offline
+          bun install --filter ombrage-basic-example --frozen-lockfile --ignore-scripts --prefer-offline
+          bun install --filter ombrage-auth-example --frozen-lockfile --ignore-scripts --prefer-offline
 
       - name: Run checks
-        run: |
-          echo "🔍 Running type checks..."
-          bun run check
+        run: bun run check
 
-          echo "🧹 Running linter..."
-          bun run lint
+      - name: Run linter
+        run: bun run lint
 
-          echo "🧪 Running tests with coverage..."
-          bun run test:coverage
+      - name: Run tests
+        run: bun run test
 
-          echo "🏗️ Building package..."
-          bun run build
+      - name: Run tests with coverage
+        run: bun run --filter ombrage-bun-api test:coverage
 
-          echo "🧪 Running tests for the example app..."
-          cd example
-          bun install --frozen-lockfile --ignore-scripts
-          bun test
-          cd ..
-
-          echo "✅ All checks passed successfully!"
+      - name: Build package
+        run: bun run --filter ombrage-bun-api build
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
@@ -197,3 +195,40 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+
+  build-docs:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Not needed if lastUpdated is not enabled
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build with VitePress
+        run: bun run docs:build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .vitepress/dist
+
+  deploy-docs:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build-docs
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

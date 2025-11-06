@@ -1,0 +1,5 @@
+[test]
+# Test configuration
+timeout = "30000"
+coverage = true
+bail = 0

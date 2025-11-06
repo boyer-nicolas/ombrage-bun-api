@@ -4,13 +4,12 @@
  * @type {import('lint-staged').Configuration}
  */
 export default {
-	"src/app.d.ts": [() => "bun run ./scripts/generate-env.ts"],
+	"*": [() => "bun run ./scripts/generate-config.ts"],
 	"**/*.ts": [
+		() => "bun run --filter ombrage-bun-api build",
 		() => "bun run lint:fix",
-		() => "bun test:coverage",
+		() => "bun run --filter ombrage-bun-api test:coverage",
 		() => "bun run check",
-		() => "bun run build",
-		() => "bun run test --cwd example",
 	],
 };
 

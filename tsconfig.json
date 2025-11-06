@@ -29,6 +29,22 @@
     "noPropertyAccessFromIndexSignature": false,
     "rootDir": "."
   },
-  "include": ["src", "dev", "tests", "scripts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "packages/api/src/**/*",
+    "packages/api/tests/**/*",
+    "packages/examples/*/src/**/*",
+    "packages/examples/*/routes/**/*",
+    "packages/examples/*/lib/**/*",
+    "packages/examples/*/*.ts"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/node_modules/**",
+    "**/dist",
+    "**/dist/**",
+    "**/coverage",
+    "**/coverage/**",
+    "packages/api/dev/node_modules",
+    "packages/api/dev/node_modules/**"
+  ]
 }

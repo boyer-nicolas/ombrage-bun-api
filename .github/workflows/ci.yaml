@@ -5,9 +5,14 @@ on:
   push:
     branches-ignore:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   TZ: Europe/Paris
@@ -22,32 +27,28 @@ jobs:
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.3.0
+          bun-version: 1.3.1
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile --ignore-scripts
+        run: |
+          bun install --frozen-lockfile --ignore-scripts --prefer-offline
+
+      - name: Build package
+        run: bun run --filter ombrage-bun-api build
 
       - name: Run checks
-        run: |
-          echo "🔍 Running type checks..."
-          bun run check
+        run: bun run check
 
-          echo "🧹 Running linter..."
-          bun run lint
+      - name: Run linter
+        run: bun run lint
+      - name: Run tests
+        run: bun run test
 
-          echo "🧪 Running tests with coverage..."
-          bun run test:coverage
+      - name: Run tests with coverage
+        run: bun run --filter ombrage-bun-api test:coverage
 
-          echo "🏗️ Building package..."
-          bun run build
-
-          echo "🧪 Running tests for the example app..."
-          cd example
-          bun install --frozen-lockfile --ignore-scripts
-          bun test
-          cd ..
-
-          echo "✅ All checks passed successfully!"
+      - name: Build documentation site
+        run: bun run docs:build
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
