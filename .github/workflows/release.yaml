@@ -118,7 +118,7 @@ jobs:
 
       - name: Generate changelog, bump version and publish
         if: steps.changes.outputs.should_publish == 'true'
-        run: bunx changelogen --release --publish --bump --output ../../CHANGELOG.md
+        run: cd packages/api && bunx changelogen --release --publish --bump --output ../../CHANGELOG.md
 
       - name: Display new version
         if: steps.changes.outputs.should_publish == 'true'
