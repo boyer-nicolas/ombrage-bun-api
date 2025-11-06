@@ -49,7 +49,7 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "publish": "changelogen --release --bump --output ../../CHANGELOG.md && bun publish --tag latest --ignore-scripts && git push && git push --tags"
+    "changelog": "changelogen --release --bump --output ../../CHANGELOG.md"
   },
   "type": "module",
   "types": "dist/index.d.ts"

@@ -119,33 +119,7 @@ jobs:
       - name: Generate changelog and bump version
         if: steps.changes.outputs.should_publish == 'true'
         id: release
-        run: |
-          # Simple patch version bump
-          cd packages/api
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          echo "Current API version: $CURRENT_VERSION"
-
-          # Bump patch version
-          NEW_VERSION=$(node -e "
-            const pkg = require('./package.json');
-            const version = pkg.version.split('.');
-            version[2] = parseInt(version[2]) + 1;
-            const newVersion = version.join('.');
-            pkg.version = newVersion;
-            require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
-            console.log(newVersion);
-          ")
-
-          echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "New API version: v$NEW_VERSION"
-
-          # Simple changelog entry
-          cd ../..
-          echo "## v$NEW_VERSION ($(date '+%Y-%m-%d'))" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "### Changes" >> CHANGELOG.md
-          echo "- API package updates" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
+        run: bun run --filter ombrage-bun-api changelog
 
       - name: Publish to NPM
         if: steps.changes.outputs.should_publish == 'true' && env.NPM_CONFIG_TOKEN != ''
