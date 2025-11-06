@@ -31,25 +31,59 @@ features:
 
 <br/>
 
-# Documentation
+# Quick Start
 
-## Getting Started
+1. **Install the package**
 
-- **[Getting Started](/getting-started/getting-started)** - Installation, setup, and your first route
-- **[Routing Guide](/getting-started/routing)** - File-based routing patterns and best practices
+```bash
+bun install ombrage-bun-api
+```
 
-## Core Concepts
+2. **Create the server entry point**
 
-- **[Route Parameters](/core-concepts/parameters)** - Path, query, body, and header parameter validation with Zod
-- **[Configuration](/core-concepts/configuration)** - Server configuration options and environment variables
-- **[OpenAPI Integration](/core-concepts/openapi)** - Automatic documentation generation and Swagger UI
-- **[Proxy Configuration](/core-concepts/proxy)** - Advanced proxy setup and configuration
+```typescript
+// index.ts
+import { Api } from "ombrage-bun-api";
 
-## Examples & Patterns
+new Api({
+  server: {
+    routes: {
+      dir: "./routes", // Directory containing your route files
+    },
+  },
+}).start();
+```
 
-- **[Examples](/examples-patterns/examples)** - Common patterns, CRUD operations, authentication, and file uploads
+3. **Create your first route**
 
-## Additional Resources
+```typescript
+// routes/hello/route.ts
+import { createRoute } from "ombrage-bun-api";
+import { z } from "zod";
 
-- **[GitHub Repository](https://github.com/boyer-nicolas/ombrage-bun-api)** - Source code and issues
-- **[NPM Package](https://www.npmjs.com/package/ombrage-bun-api)** - Package information and releases
+export const GET = createRoute({
+  method: "GET",
+  handler: async () => {
+    return Response.json({ message: "Hello, world!" });
+  },
+  spec: {
+    format: "json",
+    summary: "Hello World",
+    responses: {
+      200: {
+        schema: z.object({
+          message: z.string(),
+        }),
+      },
+    },
+  },
+});
+```
+
+4. **Run the server**
+
+```bash
+bun run index.ts
+```
+
+Visit [http://localhost:8080](http://localhost:8080) to see your API documentation!
