@@ -140,21 +140,32 @@ jobs:
         if: steps.changes.outputs.should_publish == 'true'
         id: release
         run: |
-          # Manually bump the API package version
+          # Manually bump the API package version using a simple Node.js script
           cd packages/api
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current API version: $CURRENT_VERSION"
-
-          # Use npm version to bump (patch by default)
-          npm version patch --no-git-tag-version
-
-          NEW_VERSION=$(node -p "require('./package.json').version")
+          
+          # Bump patch version using Node.js
+          NEW_VERSION=$(node -e "
+            const pkg = require('./package.json');
+            const version = pkg.version.split('.');
+            version[2] = parseInt(version[2]) + 1;
+            const newVersion = version.join('.');
+            pkg.version = newVersion;
+            require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+            console.log(newVersion);
+          ")
+          
           echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "New API version: v$NEW_VERSION"
-
+          
           # Generate changelog from root but for the API package
           cd ../..
-          echo "Generating changelog for API package release v$NEW_VERSION" >> CHANGELOG.md
+          echo "## v$NEW_VERSION ($(date '+%Y-%m-%d'))" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "### Changes" >> CHANGELOG.md
+          echo "- Automated release" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
 
       - name: Publish to NPM
         if: steps.changes.outputs.should_publish == 'true' && env.NPM_CONFIG_TOKEN != ''
