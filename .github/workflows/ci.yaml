@@ -5,9 +5,14 @@ on:
   push:
     branches-ignore:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   TZ: Europe/Paris
