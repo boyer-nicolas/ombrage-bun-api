@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       force_publish:
-        description: 'Force publish even if no changes detected'
+        description: "Force publish even if no changes detected"
         required: false
         default: false
         type: boolean
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
