@@ -60,7 +60,7 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "release": "changelogen --release --publish --bump --output ../../CHANGELOG.md"
+    "release": "cp ../../README.md . && changelogen --release --publish --bump --output ../../CHANGELOG.md"
   },
   "type": "module",
   "types": "dist/index.d.ts"
