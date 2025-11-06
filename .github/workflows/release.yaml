@@ -149,7 +149,7 @@ jobs:
             🚀 **Automated release created by GitHub Actions**
 
             ## Changes
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/packages/api/CHANGELOG.md) for detailed changes.
+            See the [Changelog](https://github.com/${{ github.repository }}/blob/main/packages/api/CHANGELOG.md) for detailed changes.
 
             ## Installation
             ```bash
