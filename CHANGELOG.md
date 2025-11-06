@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v0.0.29
+
+[compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.28...v0.0.29)
+
 ## v0.0.13
 
 [compare changes](https://github.com/boyer-nicolas/ombrage-bun-api/compare/v0.0.1...v0.0.13)

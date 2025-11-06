@@ -1,6 +1,6 @@
 {
   "name": "ombrage-bun-api",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "author": {
     "name": "Nicolas Boyer"
   },
@@ -48,7 +48,8 @@
     "build": "bun run build:clean && bun run build:types && bun run build:js",
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "publish": "changelogen --release --bump --output ../../CHANGELOG.md && bun publish --tag latest --ignore-scripts && git push && git push --tags"
   },
   "type": "module",
   "types": "dist/index.d.ts"
