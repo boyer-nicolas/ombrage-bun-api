@@ -1,6 +1,15 @@
 {
   "name": "ombrage-bun-api",
   "version": "0.0.38",
+  "keywords": [
+    "ombrage",
+    "openapi",
+    "api",
+    "client",
+    "server",
+    "typescript",
+    "bun"
+  ],
   "author": {
     "name": "Nicolas Boyer"
   },
@@ -8,6 +17,7 @@
     "url": "https://github.com/boyer-nicolas/ombrage-bun-api"
   },
   "homepage": "https://boyer-nicolas.github.io/ombrage-bun-api/",
+  "readme": "README.md",
   "main": "dist/index.js",
   "module": "src/index.ts",
   "devDependencies": {
@@ -52,7 +62,7 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "release": "changelogen --release --publish --bump --output ../../CHANGELOG.md"
+    "release": "changelogen --dir ../../ --release --publish --bump --output ../../CHANGELOG.md"
   },
   "type": "module",
   "types": "dist/index.d.ts"
