@@ -513,3 +513,8 @@
 ### Changes
 - Automated release
 
+## v0.0.22 (2025-11-06)
+
+### Changes
+- Automated release
+
