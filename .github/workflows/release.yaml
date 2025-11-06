@@ -9,6 +9,7 @@ on:
       - "packages/api/package.json"
       - "*.md"
       - "!packages/api/coverage/**"
+      - ".github/workflows/release.yaml"
   workflow_dispatch:
     inputs:
       force_publish:
