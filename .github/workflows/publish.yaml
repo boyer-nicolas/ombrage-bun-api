@@ -80,7 +80,7 @@ jobs:
       - name: Generate and update coverage badge
         run: |
           # Generate coverage percentage and update README
-          bun run scripts/generate-coverage-badge.ts coverage/lcov.info README.md
+          bun run scripts/generate-coverage-badge.ts
 
           # Generate HTML coverage report
           bun run scripts/generate-coverage-report.ts
