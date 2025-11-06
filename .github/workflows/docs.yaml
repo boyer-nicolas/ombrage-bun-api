@@ -7,6 +7,7 @@ on:
       - "docs/**"
       - ".vitepress/**"
       - "README.md"
+      - ".github/workflows/docs.yaml"
   release:
     types: [published]
   workflow_dispatch:
