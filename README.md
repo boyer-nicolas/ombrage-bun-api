@@ -80,7 +80,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see your API documentati
 
 ## Documentation
 
-📚 **[Complete Documentation](./docs/index.md)**
+📚 **[Complete Documentation](https://boyer-nicolas.github.io/ombrage-bun-api/)**
 
 ## Example APIs
 
