@@ -116,9 +116,9 @@ function buildSidebar(): DefaultTheme.SidebarItem[] {
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
 	srcDir: "docs",
-	title: "Ombrage Bun API",
+	title: "Koritsu",
 	description: "A File-based routing API framework",
-	base: "/ombrage-bun-api/",
+	base: "/koritsu/",
 	ignoreDeadLinks: [/^http?:\/\/localhost/],
 	lastUpdated: true,
 	themeConfig: {
@@ -130,7 +130,7 @@ export default defineConfig({
 			{ text: "Docs", link: "/getting-started/getting-started" },
 			{
 				text: "Examples",
-				link: "https://github.com/boyer-nicolas/ombrage-bun-api/tree/main/packages/examples",
+				link: "https://github.com/boyer-nicolas/koritsu/tree/main/packages/examples",
 			},
 		],
 		sidebar: buildSidebar(),
@@ -138,11 +138,11 @@ export default defineConfig({
 		socialLinks: [
 			{
 				icon: "github",
-				link: "https://github.com/boyer-nicolas/ombrage-bun-api",
+				link: "https://github.com/boyer-nicolas/koritsu",
 			},
 			{
 				icon: "npm",
-				link: "https://www.npmjs.com/package/ombrage-bun-api",
+				link: "https://www.npmjs.com/package/koritsu",
 			},
 		],
 	},

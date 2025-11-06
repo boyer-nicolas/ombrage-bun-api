@@ -1,5 +1,5 @@
 {
-  "name": "ombrage-bun-api-monorepo",
+  "name": "koritsu-monorepo",
   "author": {
     "name": "Nicolas Boyer"
   },
@@ -22,7 +22,7 @@
   ],
   "packageManager": "bun@1.3.1",
   "scripts": {
-    "build": "bun run --filter ombrage-bun-api build",
+    "build": "bun run --filter koritsu build",
     "lint:fix": "biome check --write .",
     "lint": "biome check",
     "check:ci": "act --workflows .github/workflows/ci.yaml --pull=false",
@@ -34,7 +34,7 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "release": "bun run --filter ombrage-bun-api release"
+    "release": "bun run --filter koritsu release"
   },
   "type": "module"
 }

@@ -1,4 +1,4 @@
-# Ombrage Bun API - Copilot Instructions
+# Koritsu - Copilot Instructions
 
 ## Project Architecture
 

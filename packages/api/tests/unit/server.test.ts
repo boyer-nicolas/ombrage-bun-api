@@ -11,7 +11,7 @@ describe("server.ts", () => {
 
 	beforeEach(async () => {
 		// Create temporary directory for testing
-		tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "ombrage-test-"));
+		tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "koritsu-test-"));
 		routesDir = path.join(tempDir, "routes");
 		await fs.mkdir(routesDir, { recursive: true });
 

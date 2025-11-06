@@ -1,11 +1,11 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
-import { Api, type OmbrageServer } from "ombrage-bun-api";
+import { Api, type KoritsuServer } from "koritsu";
 import { auth } from "../../lib/auth";
 import { db } from "../../lib/db";
 
 describe("Auth Integration Tests", () => {
-	let server: OmbrageServer;
+	let server: KoritsuServer;
 	let baseURL: string;
 	let testSession: string;
 

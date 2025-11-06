@@ -6,11 +6,11 @@
 export default {
 	"*": [() => "bun run ./scripts/generate-config.ts"],
 	"**/*.ts": [
-		() => "bun run --filter ombrage-bun-api build",
+		() => "bun run --filter koritsu build",
 		() => "bun run lint:fix",
-		() => "bun run --filter ombrage-bun-api test:coverage",
+		() => "bun run --filter koritsu test:coverage",
 		() => "bun run check",
 	],
-	"docs/**/*.md": ["bun run docs:build"],
+	"docs/**/*.md": [() => "bun run docs:build"],
 };
 

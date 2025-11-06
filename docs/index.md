@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "Ombrage Bun API"
+  name: "Koritsu"
   text: "A File-based routing API framework"
   tagline: Built with Bun, featuring automatic OpenAPI documentation generation
   actions:
@@ -24,9 +24,9 @@ features:
 ---
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 2rem 0; flex-wrap: wrap;">
-  <img src="https://img.shields.io/npm/v/ombrage-bun-api?style=for-the-badge&logo=npm&logoColor=white&label=Latest&color=8e5cd9" alt="NPM Version">
-  <img src="https://img.shields.io/npm/dm/ombrage-bun-api?style=for-the-badge&logo=npm&color=8e5cd9" alt="NPM Downloads">
-  <img src="https://img.shields.io/github/license/boyer-nicolas/ombrage-bun-api?style=for-the-badge&color=8e5cd9" alt="License">
+  <img src="https://img.shields.io/npm/v/koritsu?style=for-the-badge&logo=npm&logoColor=white&label=Latest&color=8e5cd9" alt="NPM Version">
+  <img src="https://img.shields.io/npm/dm/koritsu?style=for-the-badge&logo=npm&color=8e5cd9" alt="NPM Downloads">
+  <img src="https://img.shields.io/github/license/boyer-nicolas/koritsu?style=for-the-badge&color=8e5cd9" alt="License">
 </div>
 
 <br/>
@@ -36,14 +36,14 @@ features:
 1. **Install the package**
 
 ```bash
-bun install ombrage-bun-api
+bun install koritsu
 ```
 
 2. **Create the server entry point**
 
 ```typescript
 // index.ts
-import { Api } from "ombrage-bun-api";
+import { Api } from "koritsu";
 
 new Api({
   server: {
@@ -58,7 +58,7 @@ new Api({
 
 ```typescript
 // routes/hello/route.ts
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 export const GET = createRoute({

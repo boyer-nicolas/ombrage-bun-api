@@ -1,4 +1,4 @@
-# Proxy Functionality in Ombrage Framework
+# Proxy Functionality in the Koritsu Framework
 
 This document demonstrates how to use the new proxy functionality with wildcard patterns and handler support.
 
@@ -15,7 +15,7 @@ The proxy system allows you to:
 ## Basic Configuration
 
 ```typescript
-import { Api } from "ombrage-bun-api";
+import { Api } from "koritsu";
 
 const api = new Api({
   environment: "development",
@@ -121,7 +121,7 @@ const authHandler = async ({ request, params, target }) => {
   retries: 3, // Retry failed requests 3 times
   headers: {
     // Additional headers for all requests
-    "X-API-Gateway": "ombrage",
+    "X-API-Gateway": "koritsu",
     "X-Version": "1.0",
   },
 });

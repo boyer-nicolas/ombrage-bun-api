@@ -2,12 +2,12 @@ import { type Config, type ConfigInput, validateConfig } from "./config";
 import { getLogger, type Logger } from "./logger";
 import { FileRouter } from "./router";
 
-export type OmbrageServer = Bun.Server<undefined>;
+export type KoritsuServer = Bun.Server<undefined>;
 
 export class Api {
 	public config: Config;
 	public fileRouter: FileRouter;
-	static instance?: OmbrageServer;
+	static instance?: KoritsuServer;
 	private logger: Logger;
 
 	constructor(config: ConfigInput) {
@@ -90,7 +90,7 @@ export class Api {
 		};
 	}
 
-	async start(): Promise<OmbrageServer> {
+	async start(): Promise<KoritsuServer> {
 		this.logger.info("Starting server...");
 		const serverOptions = await this.init();
 		const server = Bun.serve(serverOptions);

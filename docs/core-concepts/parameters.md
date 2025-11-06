@@ -1,6 +1,6 @@
 # Route Parameters with Zod
 
-Ombrage API supports dynamic routes with parameters using Zod schemas for type safety and automatic documentation generation.
+Koritsu supports dynamic routes with parameters using Zod schemas for type safety and automatic documentation generation.
 
 ## Dynamic Routes
 
@@ -17,7 +17,7 @@ routes/
 
 ## Parameter Definition
 
-Use Zod schemas to define route parameters in your route specs. Ombrage API supports four types of parameters that are automatically extracted and validated:
+Use Zod schemas to define route parameters in your route specs. Koritsu supports four types of parameters that are automatically extracted and validated:
 
 ```typescript
 export const GET = createRoute({
@@ -198,7 +198,7 @@ For POST, PUT, and PATCH requests, you can validate request bodies using Zod sch
 
 ```typescript
 // routes/users/route.ts
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 export const POST = createRoute({
@@ -368,7 +368,7 @@ When body validation fails, the framework returns structured error responses:
 
 ## Supported Parameter Types & Validation
 
-Ombrage API automatically converts Zod schemas to OpenAPI parameter definitions and provides runtime validation:
+Koritsu automatically converts Zod schemas to OpenAPI parameter definitions and provides runtime validation:
 
 ### Basic Types
 
@@ -478,7 +478,7 @@ When parameter validation fails, the framework automatically returns structured 
 
 ```typescript
 // routes/users/[id]/route.ts
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 export const GET = createRoute({

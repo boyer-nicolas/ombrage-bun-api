@@ -1,4 +1,4 @@
-import { Api } from "ombrage-bun-api";
+import { Api } from "koritsu";
 
 console.log("Starting example API server...");
 

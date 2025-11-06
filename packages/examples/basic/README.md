@@ -1,6 +1,6 @@
-# Ombrage API Example
+# Koritsu Example
 
-This example demonstrates how to use the `ombrage-bun-api` library to create a complete API with file-based routing, automatic OpenAPI documentation, and type-safe request/response handling.
+This example demonstrates how to use the `koritsu` library to create a complete API with file-based routing, automatic OpenAPI documentation, and type-safe request/response handling.
 
 ## Setup
 
@@ -154,7 +154,7 @@ curl -X POST http://localhost:8080/healthz \
 
 ## Integration Tests
 
-The example includes comprehensive integration tests that demonstrate how to test APIs built with Ombrage:
+The example includes comprehensive integration tests that demonstrate how to test APIs built with Koritsu:
 
 ```bash
 bun run test
@@ -177,6 +177,6 @@ The tests show how to:
 - Test error handling and validation scenarios
 - Verify OpenAPI documentation is served correctly
 
-This demonstrates a complete testing strategy for APIs built with the Ombrage framework.
+This demonstrates a complete testing strategy for APIs built with the Koritsu framework.
 
-This example shows how the `ombrage-bun-api` library provides a clean, type-safe way to build APIs with minimal boilerplate while automatically generating comprehensive documentation.
+This example shows how the `koritsu` library provides a clean, type-safe way to build APIs with minimal boilerplate while automatically generating comprehensive documentation.

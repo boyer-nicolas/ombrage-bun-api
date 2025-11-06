@@ -1,14 +1,16 @@
-# [Ombrage API](https://www.npmjs.com/package/ombrage-bun-api)
+# [Koritsu](https://www.npmjs.com/package/koritsu)
 
 > A modern, type-safe file-based routing API framework for Bun with automatic OpenAPI documentation generation.
 
-[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/coverage.yaml)
-[![Release](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/release.yaml/badge.svg)](https://github.com/boyer-nicolas/ombrage-bun-api/actions/workflows/release.yaml)
-[![NPM Version](https://img.shields.io/npm/v/ombrage-bun-api)](https://www.npmjs.com/package/ombrage-bun-api)
-[![NPM Downloads](https://img.shields.io/npm/dm/ombrage-bun-api)](https://www.npmjs.com/package/ombrage-bun-api)
+[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](https://github.com/boyer-nicolas/koritsu/actions/workflows/coverage.yaml)
+[![Release](https://github.com/boyer-nicolas/koritsu/actions/workflows/release.yaml/badge.svg)](https://github.com/boyer-nicolas/koritsu/actions/workflows/release.yaml)
+[![NPM Version](https://img.shields.io/npm/v/koritsu)](https://www.npmjs.com/package/koritsu)
+[![NPM Downloads](https://img.shields.io/npm/dm/koritsu)](https://www.npmjs.com/package/koritsu)
 [![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)](./coverage/)
 
 A powerful file-based routing system built with Bun, featuring automatic API documentation generation with Swagger UI.
+
+Kōritsu (効率) means "efficiency" in Japanese, reflecting the framework's goal to streamline API development.
 
 ## Features
 
@@ -24,14 +26,14 @@ A powerful file-based routing system built with Bun, featuring automatic API doc
 1. **Install the package**
 
 ```bash
-bun install ombrage-bun-api
+bun install koritsu
 ```
 
 2. **Create the server entrypoint**
 
 ```typescript
 // index.ts
-import { Api } from "ombrage-bun-api";
+import { Api } from "koritsu";
 
 new Api({
   server: {
@@ -46,7 +48,7 @@ new Api({
 
 ```typescript
 // routes/hello/route.ts
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 export const GET = createRoute({
@@ -78,7 +80,7 @@ Visit [http://localhost:8080](http://localhost:8080) to see your API documentati
 
 ## Documentation
 
-📚 **[Complete Documentation](https://boyer-nicolas.github.io/ombrage-bun-api/)**
+📚 **[Complete Documentation](https://boyer-nicolas.github.io/koritsu/)**
 
 ## Example APIs
 

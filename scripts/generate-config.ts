@@ -10,7 +10,7 @@ export async function generateEnvDocumentation(): Promise<string> {
 	lines.push("# Configuration Options");
 	lines.push("");
 	lines.push(
-		"This document outlines the available configuration options for the Ombrage Bun API server. You can configure the server using environment variables or by providing a configuration object when initializing the server.",
+		"This document outlines the available configuration options for the Koritsu server. You can configure the server using environment variables or by providing a configuration object when initializing the server.",
 	);
 	lines.push("");
 	// App Config options
@@ -20,7 +20,7 @@ export async function generateEnvDocumentation(): Promise<string> {
 	);
 	lines.push("");
 	lines.push("```ts");
-	lines.push("import { Server } from 'ombrage-bun-api';");
+	lines.push("import { Server } from 'koritsu';");
 	lines.push("");
 	lines.push(`new Server(${JSON.stringify(config, null, 2)}).start();`);
 	lines.push("");

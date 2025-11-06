@@ -1,5 +1,5 @@
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
-import { Api } from "ombrage-bun-api";
+import { Api } from "koritsu";
 import { auth } from "./lib/auth";
 import { db } from "./lib/db";
 

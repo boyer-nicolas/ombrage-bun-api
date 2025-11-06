@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import type { OpenAPIV3_1 } from "openapi-types";
-import { Api, type OmbrageServer } from "../../src/lib/api";
+import { Api, type KoritsuServer } from "../../src/lib/api";
 
 describe("Server Integration Tests", () => {
-	let server: OmbrageServer;
+	let server: KoritsuServer;
 	let baseURL: string;
 
 	beforeAll(async () => {

@@ -1,8 +1,8 @@
 {
-  "name": "ombrage-bun-api",
+  "name": "koritsu",
   "version": "0.1.3",
   "keywords": [
-    "ombrage",
+    "koritsu",
     "openapi",
     "api",
     "client",
@@ -14,9 +14,9 @@
     "name": "Nicolas Boyer"
   },
   "repository": {
-    "url": "https://github.com/boyer-nicolas/ombrage-bun-api"
+    "url": "https://github.com/boyer-nicolas/koritsu"
   },
-  "homepage": "https://boyer-nicolas.github.io/ombrage-bun-api/",
+  "homepage": "https://boyer-nicolas.github.io/koritsu/",
   "main": "dist/index.js",
   "module": "src/index.ts",
   "devDependencies": {

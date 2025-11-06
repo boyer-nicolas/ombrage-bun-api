@@ -1,16 +1,16 @@
 # Better Auth Integration
 
-This guide demonstrates how to integrate [Better Auth](https://www.better-auth.com/) with your Ombrage Bun API for comprehensive authentication and session management.
+This guide demonstrates how to integrate [Better Auth](https://www.better-auth.com/) with your Koritsu for comprehensive authentication and session management.
 
 For complete Better Auth documentation, features, and configuration options, visit the [official Better Auth documentation](https://www.better-auth.com/docs).
 
-When integrated with Ombrage, Better Auth routes are handled through the [proxy system](/core-concepts/proxy), allowing seamless authentication alongside your API routes.
+When integrated with Koritsu, Better Auth routes are handled through the [proxy system](/core-concepts/proxy), allowing seamless authentication alongside your API routes.
 
 > **Note**: This guide uses SQLite with `bun:sqlite` as an example, but Better Auth works with any database system supported by Drizzle ORM (PostgreSQL, MySQL, SQLite, etc.). Simply adjust the database driver and connection configuration for your chosen database.
 
 ## Quick Start
 
-A complete working example is available in the [packages/examples/auth](https://github.com/boyer-nicolas/ombrage-bun-api/tree/main/packages/examples/auth) directory of the Ombrage repository. This example includes:
+A complete working example is available in the [packages/examples/auth](https://github.com/boyer-nicolas/koritsu/tree/main/packages/examples/auth) directory of the Koritsu repository. This example includes:
 
 - Full Better Auth integration
 - Database setup with automatic schema generation
@@ -101,14 +101,14 @@ export const auth = betterAuth({
 });
 ```
 
-## Ombrage Integration
+## Koritsu Integration
 
-Integrate Better Auth with your Ombrage API using the proxy system. You can handle authentication directly in the proxy handler for protected routes:
+Integrate Better Auth with your Koritsu using the proxy system. You can handle authentication directly in the proxy handler for protected routes:
 
 ```typescript
 // index.ts
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
-import { Api } from "ombrage-bun-api";
+import { Api } from "koritsu";
 import { auth } from "./lib/auth";
 import { db } from "./lib/db";
 
@@ -254,7 +254,7 @@ With the proxy configuration above, any route under `/protected/` will automatic
 
 ```typescript
 // routes/protected/profile/route.ts
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 export const GET = createRoute({
@@ -328,7 +328,7 @@ Use this for routes that need authentication but aren't under the `/protected/` 
 
 ```typescript
 // routes/admin/route.ts
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { requireAuth } from "../../lib/middleware";
 import { z } from "zod";
 
@@ -395,7 +395,7 @@ The `tags: ["Authentication"]` configuration groups all Better Auth endpoints un
 
 ### How It Works
 
-The external specs feature supports both JSON and HTML responses from OpenAPI endpoints. When Better Auth serves its OpenAPI spec as an HTML page with embedded JSON (which is the default), Ombrage automatically extracts the JSON specification and merges it with your main API documentation.
+The external specs feature supports both JSON and HTML responses from OpenAPI endpoints. When Better Auth serves its OpenAPI spec as an HTML page with embedded JSON (which is the default), Koritsu automatically extracts the JSON specification and merges it with your main API documentation.
 
 The merge process handles:
 

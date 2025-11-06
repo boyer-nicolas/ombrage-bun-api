@@ -1,6 +1,6 @@
-# Ombrage Auth Example
+# Koritsu Auth Example
 
-This example demonstrates how to integrate authentication into an Ombrage Bun API using [Better Auth](https://better-auth.vercel.app/), a comprehensive authentication library for TypeScript.
+This example demonstrates how to integrate authentication into a Koritsu API using [Better Auth](https://better-auth.vercel.app/), a comprehensive authentication library for TypeScript.
 
 ## Features
 
@@ -141,7 +141,7 @@ The project uses Drizzle ORM with SQLite for persistence. The schema includes:
 
 ### Proxy Configuration
 
-Authentication is handled through Ombrage's proxy system:
+Authentication is handled through Koritsu's proxy system:
 
 ```typescript
 proxy: {
@@ -161,7 +161,7 @@ proxy: {
 }
 ```
 
-This allows Better Auth to handle all `/auth/*` requests while integrating seamlessly with the Ombrage API framework.
+This allows Better Auth to handle all `/auth/*` requests while integrating seamlessly with the Koritsu framework.
 
 ### Better Auth Configuration
 
@@ -195,7 +195,7 @@ For production deployment, consider:
 
 ### Runtime
 
-- **ombrage-bun-api**: The main API framework
+- **koritsu**: The main API framework
 - **better-auth**: Authentication library
 - **drizzle-orm**: Database ORM
 - **zod**: Schema validation

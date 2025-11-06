@@ -79,7 +79,7 @@ export const exampleProxyConfig = new Api({
 				timeout: 15000,
 				retries: 2,
 				headers: {
-					"X-Proxy-Source": "ombrage-api-gateway",
+					"X-Proxy-Source": "koritsu-api-gateway",
 				},
 			},
 

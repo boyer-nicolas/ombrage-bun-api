@@ -62,10 +62,10 @@ jobs:
           bun install --frozen-lockfile --ignore-scripts --prefer-offline
 
       - name: Build package
-        run: bun run --filter ombrage-bun-api build
+        run: bun run --filter koritsu build
 
       - name: Run tests with coverage
-        run: bun run --filter ombrage-bun-api test:coverage
+        run: bun run --filter koritsu test:coverage
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
@@ -75,10 +75,10 @@ jobs:
           retention-days: 30
 
       - name: Generate and update coverage badge
-        run: bun run --filter ombrage-bun-api coverage:badge
+        run: bun run --filter koritsu coverage:badge
 
       - name: Generate coverage reports
-        run: bun run --filter ombrage-bun-api coverage:report
+        run: bun run --filter koritsu coverage:report
 
       - name: Commit coverage badge update
         run: |

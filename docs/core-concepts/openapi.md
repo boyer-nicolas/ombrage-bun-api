@@ -1,6 +1,6 @@
 # OpenAPI Integration
 
-Ombrage Bun API automatically generates OpenAPI (Swagger) documentation from your route specifications.
+Koritsu automatically generates OpenAPI (Swagger) documentation from your route specifications.
 
 ## Automatic Documentation
 
@@ -65,7 +65,7 @@ Customize the documentation generation:
 ```typescript
 new Api({
   title: "My API",
-  description: "A powerful API built with Ombrage",
+  description: "A powerful API built with Koritsu",
   version: "1.0.0",
   swagger: {
     path: "/docs", // Custom Swagger UI path

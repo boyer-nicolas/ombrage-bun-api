@@ -1,13 +1,13 @@
-# Ombrage Bun API Documentation
+# Koritsu Documentation
 
-Welcome to the **Ombrage Bun API** documentation! This is a file-based routing system for Bun APIs with automatic OpenAPI documentation generation.
+Welcome to the **Koritsu** documentation! This is a file-based routing system for Bun APIs with automatic OpenAPI documentation generation.
 
 ## Quick Start
 
-Get started with Ombrage Bun API in just a few steps:
+Get started with Koritsu in just a few steps:
 
 ```bash
-npm install ombrage-bun-api
+npm install koritsu
 ```
 
 ## Key Features

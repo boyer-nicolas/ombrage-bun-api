@@ -1,12 +1,12 @@
 # Configuration Options
 
-This document outlines the available configuration options for the Ombrage Bun API server. You can configure the server using environment variables or by providing a configuration object when initializing the server.
+This document outlines the available configuration options for the Koritsu server. You can configure the server using environment variables or by providing a configuration object when initializing the server.
 
 
 You can also configure the application using the `AppConfig` class:
 
 ```ts
-import { Server } from 'ombrage-bun-api';
+import { Server } from 'koritsu';
 
 new Server({
   "server": {

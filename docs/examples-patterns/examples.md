@@ -1,6 +1,6 @@
 # Examples
 
-Here are some common patterns and examples for building APIs with Ombrage Bun API.
+Here are some common patterns and examples for building APIs with Koritsu.
 
 ## Basic CRUD Operations
 

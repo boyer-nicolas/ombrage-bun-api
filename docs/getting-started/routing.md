@@ -1,13 +1,13 @@
 # Routing Guide
 
-The Ombrage Bun API uses a **file-based routing system** that automatically maps your file structure to API endpoints.
+The Koritsu uses a **file-based routing system** that automatically maps your file structure to API endpoints.
 
 ## Basic Route Structure
 
 Each route is defined in a `route.ts` file within the `routes/` directory:
 
 ```typescript
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 export const GET = createRoute({

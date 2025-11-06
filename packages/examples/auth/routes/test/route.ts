@@ -1,4 +1,4 @@
-import { createRoute } from "ombrage-bun-api";
+import { createRoute } from "koritsu";
 import { z } from "zod";
 
 const testResponseSchema = z.object({

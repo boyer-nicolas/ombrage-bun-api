@@ -1,12 +1,12 @@
-# Ombrage Bun API Examples
+# Koritsu Examples
 
-This directory contains complete working examples demonstrating different features and use cases of the `ombrage-bun-api` library. Each example is a fully functional API that you can run, explore, and learn from.
+This directory contains complete working examples demonstrating different features and use cases of the `koritsu` library. Each example is a fully functional API that you can run, explore, and learn from.
 
 ## Available Examples
 
 ### 📁 [Basic Example](./basic/)
 
-A comprehensive demonstration of the core features of Ombrage.
+A comprehensive demonstration of the core features of Koritsu.
 
 **Key Features Demonstrated:**
 

@@ -34,7 +34,7 @@ jobs:
           bun install --frozen-lockfile --ignore-scripts --prefer-offline
 
       - name: Build package
-        run: bun run --filter ombrage-bun-api build
+        run: bun run --filter koritsu build
 
       - name: Run checks
         run: bun run check
@@ -45,7 +45,7 @@ jobs:
         run: bun run test
 
       - name: Run tests with coverage
-        run: bun run --filter ombrage-bun-api test:coverage
+        run: bun run --filter koritsu test:coverage
 
       - name: Build documentation site
         run: bun run docs:build

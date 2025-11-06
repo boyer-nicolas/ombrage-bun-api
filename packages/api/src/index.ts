@@ -1,5 +1,5 @@
-// Main export file for the Ombrage Bun API
-import { Api, type OmbrageServer } from "./lib/api";
+// Main export file for the Koritsu
+import { Api, type KoritsuServer } from "./lib/api";
 import {
 	type Config,
 	ConfigSchema,
@@ -25,7 +25,7 @@ export {
 	type RouteProps,
 	type CreateRouteProps,
 	type RouteDefinition,
-	type OmbrageServer,
+	type KoritsuServer,
 	type ProxyHandler,
 	type ProxyConfig,
 	createTypedResponse,

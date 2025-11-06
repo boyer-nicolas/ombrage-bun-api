@@ -1,7 +1,7 @@
 {
-  "name": "ombrage-basic-example",
+  "name": "koritsu-basic-example",
   "version": "1.0.0",
-  "description": "Example API using ombrage-bun-api library",
+  "description": "Example API using koritsu library",
   "type": "module",
   "author": {
     "name": "Nicolas Boyer"
@@ -14,7 +14,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "ombrage-bun-api": "workspace:*",
+    "koritsu": "workspace:*",
     "zod": "^4.1.12"
   },
   "devDependencies": {

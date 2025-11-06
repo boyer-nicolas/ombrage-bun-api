@@ -700,7 +700,7 @@ describe("router.ts", () => {
 		test("should serve static file successfully", async () => {
 			// Create a temporary directory and file for testing
 			const tempDir = await fs.mkdtemp(
-				path.join(os.tmpdir(), "ombrage-static-test-"),
+				path.join(os.tmpdir(), "koritsu-static-test-"),
 			);
 			const testFile = path.join(tempDir, "test.txt");
 			await fs.writeFile(testFile, "Hello, World!");
@@ -731,7 +731,7 @@ describe("router.ts", () => {
 
 		test("should return 404 for non-existent static file", async () => {
 			const tempDir = await fs.mkdtemp(
-				path.join(os.tmpdir(), "ombrage-static-test-"),
+				path.join(os.tmpdir(), "koritsu-static-test-"),
 			);
 
 			const config = validateConfig({
@@ -778,7 +778,7 @@ describe("router.ts", () => {
 
 		test("should set appropriate content type for different file types", async () => {
 			const tempDir = await fs.mkdtemp(
-				path.join(os.tmpdir(), "ombrage-static-test-"),
+				path.join(os.tmpdir(), "koritsu-static-test-"),
 			);
 			const jsonFile = path.join(tempDir, "data.json");
 			await fs.writeFile(jsonFile, '{"test": true}');

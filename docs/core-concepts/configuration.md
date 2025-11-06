@@ -1,39 +1,38 @@
 # Configuration Options
 
-This document outlines the available configuration options for the Ombrage Bun API server. You can configure the server using environment variables or by providing a configuration object when initializing the server.
-
+This document outlines the available configuration options for the Koritsu server. You can configure the server using environment variables or by providing a configuration object when initializing the server.
 
 You can also configure the application using the `AppConfig` class:
 
 ```ts
-import { Server } from 'ombrage-bun-api';
+import { Server } from "koritsu";
 
 new Server({
-  "server": {
-    "port": 8080,
-    "host": "0.0.0.0",
-    "logLevel": "info",
-    "routes": {
-      "dir": "./routes",
-      "basePath": "/"
+  server: {
+    port: 8080,
+    host: "0.0.0.0",
+    logLevel: "info",
+    routes: {
+      dir: "./routes",
+      basePath: "/",
     },
-    "static": {
-      "dir": "./static",
-      "enabled": false,
-      "basePath": "/static"
-    }
+    static: {
+      dir: "./static",
+      enabled: false,
+      basePath: "/static",
+    },
   },
-  "proxy": {
-    "enabled": false,
-    "configs": []
+  proxy: {
+    enabled: false,
+    configs: [],
   },
-  "swagger": {
-    "enabled": true,
-    "path": "/"
+  swagger: {
+    enabled: true,
+    path: "/",
   },
-  "title": "My API",
-  "description": "Auto-generated API documentation from route specifications",
-  "environment": "development"
+  title: "My API",
+  description: "Auto-generated API documentation from route specifications",
+  environment: "development",
 }).start();
 
 // Server is now configured with the above options

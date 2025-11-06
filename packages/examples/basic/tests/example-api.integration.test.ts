@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import path from "node:path";
-import { Api, type OmbrageServer } from "ombrage-bun-api";
+import { Api, type KoritsuServer } from "koritsu";
 
 describe("Example API Integration Tests", () => {
-	let server: OmbrageServer;
+	let server: KoritsuServer;
 	let baseUrl: string;
 
 	beforeAll(async () => {

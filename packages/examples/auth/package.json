@@ -1,7 +1,7 @@
 {
-  "name": "ombrage-auth-example",
+  "name": "koritsu-auth-example",
   "version": "1.0.0",
-  "description": "Example API using ombrage-bun-api library with authentication",
+  "description": "Example API using koritsu library with authentication",
   "type": "module",
   "author": {
     "name": "Nicolas Boyer"
@@ -18,7 +18,7 @@
   "dependencies": {
     "better-auth": "^1.3.34",
     "drizzle-orm": "^0.44.7",
-    "ombrage-bun-api": "workspace:*",
+    "koritsu": "workspace:*",
     "zod": "^4.1.12"
   },
   "devDependencies": {

@@ -11,7 +11,7 @@ describe("api.ts", () => {
 	beforeEach(async () => {
 		tempDir = join(
 			tmpdir(),
-			`ombrage-api-test-${Math.random().toString(36).substring(7)}`,
+			`koritsu-api-test-${Math.random().toString(36).substring(7)}`,
 		);
 
 		// Create the directory structure
