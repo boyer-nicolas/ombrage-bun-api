@@ -78,12 +78,10 @@ jobs:
           retention-days: 30
 
       - name: Generate and update coverage badge
-        run: |
-          # Generate coverage percentage and update README
-          bun run scripts/generate-coverage-badge.ts
+        run: bun run --filter ombrage-bun-api coverage:badge
 
-          # Generate HTML coverage report
-          bun run scripts/generate-coverage-report.ts
+      - name: Generate coverage reports
+        run: bun run --filter ombrage-bun-api coverage:report
 
       - name: Check for changes since last tag
         id: changes
