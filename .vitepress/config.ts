@@ -116,10 +116,12 @@ function buildSidebar(): DefaultTheme.SidebarItem[] {
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
 	srcDir: "docs",
-
 	title: "Ombrage Bun API",
 	description: "A File-based routing API framework",
 	themeConfig: {
+		search: {
+			provider: "local",
+		},
 		nav: [
 			{ text: "Home", link: "/" },
 			{ text: "Docs", link: "/getting-started/getting-started" },
