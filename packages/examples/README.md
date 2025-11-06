@@ -25,3 +25,15 @@ A comprehensive demonstration of the core features of Ombrage.
 - **Middleware:** Custom middleware for logging, CORS, rate limiting
 - **File Uploads:** Bun S3 integration for handling storage operations
 - **Advanced Validation:** Complex Zod schemas and custom validators
+
+### [Auth Example](./auth/)
+
+An example showcasing how to implement authentication and authorization using Better Auth.
+
+**Key Features Demonstrated:**
+
+- ✅ User registration and login
+- ✅ Integrated OpenAPI documentation for auth endpoints
+- ✅ Global protected route patterns
+- ✅ Granular access control (at route level)
+- ✅ Integration with database for user management
