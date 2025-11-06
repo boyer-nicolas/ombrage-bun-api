@@ -829,7 +829,7 @@ describe("router.ts", () => {
 			const allTags = new Set<string>();
 
 			// Should not throw and should not modify the spec
-			await router["mergeExternalSpecs"](baseSpec, allTags);
+			await router.mergeExternalSpecs(baseSpec, allTags);
 
 			expect(baseSpec.paths).toEqual({});
 		});
@@ -860,7 +860,7 @@ describe("router.ts", () => {
 			const allTags = new Set<string>();
 
 			// Should not throw even if external spec fetch fails
-			await router["mergeExternalSpecs"](baseSpec, allTags);
+			await router.mergeExternalSpecs(baseSpec, allTags);
 
 			expect(baseSpec.paths).toEqual({});
 		});
@@ -915,7 +915,7 @@ describe("router.ts", () => {
 			};
 			const allTags = new Set<string>();
 
-			await router["mergeExternalSpecs"](baseSpec, allTags);
+			await router.mergeExternalSpecs(baseSpec, allTags);
 
 			expect(baseSpec.paths).toHaveProperty("/external/test");
 			expect(baseSpec.tags).toContainEqual({
@@ -973,7 +973,7 @@ describe("router.ts", () => {
 			};
 			const allTags = new Set<string>();
 
-			await router["mergeExternalSpecs"](baseSpec, allTags);
+			await router.mergeExternalSpecs(baseSpec, allTags);
 
 			expect(baseSpec.paths).toHaveProperty("/auth/login");
 			expect(baseSpec.tags).toContainEqual({
@@ -1023,7 +1023,7 @@ describe("router.ts", () => {
 			const allTags = new Set<string>();
 
 			// Should not throw and should not modify the spec
-			await router["mergeExternalSpecs"](baseSpec, allTags);
+			await router.mergeExternalSpecs(baseSpec, allTags);
 
 			expect(baseSpec.paths).toEqual({});
 
@@ -1081,7 +1081,7 @@ describe("router.ts", () => {
 			};
 			const allTags = new Set<string>();
 
-			await router["mergeExternalSpecs"](baseSpec, allTags);
+			await router.mergeExternalSpecs(baseSpec, allTags);
 
 			expect(baseSpec.paths).toHaveProperty("/simple");
 			expect(baseSpec.tags).toEqual([]); // Should remain empty

@@ -593,7 +593,7 @@ export class FileRouter {
 	/**
 	 * Merge external OpenAPI specifications into the main spec
 	 */
-	private async mergeExternalSpecs(
+	public async mergeExternalSpecs(
 		baseSpec: OpenAPIV3_1.Document,
 		allTags: Set<string>,
 	): Promise<void> {
