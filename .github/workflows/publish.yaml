@@ -54,8 +54,9 @@ jobs:
       - name: Install dependencies
         run: |
           bun install --frozen-lockfile --ignore-scripts --prefer-offline
-          bun install --filter ombrage-basic-example --frozen-lockfile --ignore-scripts --prefer-offline
-          bun install --filter ombrage-auth-example --frozen-lockfile --ignore-scripts --prefer-offline
+
+      - name: Build package
+        run: bun run --filter ombrage-bun-api build
 
       - name: Run checks
         run: bun run check
@@ -68,9 +69,6 @@ jobs:
 
       - name: Run tests with coverage
         run: bun run --filter ombrage-bun-api test:coverage
-
-      - name: Build package
-        run: bun run --filter ombrage-bun-api build
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
