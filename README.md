@@ -76,7 +76,7 @@ export const GET = createRoute({
 bun run index.ts
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see your API documentation!
+Visit [http://localhost:8080](http://localhost:8080) to see your API documentation!
 
 ## Documentation
 
