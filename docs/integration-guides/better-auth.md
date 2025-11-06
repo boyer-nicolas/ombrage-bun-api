@@ -30,7 +30,7 @@ bun init -y
 
 ```bash
 bun add better-auth drizzle-orm
-bun add -d drizzle-kit @types/better-auth
+bun add -d drizzle-kit
 ```
 
 ## Folder structure setup
