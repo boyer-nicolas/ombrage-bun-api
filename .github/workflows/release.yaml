@@ -156,6 +156,10 @@ jobs:
             bun install ombrage-bun-api@${{ steps.version.outputs.new_version }}
             # or
             npm install ombrage-bun-api@${{ steps.version.outputs.new_version }}
+            # or
+            yarn add ombrage-bun-api@${{ steps.version.outputs.new_version }}
+            # or
+            pnpm add ombrage-bun-api@${{ steps.version.outputs.new_version }}
             ```
           draft: false
           prerelease: false
