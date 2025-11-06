@@ -25,8 +25,6 @@ A powerful file-based routing system built with Bun, featuring automatic API doc
 
 ```bash
 bun install ombrage-bun-api
-# or
-npm install ombrage-bun-api
 ```
 
 2. **Create the server entry point**
