@@ -1,3 +1,4 @@
+// Main export file for the Ombrage Bun API
 import { Api, type OmbrageServer } from "./lib/api";
 import {
 	type Config,
