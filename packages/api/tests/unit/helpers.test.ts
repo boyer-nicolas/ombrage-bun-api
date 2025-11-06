@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, test } from "bun:test";
+import { afterEach, beforeAll, describe, expect, mock, test } from "bun:test";
 import type { OpenAPIV3_1 } from "openapi-types";
 import { z } from "zod";
 import { resetConfig, validateConfig } from "../../src/lib/config";
@@ -6,8 +6,10 @@ import {
 	type CreateRouteProps,
 	type CustomSpec,
 	createRoute,
+	createRouteCollection,
 	createTypedResponse,
 	customSpecToOpenAPI,
+	executeProxyRequest,
 	generateOpenAPIFromCustomSpec,
 	type RouteProps,
 	type SpecItem,
@@ -979,6 +981,138 @@ describe("helpers.ts", () => {
 			expect(putOperation?.description).toBe(
 				"Request accepted and will be processed asynchronously",
 			);
+		});
+	});
+
+	describe("createRouteCollection", () => {
+		test("should create route collection from object", () => {
+			const routes = {
+				get: {
+					method: "GET" as const,
+					handler: async () => new Response("GET response"),
+				},
+				post: {
+					method: "POST" as const,
+					handler: async () => new Response("POST response"),
+				},
+				put: {
+					method: "PUT" as const,
+					handler: async () => new Response("PUT response"),
+				},
+			};
+
+			const collection = createRouteCollection(routes);
+
+			expect(collection).toHaveProperty("GET");
+			expect(collection).toHaveProperty("POST");
+			expect(collection).toHaveProperty("PUT");
+			expect(collection.GET?.method).toBe("GET");
+			expect(collection.POST?.method).toBe("POST");
+			expect(collection.PUT?.method).toBe("PUT");
+		});
+
+		test("should handle routes without handlers", () => {
+			const routes = {
+				get: {
+					method: "GET" as const,
+				},
+				post: {
+					method: "POST" as const,
+					handler: async () => new Response("POST response"),
+				},
+			};
+
+			const collection = createRouteCollection(routes);
+
+			expect(collection).toHaveProperty("GET");
+			expect(collection).toHaveProperty("POST");
+			expect(collection.GET?.method).toBe("GET");
+			expect(collection.GET?.handler).toBeUndefined();
+			expect(collection.POST?.handler).toBeDefined();
+		});
+	});
+
+	describe("executeProxyRequest", () => {
+		test("should execute proxy request without handler", async () => {
+			// Mock fetch to avoid actual network requests
+			const originalFetch = global.fetch;
+			global.fetch = mock(async () => {
+				return new Response("Proxied response", { status: 200 });
+			}) as unknown as typeof fetch;
+
+			const request = new Request("http://localhost/test");
+			const context = {
+				request,
+				params: {},
+				startTime: Date.now(),
+				config: {
+					pattern: "/test/*",
+					target: "http://example.com",
+					enabled: true,
+				},
+			};
+
+			const response = await executeProxyRequest(context);
+			expect(response.status).toBe(200);
+
+			// Restore original fetch
+			global.fetch = originalFetch;
+		});
+
+		test("should execute proxy handler that blocks request", async () => {
+			const request = new Request("http://localhost/test");
+			const mockHandler = mock(async () => ({
+				proceed: false,
+				response: new Response("Blocked", { status: 403 }),
+			}));
+
+			const context = {
+				request,
+				params: {},
+				startTime: Date.now(),
+				config: {
+					pattern: "/test/*",
+					target: "http://example.com",
+					enabled: true,
+					handler: mockHandler,
+				},
+			};
+
+			const response = await executeProxyRequest(context);
+			expect(response.status).toBe(403);
+			expect(await response.text()).toBe("Blocked");
+		});
+
+		test("should execute proxy handler that allows request", async () => {
+			// Mock fetch
+			const originalFetch = global.fetch;
+			global.fetch = mock(async () => {
+				return new Response("Proxied response", { status: 200 });
+			}) as unknown as typeof fetch;
+
+			const request = new Request("http://localhost/test");
+			const mockHandler = mock(async () => ({
+				proceed: true,
+				headers: { "X-Custom": "test" },
+			}));
+
+			const context = {
+				request,
+				params: {},
+				startTime: Date.now(),
+				config: {
+					pattern: "/test/*",
+					target: "http://example.com",
+					enabled: true,
+					handler: mockHandler,
+				},
+			};
+
+			const response = await executeProxyRequest(context);
+			expect(response.status).toBe(200);
+
+			// Restore original fetch
+			global.fetch = originalFetch;
 		});
 	});
 });

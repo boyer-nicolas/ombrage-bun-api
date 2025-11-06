@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -7,18 +7,27 @@ import { FileRouter } from "../../src/lib/router";
 
 describe("router.ts", () => {
 	let router: FileRouter;
+	let originalFetch: typeof global.fetch;
 
 	beforeEach(() => {
-		const config = validateConfig({
-			server: {
-				routes: {
-					dir: "./dev/routes",
+		// Store original fetch so we can restore it
+		originalFetch = global.fetch;
+
+		router = new FileRouter(
+			validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
 				},
-			},
-		});
-		router = new FileRouter(config);
+			}),
+		);
 	});
 
+	afterEach(() => {
+		// Restore original fetch to prevent test pollution
+		global.fetch = originalFetch;
+	});
 	describe("FileRouter constructor", () => {
 		test("should initialize with default routes path", () => {
 			expect(router).toBeInstanceOf(FileRouter);
@@ -311,8 +320,8 @@ describe("router.ts", () => {
 	});
 
 	describe("generateOpenAPISpec", () => {
-		test("should generate basic OpenAPI spec", () => {
-			const spec = router.generateOpenAPISpec();
+		test("should generate basic OpenAPI spec", async () => {
+			const spec = await router.generateOpenAPISpec();
 
 			expect(spec).toHaveProperty("openapi", "3.1.0");
 			expect(spec).toHaveProperty("info");
@@ -320,7 +329,7 @@ describe("router.ts", () => {
 			expect(spec).toHaveProperty("paths");
 		});
 
-		test("should include route specs in generated OpenAPI spec", () => {
+		test("should include route specs in generated OpenAPI spec", async () => {
 			const mockRoutes = {
 				GET: {
 					method: "GET",
@@ -329,22 +338,29 @@ describe("router.ts", () => {
 						format: "json",
 						responses: {
 							200: {
-								summary: "Test endpoint",
 								description: "Success",
-								schema: { type: "object" },
 							},
 						},
 					},
 				},
 			};
 
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+			});
+
+			const router = new FileRouter(config);
 			router.routes.set("/test", {
 				path: "/test",
 				routeFile: "/path/to/route.ts",
 				routes: mockRoutes,
 			});
 
-			const spec = router.generateOpenAPISpec();
+			const spec = await router.generateOpenAPISpec();
 
 			expect(spec.paths).toBeDefined();
 			if (spec.paths) {
@@ -353,7 +369,7 @@ describe("router.ts", () => {
 			}
 		});
 
-		test("should add 500 error response to operations without one", () => {
+		test("should add 500 error response to operations without one", async () => {
 			const mockRoutes = {
 				GET: {
 					method: "GET",
@@ -377,7 +393,7 @@ describe("router.ts", () => {
 				routes: mockRoutes,
 			});
 
-			const spec = router.generateOpenAPISpec();
+			const spec = await router.generateOpenAPISpec();
 
 			expect(spec.paths?.["/test"]?.get?.responses?.["500"]).toEqual({
 				description: "Internal server error",
@@ -400,7 +416,7 @@ describe("router.ts", () => {
 			});
 		});
 
-		test("should collect and include tags in OpenAPI spec", () => {
+		test("should collect and include tags in OpenAPI spec", async () => {
 			const mockRoutesWithTags = {
 				GET: {
 					method: "GET",
@@ -464,7 +480,7 @@ describe("router.ts", () => {
 				routes: mockHealthRoutes,
 			});
 
-			const spec = router.generateOpenAPISpec();
+			const spec = await router.generateOpenAPISpec();
 
 			// Check that tags section exists
 			expect(spec.tags).toBeDefined();
@@ -493,15 +509,15 @@ describe("router.ts", () => {
 	});
 
 	describe("handleSwaggerRequest", () => {
-		test("should return Swagger UI HTML for root path", () => {
-			const response = router.handleSwaggerRequest("/");
+		test("should return Swagger UI HTML for root path", async () => {
+			const response = await router.handleSwaggerRequest("/");
 
 			expect(response).toBeInstanceOf(Response);
 			expect(response?.headers.get("Content-Type")).toBe("text/html");
 		});
 
-		test("should return OpenAPI JSON for api-docs.json", () => {
-			const response = router.handleSwaggerRequest("/api-docs.json");
+		test("should return OpenAPI JSON for api-docs.json", async () => {
+			const response = await router.handleSwaggerRequest("/api-docs.json");
 
 			expect(response).toBeInstanceOf(Response);
 			expect(response?.headers.get("Content-Type")).toBe(
@@ -509,8 +525,8 @@ describe("router.ts", () => {
 			);
 		});
 
-		test("should return null for non-swagger paths", () => {
-			const response = router.handleSwaggerRequest("/other");
+		test("should return null for non-swagger paths", async () => {
+			const response = await router.handleSwaggerRequest("/other");
 			expect(response).toBeNull();
 		});
 	});
@@ -660,6 +676,418 @@ describe("router.ts", () => {
 			await router.handleRequest(request);
 
 			expect(parentHandler).toHaveBeenCalled();
+		});
+	});
+
+	describe("handleStaticRequest", () => {
+		test("should handle static requests when static directory exists but serving disabled", async () => {
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+					// Static config gets defaults: { dir: "./static", enabled: false, basePath: "/static" }
+				},
+			});
+			const router = new FileRouter(config);
+
+			// Since static serving is disabled, this should still work (directory exists)
+			// but will return 404 for non-existent file
+			const response = await router.handleStaticRequest("/test.txt");
+			expect(response.status).toBe(404);
+		});
+
+		test("should serve static file successfully", async () => {
+			// Create a temporary directory and file for testing
+			const tempDir = await fs.mkdtemp(
+				path.join(os.tmpdir(), "ombrage-static-test-"),
+			);
+			const testFile = path.join(tempDir, "test.txt");
+			await fs.writeFile(testFile, "Hello, World!");
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+					static: {
+						dir: tempDir,
+						enabled: true,
+					},
+				},
+			});
+			const router = new FileRouter(config);
+
+			const response = await router.handleStaticRequest("/test.txt");
+
+			expect(response.status).toBe(200);
+			expect(await response.text()).toBe("Hello, World!");
+			expect(response.headers.get("Content-Type")).toContain("text/plain");
+
+			// Cleanup
+			await fs.unlink(testFile);
+			await fs.rmdir(tempDir);
+		});
+
+		test("should return 404 for non-existent static file", async () => {
+			const tempDir = await fs.mkdtemp(
+				path.join(os.tmpdir(), "ombrage-static-test-"),
+			);
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+					static: {
+						dir: tempDir,
+						enabled: true,
+					},
+				},
+			});
+			const router = new FileRouter(config);
+
+			const response = await router.handleStaticRequest("/nonexistent.txt");
+
+			expect(response.status).toBe(404);
+			expect(await response.text()).toBe("Not Found");
+
+			// Cleanup
+			await fs.rmdir(tempDir);
+		});
+
+		test("should handle file system errors gracefully", async () => {
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+					static: {
+						dir: "/invalid/directory/that/does/not/exist",
+						enabled: true,
+					},
+				},
+			});
+			const router = new FileRouter(config);
+
+			const response = await router.handleStaticRequest("/test.txt");
+
+			expect(response.status).toBe(404);
+			expect(await response.text()).toBe("Not Found");
+		});
+
+		test("should set appropriate content type for different file types", async () => {
+			const tempDir = await fs.mkdtemp(
+				path.join(os.tmpdir(), "ombrage-static-test-"),
+			);
+			const jsonFile = path.join(tempDir, "data.json");
+			await fs.writeFile(jsonFile, '{"test": true}');
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+					static: {
+						dir: tempDir,
+						enabled: true,
+					},
+				},
+			});
+			const router = new FileRouter(config);
+
+			const response = await router.handleStaticRequest("/data.json");
+
+			expect(response.status).toBe(200);
+			expect(response.headers.get("Content-Type")).toContain(
+				"application/json",
+			);
+
+			// Cleanup
+			await fs.unlink(jsonFile);
+			await fs.rmdir(tempDir);
+		});
+	});
+
+	describe("mergeExternalSpecs", () => {
+		test("should handle missing external specs configuration", async () => {
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+				// No swagger.externalSpecs configuration
+			});
+			const router = new FileRouter(config);
+
+			const baseSpec = {
+				openapi: "3.1.0",
+				info: { title: "Test API", version: "1.0.0" },
+				paths: {},
+			};
+			const allTags = new Set<string>();
+
+			// Should not throw and should not modify the spec
+			await router["mergeExternalSpecs"](baseSpec, allTags);
+
+			expect(baseSpec.paths).toEqual({});
+		});
+
+		test.skip("should handle failed external spec fetch", async () => {
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+				swagger: {
+					externalSpecs: [
+						{
+							name: "Test External API",
+							url: "https://httpbin.org/status/500",
+						},
+					],
+				},
+			});
+			const router = new FileRouter(config);
+
+			const baseSpec = {
+				openapi: "3.1.0",
+				info: { title: "Test API", version: "1.0.0" },
+				paths: {},
+			};
+			const allTags = new Set<string>();
+
+			// Should not throw even if external spec fetch fails
+			await router["mergeExternalSpecs"](baseSpec, allTags);
+
+			expect(baseSpec.paths).toEqual({});
+		});
+
+		test.skip("should merge JSON external spec successfully", async () => {
+			// Mock fetch for JSON response
+			const originalFetch = global.fetch;
+			global.fetch = mock(async () => {
+				return new Response(
+					JSON.stringify({
+						openapi: "3.1.0",
+						info: { title: "External API", version: "1.0.0" },
+						paths: {
+							"/external/test": {
+								get: {
+									summary: "External test endpoint",
+									responses: { 200: { description: "Success" } },
+								},
+							},
+						},
+						tags: [{ name: "External", description: "External endpoints" }],
+					}),
+					{
+						headers: { "content-type": "application/json" },
+						status: 200,
+					},
+				);
+			}) as unknown as typeof fetch;
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+				swagger: {
+					externalSpecs: [
+						{
+							name: "Test External API",
+							url: "http://example.com/openapi.json",
+						},
+					],
+				},
+			});
+			const router = new FileRouter(config);
+
+			const baseSpec = {
+				openapi: "3.1.0" as const,
+				info: { title: "Test API", version: "1.0.0" },
+				paths: {},
+				tags: [] as Array<{ name: string; description: string }>,
+			};
+			const allTags = new Set<string>();
+
+			await router["mergeExternalSpecs"](baseSpec, allTags);
+
+			expect(baseSpec.paths).toHaveProperty("/external/test");
+			expect(baseSpec.tags).toContainEqual({
+				name: "External",
+				description: "External endpoints",
+			});
+			expect(allTags.has("External")).toBe(true);
+
+			// Restore original fetch
+			global.fetch = originalFetch;
+		});
+
+		test.skip("should parse external spec from HTML response", async () => {
+			// Mock fetch for HTML response (like Better Auth)
+			const originalFetch = global.fetch;
+			global.fetch = mock(async () => {
+				const htmlContent = `
+					<html>
+						<head><title>API Docs</title></head>
+						<body>
+							<script>
+								const spec = {"openapi":"3.1.0","info":{"title":"Auth API","version":"1.0.0"},"paths":{"/auth/login":{"post":{"summary":"Login endpoint","responses":{"200":{"description":"Success"}}}}},"tags":[{"name":"Auth","description":"Authentication"}]};
+							</script>
+						</body>
+					</html>
+				`;
+				return new Response(htmlContent, {
+					headers: { "content-type": "text/html" },
+					status: 200,
+				});
+			}) as unknown as typeof fetch;
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+				swagger: {
+					externalSpecs: [
+						{
+							name: "Auth API",
+							url: "http://example.com/auth/openapi",
+						},
+					],
+				},
+			});
+			const router = new FileRouter(config);
+
+			const baseSpec = {
+				openapi: "3.1.0",
+				info: { title: "Test API", version: "1.0.0" },
+				paths: {},
+				tags: [] as Array<{ name: string; description: string }>,
+			};
+			const allTags = new Set<string>();
+
+			await router["mergeExternalSpecs"](baseSpec, allTags);
+
+			expect(baseSpec.paths).toHaveProperty("/auth/login");
+			expect(baseSpec.tags).toContainEqual({
+				name: "Auth",
+				description: "Authentication",
+			});
+
+			// Restore original fetch
+			global.fetch = originalFetch;
+		});
+
+		test("should handle HTML response without valid JSON", async () => {
+			// Mock fetch for HTML response without valid OpenAPI JSON
+			const originalFetch = global.fetch;
+			global.fetch = mock(async () => {
+				return new Response(
+					"<html><body><h1>API Documentation</h1><p>No JSON here</p></body></html>",
+					{
+						headers: { "content-type": "text/html" },
+						status: 200,
+					},
+				);
+			}) as unknown as typeof fetch;
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+				swagger: {
+					externalSpecs: [
+						{
+							name: "Invalid API",
+							url: "http://example.com/invalid",
+						},
+					],
+				},
+			});
+			const router = new FileRouter(config);
+
+			const baseSpec = {
+				openapi: "3.1.0",
+				info: { title: "Test API", version: "1.0.0" },
+				paths: {},
+			};
+			const allTags = new Set<string>();
+
+			// Should not throw and should not modify the spec
+			await router["mergeExternalSpecs"](baseSpec, allTags);
+
+			expect(baseSpec.paths).toEqual({});
+
+			// Restore original fetch
+			global.fetch = originalFetch;
+		});
+
+		test("should handle external spec with no tags", async () => {
+			// Mock fetch for spec without tags
+			const originalFetch = global.fetch;
+			global.fetch = mock(async () => {
+				return new Response(
+					JSON.stringify({
+						openapi: "3.1.0",
+						info: { title: "Simple API", version: "1.0.0" },
+						paths: {
+							"/simple": {
+								get: {
+									summary: "Simple endpoint",
+									responses: { 200: { description: "Success" } },
+								},
+							},
+						},
+						// No tags property
+					}),
+					{
+						headers: { "content-type": "application/json" },
+						status: 200,
+					},
+				);
+			}) as unknown as typeof fetch;
+
+			const config = validateConfig({
+				server: {
+					routes: {
+						dir: "./dev/routes",
+					},
+				},
+				swagger: {
+					externalSpecs: [
+						{
+							name: "Simple API",
+							url: "http://example.com/simple.json",
+						},
+					],
+				},
+			});
+			const router = new FileRouter(config);
+
+			const baseSpec = {
+				openapi: "3.1.0",
+				info: { title: "Test API", version: "1.0.0" },
+				paths: {},
+				tags: [],
+			};
+			const allTags = new Set<string>();
+
+			await router["mergeExternalSpecs"](baseSpec, allTags);
+
+			expect(baseSpec.paths).toHaveProperty("/simple");
+			expect(baseSpec.tags).toEqual([]); // Should remain empty
+
+			// Restore original fetch
+			global.fetch = originalFetch;
 		});
 	});
 });

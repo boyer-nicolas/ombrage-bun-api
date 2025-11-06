@@ -123,6 +123,24 @@ export const ConfigSchema = z.object({
 		.object({
 			enabled: booleanFromString.default(true),
 			path: z.string("Please provide a valid Swagger UI path").default("/"),
+			externalSpecs: z
+				.array(
+					z.object({
+						url: z
+							.string()
+							.url()
+							.describe("URL to fetch the external OpenAPI spec"),
+						name: z.string().describe("Identifier for the external spec"),
+						tags: z
+							.array(z.string())
+							.optional()
+							.describe("Tags to group external operations under"),
+					}),
+				)
+				.optional()
+				.describe(
+					"External OpenAPI specs to merge with generated documentation",
+				),
 		})
 		.default({ enabled: true, path: "/" }),
 	title: z.string("Please provide a valid API title").default("My API"),

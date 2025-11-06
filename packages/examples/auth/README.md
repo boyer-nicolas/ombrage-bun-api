@@ -6,7 +6,7 @@ This example demonstrates how to integrate authentication into an Ombrage Bun AP
 
 - **Email & Password Authentication**: Sign up, sign in, and session management
 - **Database Integration**: SQLite database with Drizzle ORM for user data storage
-- **Proxy Integration**: Auth routes are handled via Ombrage's proxy system
+- **Proxy-Level Authentication**: Routes are protected automatically at the proxy level
 - **OpenAPI Documentation**: Auto-generated API docs for authentication endpoints
 - **Comprehensive Testing**: Full integration test suite for auth functionality
 
@@ -28,7 +28,29 @@ The API will be available at `http://localhost:8080` with the following endpoint
 - `/` - Swagger UI documentation
 - `/api-docs.json` - OpenAPI specification
 - `/auth/**` - Authentication endpoints (handled by Better Auth)
-- `/test` - Test endpoint
+- `/test` - Public test endpoint
+- `/protected/**` - Protected routes requiring authentication
+
+## Protected Routes
+
+This example demonstrates two approaches to protecting routes:
+
+### 1. Proxy-Level Protection (Recommended)
+
+Routes under `/protected/**` are automatically secured by the proxy system. The proxy validates sessions and injects user information into request headers:
+
+- `/protected` - User profile endpoint
+- `/protected/dashboard` - Dashboard with user stats
+
+These routes receive user information via headers:
+
+- `x-user-id` - User ID
+- `x-user-email` - User email
+- `x-user-name` - User name
+
+### 2. Route-Level Protection (Optional)
+
+For routes outside `/protected/**` that need authentication, use the `requireAuth` middleware from `lib/middleware.ts`.
 
 ## Authentication Endpoints
 

@@ -285,8 +285,8 @@ describe("server.ts", () => {
 			// Mock swagger response
 			const originalHandleSwagger = server.fileRouter.handleSwaggerRequest;
 			server.fileRouter.handleSwaggerRequest = mock(
-				() => new Response("swagger", { status: 200 }),
-			);
+				async () => new Response("swagger", { status: 200 }),
+			) as unknown as (pathname: string) => Promise<Response | null>;
 
 			expect(options.fetch).toBeDefined();
 

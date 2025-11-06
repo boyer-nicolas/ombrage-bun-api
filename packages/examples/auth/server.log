@@ -1,0 +1,24 @@
+Starting example API server...
+Migrating database...
+Running migrations (retries left: 10)
+Database migrated successfully.
+[32m[INFO][0m Starting server...
+[32m[INFO][0m Server running at http://0.0.0.0:8080/
+[AUTH] GET http://localhost:8080/auth/openapi
+[AUTH] Response status: 200
+[34m[HTTP][0m GET http://localhost:8080/auth/openapi => 200 (9ms)
+[AUTH] GET http://localhost:8080/auth/openapi
+[AUTH] Response status: 200
+[34m[HTTP][0m GET http://localhost:8080/auth/openapi => 200 (2ms)
+[AUTH] GET http://localhost:8080/auth/openapi
+[AUTH] Response status: 200
+[34m[HTTP][0m GET http://localhost:8080/auth/openapi => 200 (1ms)
+[AUTH] GET http://localhost:8080/auth/openapi
+[AUTH] Response status: 200
+[34m[HTTP][0m GET http://localhost:8080/auth/openapi => 200 (26ms)
+[AUTH] GET http://localhost:8080/auth/openapi
+[AUTH] Response status: 200
+[34m[HTTP][0m GET http://localhost:8080/auth/openapi => 200 (29ms)
+[32m[INFO][0m Stopping server...
+[32m[INFO][0m Shutting down gracefully...
+[32m[INFO][0m Server stopped.

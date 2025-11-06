@@ -36,15 +36,25 @@ async function runMigrations() {
 	}
 }
 
-await runMigrations();
-
 // Create and start the server using the built library
 const server = new Api({
 	title: "Example Auth API",
+	description: "An example API with Better Auth integration",
 	server: {
 		routes: {
 			dir: "./routes",
 		},
+	},
+	swagger: {
+		enabled: true,
+		path: "/",
+		externalSpecs: [
+			{
+				url: "http://localhost:8080/auth/openapi",
+				name: "better-auth",
+				tags: ["Authentication"],
+			},
+		],
 	},
 	proxy: {
 		enabled: true,
@@ -89,7 +99,60 @@ const server = new Api({
 					}
 				},
 			},
+			{
+				pattern: "/protected/**",
+				description: "Protected routes requiring authentication",
+				handler: async ({ request }) => {
+					console.log(`[PROTECTED] ${request.method} ${request.url}`);
+
+					try {
+						// Validate session before proceeding to route handlers
+						const session = await auth.api.getSession({
+							headers: request.headers,
+						});
+
+						if (!session) {
+							console.log("[PROTECTED] No valid session found");
+							return {
+								proceed: false,
+								response: new Response("Unauthorized", { status: 401 }),
+							};
+						}
+
+						console.log(
+							`[PROTECTED] Authenticated user: ${session.user.email}`,
+						);
+
+						// Add user info to request headers for route handlers to use
+						const headers = new Headers(request.headers);
+						headers.set("x-user-id", session.user.id);
+						headers.set("x-user-email", session.user.email);
+						headers.set("x-user-name", session.user.name || "");
+
+						// Create new request with user info
+						const authenticatedRequest = new Request(request.url, {
+							method: request.method,
+							headers,
+							body: request.body,
+						});
+
+						return {
+							proceed: true, // Continue to route handlers
+							request: authenticatedRequest,
+						};
+					} catch (error) {
+						console.error("[PROTECTED] Session validation error:", error);
+						return {
+							proceed: false,
+							response: new Response("Invalid session", { status: 401 }),
+						};
+					}
+				},
+			},
 		],
 	},
 });
+
+await runMigrations();
+
 server.start();

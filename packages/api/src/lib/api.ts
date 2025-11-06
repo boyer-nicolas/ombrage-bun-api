@@ -45,7 +45,7 @@ export class Api {
 				const url = new URL(request.url);
 
 				// Check for Swagger UI routes
-				const swaggerResponse = self.fileRouter.handleSwaggerRequest(
+				const swaggerResponse = await self.fileRouter.handleSwaggerRequest(
 					url.pathname,
 				);
 				if (swaggerResponse) {

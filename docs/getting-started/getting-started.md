@@ -18,22 +18,6 @@ npm install ombrage-bun-api
 - ⚡ **Fast** - Built on Bun for maximum performance
 - 🧪 **Testing friendly** - Easy to test with built-in utilities
 
-## Project Structure
-
-```
-your-api/
-├── routes/
-│   ├── users/
-│   │   ├── route.ts          # GET /users
-│   │   └── [id]/
-│   │       └── route.ts      # GET /users/:id
-│   └── health/
-│       └── route.ts          # GET /health
-├── lib/
-│   └── schemas.ts
-└── index.ts
-```
-
 ## Next Steps
 
 - Learn about [routing](/getting-started/routing) and file organization

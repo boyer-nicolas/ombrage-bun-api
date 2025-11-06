@@ -392,7 +392,7 @@ export class FileRouter {
 	/**
 	 * Generate OpenAPI specification from inline specs in route files
 	 */
-	generateOpenAPISpec(): OpenAPIV3_1.Document {
+	async generateOpenAPISpec(): Promise<OpenAPIV3_1.Document> {
 		// Handle 0.0.0.0 as localhost for server URL, since the browser cannot reach
 		// that address in Swagger UI
 		let serverHost = this.config.server.host;
@@ -481,6 +481,14 @@ export class FileRouter {
 					);
 				}
 			}
+		}
+
+		// Merge external OpenAPI specs if configured
+		if (
+			this.config.swagger.externalSpecs &&
+			this.config.swagger.externalSpecs.length > 0
+		) {
+			await this.mergeExternalSpecs(baseSpec, allTags);
 		}
 
 		// Add tags section to the OpenAPI spec if we have any tags
@@ -583,6 +591,140 @@ export class FileRouter {
 	}
 
 	/**
+	 * Merge external OpenAPI specifications into the main spec
+	 */
+	private async mergeExternalSpecs(
+		baseSpec: OpenAPIV3_1.Document,
+		allTags: Set<string>,
+	): Promise<void> {
+		if (!this.config.swagger.externalSpecs) {
+			return;
+		}
+
+		for (const externalSpecConfig of this.config.swagger.externalSpecs) {
+			try {
+				this.logger.debug(
+					`Fetching external OpenAPI spec from: ${externalSpecConfig.url}`,
+				);
+
+				const response = await fetch(externalSpecConfig.url);
+				if (!response.ok) {
+					this.logger.warn(
+						`Failed to fetch external spec from ${externalSpecConfig.url}: ${response.status}`,
+					);
+					continue;
+				}
+
+				let externalSpec: OpenAPIV3_1.Document;
+
+				// Handle both JSON and HTML responses (like Better Auth OpenAPI endpoint)
+				const contentType = response.headers.get("content-type") || "";
+
+				if (contentType.includes("application/json")) {
+					externalSpec = (await response.json()) as OpenAPIV3_1.Document;
+				} else {
+					// Try to extract JSON from HTML response (for Better Auth style endpoints)
+					const text = await response.text();
+					const jsonMatch = text.match(/{"openapi":[^}]+.*}/);
+					if (jsonMatch) {
+						externalSpec = JSON.parse(jsonMatch[0]) as OpenAPIV3_1.Document;
+					} else {
+						this.logger.warn(
+							`Could not extract JSON from external spec response: ${externalSpecConfig.url}`,
+						);
+						continue;
+					}
+				}
+
+				this.logger.debug(`Merging external spec: ${externalSpecConfig.name}`);
+
+				// Merge paths
+				if (externalSpec.paths) {
+					for (const [path, pathItem] of Object.entries(externalSpec.paths)) {
+						if (!baseSpec.paths) {
+							baseSpec.paths = {};
+						}
+
+						if (!baseSpec.paths[path]) {
+							baseSpec.paths[path] = {};
+						}
+
+						if (pathItem && typeof pathItem === "object") {
+							// Apply custom tags if specified
+							if (
+								externalSpecConfig.tags &&
+								externalSpecConfig.tags.length > 0
+							) {
+								for (const [method, operation] of Object.entries(pathItem)) {
+									if (
+										operation &&
+										typeof operation === "object" &&
+										method !== "parameters"
+									) {
+										const op = operation as { tags?: string[] };
+										op.tags = [...(op.tags || []), ...externalSpecConfig.tags];
+
+										// Add tags to our collection
+										for (const tag of externalSpecConfig.tags) {
+											allTags.add(tag);
+										}
+									}
+								}
+							} else if (externalSpec.tags) {
+								// Use tags from the external spec
+								for (const tag of externalSpec.tags) {
+									allTags.add(tag.name);
+								}
+							}
+
+							Object.assign(baseSpec.paths[path], pathItem);
+						}
+					}
+				}
+
+				// Merge components (schemas, securitySchemes, etc.)
+				if (externalSpec.components) {
+					if (!baseSpec.components) {
+						baseSpec.components = {};
+					}
+
+					for (const [componentType, components] of Object.entries(
+						externalSpec.components,
+					)) {
+						if (components && typeof components === "object") {
+							const baseComponents = baseSpec.components as Record<
+								string,
+								Record<string, unknown>
+							>;
+							if (!baseComponents[componentType]) {
+								baseComponents[componentType] = {};
+							}
+							Object.assign(baseComponents[componentType], components);
+						}
+					}
+				}
+
+				// Merge security schemes
+				if (externalSpec.security) {
+					if (!baseSpec.security) {
+						baseSpec.security = [];
+					}
+					baseSpec.security.push(...externalSpec.security);
+				}
+
+				this.logger.debug(
+					`Successfully merged external spec: ${externalSpecConfig.name}`,
+				);
+			} catch (error) {
+				this.logger.error(
+					error,
+					`Failed to merge external spec from ${externalSpecConfig.url}:`,
+				);
+			}
+		}
+	}
+
+	/**
 	 * Serve Swagger UI HTML
 	 */
 	getSwaggerUIHTML(): string {
@@ -625,7 +767,7 @@ export class FileRouter {
 	/**
 	 * Handle Swagger UI related requests
 	 */
-	handleSwaggerRequest(pathname: string): Response | null {
+	async handleSwaggerRequest(pathname: string): Promise<Response | null> {
 		if (pathname === "/") {
 			return new Response(this.getSwaggerUIHTML(), {
 				headers: { "Content-Type": "text/html" },
@@ -633,7 +775,7 @@ export class FileRouter {
 		}
 
 		if (pathname === "/api-docs.json") {
-			const openapiSpec = this.generateOpenAPISpec();
+			const openapiSpec = await this.generateOpenAPISpec();
 
 			return Response.json(openapiSpec);
 		}
