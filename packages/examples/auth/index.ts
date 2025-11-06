@@ -50,19 +50,43 @@ const server = new Api({
 		enabled: true,
 		configs: [
 			{
-				pattern: "/auth/*",
-				handler: async ({ request, target, params }) => {
-					console.log(`[PROXY] ${request.method} ${request.url} -> ${target}`, {
-						params,
-						timestamp: new Date().toISOString(),
-					});
+				pattern: "/auth/**",
+				// No target specified - auth is handled locally by better-auth
+				description:
+					"Authentication endpoints handled by better-auth (all levels)",
+				handler: async ({ request }) => {
+					console.log(`[AUTH] ${request.method} ${request.url}`);
 
-					const response = await auth.handler(request);
-					console.log("response", response);
-					return {
-						proceed: response.ok,
-						response,
-					};
+					try {
+						// Let better-auth handle the authentication request
+						const response = await auth.handler(request);
+
+						console.log(
+							`[AUTH] Response status: ${response?.status || "no response"}`,
+						);
+
+						// If better-auth handled the request, return its response
+						if (response) {
+							return {
+								proceed: false, // Don't proxy anywhere - we have the response
+								response,
+							};
+						}
+
+						// If better-auth didn't handle it, let it fall through to file routes
+						return {
+							proceed: false,
+							response: new Response("Auth endpoint not found", {
+								status: 404,
+							}),
+						};
+					} catch (error) {
+						console.error("[AUTH] Error handling request:", error);
+						return {
+							proceed: false,
+							response: new Response("Internal auth error", { status: 500 }),
+						};
+					}
 				},
 			},
 		],

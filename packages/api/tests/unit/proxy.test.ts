@@ -64,6 +64,31 @@ describe("Proxy Pattern Matching", () => {
 			expect(result.params.param0).toBe("123");
 			expect(result.params.param1).toBe("456");
 		});
+
+		test("should match recursive patterns with double asterisk", () => {
+			const result = matchProxyPattern("/auth/sign-up/email", "/auth/**");
+			expect(result.matched).toBe(true);
+			expect(result.params.param0).toBe("sign-up/email");
+		});
+
+		test("should match deeply nested paths with double asterisk", () => {
+			const result = matchProxyPattern(
+				"/api/v1/users/123/posts/456/comments/789",
+				"/api/**",
+			);
+			expect(result.matched).toBe(true);
+			expect(result.params.param0).toBe("v1/users/123/posts/456/comments/789");
+		});
+
+		test("should handle mixed single and double asterisk patterns", () => {
+			const result = matchProxyPattern(
+				"/tenants/acme/api/v1/users/123",
+				"/tenants/*/api/**",
+			);
+			expect(result.matched).toBe(true);
+			expect(result.params.param0).toBe("acme");
+			expect(result.params.param1).toBe("v1/users/123");
+		});
 	});
 
 	describe("findMatchingProxyConfig", () => {

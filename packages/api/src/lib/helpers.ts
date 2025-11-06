@@ -21,32 +21,53 @@ export interface ProxyExecutionContext {
 /**
  * Matches a request path against a wildcard pattern and extracts parameters
  * Supports patterns like:
- * - "/api/*" (matches /api/users, /api/posts, etc.)
+ * - "/api/star" (matches /api/users, /api/posts, etc.)
+ * - "/api/doublestar" (matches /api/users, /api/users/123, /api/users/123/posts, etc.)
  * - "/auth/star/protected" (matches /auth/user123/protected, /auth/admin/protected, etc.)
  * - "/users/star/posts/star" (matches /users/123/posts/456, etc.)
- * Note: star represents * wildcard in documentation
+ * Note: star=single asterisk matches single path segment, doublestar=double asterisk matches any number of path segments
  */
 export function matchProxyPattern(
 	requestPath: string,
 	pattern: string,
 ): { matched: boolean; params: Record<string, string> } {
 	// Convert wildcard pattern to regex
-	// Replace * with named capture groups and escape special regex characters
+	// Replace * and ** with named capture groups and escape special regex characters
 	const paramNames: string[] = [];
 	let paramIndex = 0;
 
-	// Escape special regex characters except *
-	const escapedPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+	// Process ** first to avoid interference with single *
+	let processedPattern = pattern;
 
-	// Replace * with named capture groups
-	const regexPattern = escapedPattern.replace(/\*/g, () => {
+	// Handle ** (double asterisk) for recursive matching first
+	processedPattern = processedPattern.replace(/\*\*/g, () => {
 		const paramName = `param${paramIndex++}`;
 		paramNames.push(paramName);
-		return "([^/]+)";
+		return "___RECURSIVE_WILDCARD___"; // Temporary placeholder
 	});
 
+	// Then handle * (single asterisk) for single segment matching
+	processedPattern = processedPattern.replace(/\*/g, () => {
+		const paramName = `param${paramIndex++}`;
+		paramNames.push(paramName);
+		return "___SINGLE_WILDCARD___"; // Temporary placeholder
+	});
+
+	// Escape special regex characters
+	processedPattern = processedPattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+
+	// Replace placeholders with actual regex patterns
+	processedPattern = processedPattern.replace(
+		/___RECURSIVE_WILDCARD___/g,
+		"(.*?)",
+	);
+	processedPattern = processedPattern.replace(
+		/___SINGLE_WILDCARD___/g,
+		"([^/]+)",
+	);
+
 	// Create regex for exact match
-	const regex = new RegExp(`^${regexPattern}$`);
+	const regex = new RegExp(`^${processedPattern}$`);
 	const match = requestPath.match(regex);
 
 	if (!match) {
