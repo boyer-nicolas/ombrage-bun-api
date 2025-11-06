@@ -1,0 +1,12 @@
+name: Label-based Release
+
+on:
+  pull_request:
+    types: [closed]
+    
+jobs:
+  release:
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'release')
+    # Same release job

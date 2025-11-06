@@ -1,6 +1,13 @@
 name: Release
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/api/src/**'
+      - 'packages/api/package.json'
+      - '!packages/api/coverage/**'
   workflow_dispatch:
     inputs:
       force_publish:
@@ -82,7 +89,6 @@ jobs:
           if [[ "${{ github.event.inputs.force_publish }}" == "true" ]]; then
             echo "🚀 Force publish requested, will publish"
             echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "is_first_release=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
@@ -93,7 +99,6 @@ jobs:
           if [ -z "$LATEST_TAG" ]; then
             echo "🎉 No previous tags found, will publish first release"
             echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "is_first_release=true" >> $GITHUB_OUTPUT
           else
             # Check if current commit is already tagged
             if git describe --tags --exact-match HEAD 2>/dev/null; then
@@ -101,18 +106,9 @@ jobs:
               echo "🏷️ Current commit is already tagged ($CURRENT_TAG), skipping publish"
               echo "should_publish=false" >> $GITHUB_OUTPUT
             else
-              # Check if there are changes since last tag (excluding coverage badge commits)
-              CHANGES=$(git rev-list $LATEST_TAG..HEAD --count --grep="chore: update coverage badge" --invert-grep)
-              echo "Meaningful changes since last tag: $CHANGES commits"
-              
-              if [ "$CHANGES" -gt 0 ]; then
-                echo "🚀 Found $CHANGES meaningful commits since last release, will publish"
-                echo "should_publish=true" >> $GITHUB_OUTPUT
-                echo "is_first_release=false" >> $GITHUB_OUTPUT
-              else
-                echo "⏭️ No meaningful changes since last release, skipping publish"
-                echo "should_publish=false" >> $GITHUB_OUTPUT
-              fi
+              # Simple check: if files changed in API package, publish
+              echo "� API package files changed, will publish"
+              echo "should_publish=true" >> $GITHUB_OUTPUT
             fi
           fi
 
@@ -120,12 +116,12 @@ jobs:
         if: steps.changes.outputs.should_publish == 'true'
         id: release
         run: |
-          # Manually bump the API package version using a simple Node.js script
+          # Simple patch version bump
           cd packages/api
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current API version: $CURRENT_VERSION"
-
-          # Bump patch version using Node.js
+          
+          # Bump patch version
           NEW_VERSION=$(node -e "
             const pkg = require('./package.json');
             const version = pkg.version.split('.');
@@ -135,16 +131,16 @@ jobs:
             require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
             console.log(newVersion);
           ")
-
+          
           echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "New API version: v$NEW_VERSION"
-
-          # Generate changelog from root but for the API package
+          
+          # Simple changelog entry
           cd ../..
           echo "## v$NEW_VERSION ($(date '+%Y-%m-%d'))" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
           echo "### Changes" >> CHANGELOG.md
-          echo "- Automated release" >> CHANGELOG.md
+          echo "- API package updates" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
 
       - name: Publish to NPM

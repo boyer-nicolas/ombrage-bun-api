@@ -1,0 +1,12 @@
+name: Scheduled Release
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  release:
+    # Same release job as current workflow
+    # Only publishes if there are changes since last release
