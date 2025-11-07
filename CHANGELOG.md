@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.7
+
+[compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.6...v0.1.7)
+
+### 🩹 Fixes
+
+- Tests ([3f3c687](https://github.com/boyer-nicolas/koritsu/commit/3f3c687))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v0.1.6
 
 [compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.5...v0.1.6)
