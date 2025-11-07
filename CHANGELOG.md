@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.6
+
+[compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.5...v0.1.6)
+
+### 🩹 Fixes
+
+- Pages new domain basepath ([f004603](https://github.com/boyer-nicolas/koritsu/commit/f004603))
+- Swagger path ([#40](https://github.com/boyer-nicolas/koritsu/pull/40))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.1.5
 
 [compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.4...v0.1.5)
