@@ -216,9 +216,12 @@ export class FileRouter {
 			return null;
 		}
 
-		this.logger.debug(
-			`Proxy match found for ${path}: pattern "${proxyMatch.config.pattern}" -> ${proxyMatch.config.target}`,
-		);
+		// Log proxy match if logging is enabled for this proxy
+		if (proxyMatch.config.logging !== false) {
+			this.logger.debug(
+				`Proxy match found for ${path}: pattern "${proxyMatch.config.pattern}" -> ${proxyMatch.config.target}`,
+			);
+		}
 
 		// Execute proxy request
 		const context: ProxyExecutionContext = {

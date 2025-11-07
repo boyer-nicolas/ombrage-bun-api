@@ -222,19 +222,24 @@ export async function executeProxyRequest(
 			try {
 				const response = await fetch(targetUrl.toString(), requestOptions);
 
-				// Log successful proxy
-				logger.info(
-					`Proxied ${request.method} ${url.pathname} -> ${targetUrl} (${response.status}) [attempt ${attempt + 1}]`,
-				);
+				// Log successful proxy if logging is enabled
+				if (config.logging !== false) {
+					logger.info(
+						`Proxied ${request.method} ${url.pathname} -> ${targetUrl} (${response.status}) [attempt ${attempt + 1}]`,
+					);
+				}
 
 				return response;
 			} catch (error) {
 				lastError = error as Error;
 
 				if (attempt < maxRetries) {
-					logger.warn(
-						`Proxy attempt ${attempt + 1} failed, retrying: ${lastError.message}`,
-					);
+					// Log retry attempt if logging is enabled
+					if (config.logging !== false) {
+						logger.warn(
+							`Proxy attempt ${attempt + 1} failed, retrying: ${lastError.message}`,
+						);
+					}
 					// Simple exponential backoff
 					await new Promise((resolve) =>
 						setTimeout(resolve, 2 ** attempt * 1000),
@@ -243,10 +248,12 @@ export async function executeProxyRequest(
 			}
 		}
 
-		// All attempts failed
-		logger.error(
-			`Proxy failed after ${maxRetries + 1} attempts: ${lastError?.message}`,
-		);
+		// Log final failure if logging is enabled
+		if (config.logging !== false) {
+			logger.error(
+				`Proxy failed after ${maxRetries + 1} attempts: ${lastError?.message}`,
+			);
+		}
 
 		return new Response("Proxy request failed", {
 			status: 502,
@@ -254,7 +261,11 @@ export async function executeProxyRequest(
 		});
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		logger.error(`Proxy execution error: ${errorMessage}`);
+
+		// Log execution error if logging is enabled
+		if (config.logging !== false) {
+			logger.error(`Proxy execution error: ${errorMessage}`);
+		}
 
 		return new Response("Proxy error", {
 			status: 500,

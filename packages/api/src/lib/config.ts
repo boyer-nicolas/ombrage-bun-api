@@ -71,6 +71,11 @@ const ProxyConfigSchema = z.object({
 		.default(0)
 		.optional()
 		.describe("Number of retry attempts on failure"),
+	logging: z
+		.boolean()
+		.default(true)
+		.optional()
+		.describe("Enable or disable logging for this proxy (default: true)"),
 });
 
 export type ProxyConfig = z.infer<typeof ProxyConfigSchema> & {

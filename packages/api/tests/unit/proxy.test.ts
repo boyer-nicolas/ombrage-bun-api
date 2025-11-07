@@ -240,4 +240,50 @@ describe("Proxy Pattern Matching", () => {
 		expect(config.description).toBe("Authentication-only proxy");
 		expect(config.handler).toBe(authHandler);
 	});
+
+	test("should create proxy config with logging enabled by default", () => {
+		const config: ProxyConfig = {
+			pattern: "/api/*",
+			target: "https://example.com",
+			enabled: true,
+			basePath: "/",
+		};
+
+		// logging should default to true
+		expect(config.logging).toBeUndefined(); // undefined means default (true)
+	});
+
+	test("should create proxy config with logging explicitly disabled", () => {
+		const config: ProxyConfig = {
+			pattern: "/api/*",
+			target: "https://example.com",
+			enabled: true,
+			logging: false,
+			description: "API proxy with logging disabled",
+			basePath: "/",
+		};
+
+		expect(config.pattern).toBe("/api/*");
+		expect(config.target).toBe("https://example.com");
+		expect(config.enabled).toBe(true);
+		expect(config.logging).toBe(false);
+		expect(config.description).toBe("API proxy with logging disabled");
+	});
+
+	test("should create proxy config with logging explicitly enabled", () => {
+		const config: ProxyConfig = {
+			pattern: "/api/*",
+			target: "https://example.com",
+			enabled: true,
+			logging: true,
+			description: "API proxy with logging enabled",
+			basePath: "/",
+		};
+
+		expect(config.pattern).toBe("/api/*");
+		expect(config.target).toBe("https://example.com");
+		expect(config.enabled).toBe(true);
+		expect(config.logging).toBe(true);
+		expect(config.description).toBe("API proxy with logging enabled");
+	});
 });

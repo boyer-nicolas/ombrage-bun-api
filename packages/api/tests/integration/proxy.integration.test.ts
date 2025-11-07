@@ -434,4 +434,57 @@ describe("Proxy Integration Tests", () => {
 			testServer.stop();
 		}
 	});
+
+	test("should handle proxy with logging disabled", async () => {
+		// Create a simple target server
+		const targetServer = Bun.serve({
+			port: 0,
+			fetch() {
+				return Response.json({ message: "success", timestamp: Date.now() });
+			},
+		});
+
+		try {
+			// Create API server with proxy configuration where logging is disabled
+			const testServer = new Api({
+				environment: "test",
+				server: {
+					port: 0,
+					routes: { dir: "./tests/fixtures/routes" },
+				},
+				proxy: {
+					enabled: true,
+					configs: [
+						{
+							pattern: "/quiet/*",
+							target: `http://localhost:${targetServer.port}`,
+							enabled: true,
+							logging: false, // Disable logging for this proxy
+						},
+					],
+				},
+			});
+
+			const server = await testServer.start();
+
+			try {
+				// Make a request through the proxy
+				const response = await fetch(
+					`http://localhost:${server.port}/quiet/test`,
+				);
+				expect(response.status).toBe(200);
+
+				// biome-ignore lint/suspicious/noExplicitAny: This is a test file
+				const data = (await response.json()) as any;
+				expect(data.message).toBe("success");
+
+				// Since logging is disabled, we can't easily verify logs are not written
+				// but we can verify the request succeeds without errors
+			} finally {
+				server.stop();
+			}
+		} finally {
+			targetServer.stop();
+		}
+	});
 });

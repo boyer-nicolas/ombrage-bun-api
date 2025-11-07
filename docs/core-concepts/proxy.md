@@ -119,6 +119,7 @@ const authHandler = async ({ request, params, target }) => {
   handler: authHandler,
   timeout: 15000, // 15 second timeout
   retries: 3, // Retry failed requests 3 times
+  logging: true, // Enable proxy logging (default: true)
   headers: {
     // Additional headers for all requests
     "X-API-Gateway": "koritsu",
@@ -126,6 +127,41 @@ const authHandler = async ({ request, params, target }) => {
   },
 });
 ```
+
+### Controlling Proxy Logging
+
+By default, the proxy logs successful requests, retries, and errors. You can control this behavior using the `logging` property:
+
+```typescript
+// Enable logging (default behavior)
+{
+  pattern: "/api/verbose/*",
+  target: "https://api.example.com",
+  logging: true, // Will log: [INFO] Proxied GET /api/verbose/test -> https://api.example.com/api/verbose/test (200) [attempt 1]
+}
+
+// Disable logging for quieter operation
+{
+  pattern: "/api/quiet/*",
+  target: "https://api.example.com",
+  logging: false, // No proxy logs will be generated
+}
+```
+
+When logging is disabled, the proxy will still function normally but won't generate any log messages for:
+
+- Successful proxy requests
+- Retry attempts
+- Error messages from failed proxy requests
+
+This is useful for:
+
+- **High-traffic endpoints**: Reduce log noise for frequently accessed APIs
+- **Health checks**: Avoid cluttering logs with routine health check requests
+- **Development environments**: Focus logs on specific proxy configurations
+- **Production optimization**: Reduce logging overhead for performance-critical paths
+
+Note: Disabling proxy logging only affects the proxy-specific log messages. General HTTP request logs and application-level logs are controlled separately.
 
 ## Dynamic Target Selection
 
