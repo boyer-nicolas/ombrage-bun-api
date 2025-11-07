@@ -118,7 +118,7 @@ export default defineConfig({
 	srcDir: "docs",
 	title: "Koritsu",
 	description: "A File-based routing API framework",
-	base: "/koritsu/",
+	base: "/",
 	ignoreDeadLinks: [/^http?:\/\/localhost/],
 	lastUpdated: true,
 	themeConfig: {
