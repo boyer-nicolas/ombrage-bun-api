@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.5
+
+[compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.4...v0.1.5)
+
+### 🩹 Fixes
+
+- Better auth non-existent package ([bf506e8](https://github.com/boyer-nicolas/koritsu/commit/bf506e8))
+- Basepaths ([#39](https://github.com/boyer-nicolas/koritsu/pull/39))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.1.4
 
 [compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.3...v0.1.4)
