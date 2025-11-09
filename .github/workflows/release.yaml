@@ -123,9 +123,9 @@ jobs:
       - name: Push release to npm
         if: steps.changes.outputs.should_publish == 'true'
         working-directory: ./packages/api
-        run: bun publish
+        run: npm publish --provenance --ignore-script
         env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Stage changes
         if: steps.changes.outputs.should_publish == 'true'
