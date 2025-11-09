@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.9
+
+[compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.8...v0.1.9)
+
+### 🩹 Fixes
+
+- Husky in api package ([bbb4033](https://github.com/boyer-nicolas/koritsu/commit/bbb4033))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v0.1.8
 
 [compare changes](https://github.com/boyer-nicolas/koritsu/compare/0.1.7...v0.1.8)
