@@ -935,3 +935,184 @@ function validateResponseAgainstSpec(
 	// - Header validation
 	// - Response size validation
 }
+
+/**
+ * CORS Helper Functions
+ */
+
+export interface CorsOptions {
+	origin: string | string[] | boolean;
+	methods: string[];
+	allowedHeaders: string[];
+	exposedHeaders?: string[];
+	credentials: boolean;
+	maxAge?: number;
+	optionsSuccessStatus?: number;
+}
+
+/**
+ * Check if an origin is allowed based on CORS configuration
+ */
+export function isOriginAllowed(
+	requestOrigin: string | null,
+	allowedOrigin: string | string[] | boolean,
+): boolean {
+	if (!requestOrigin) {
+		return false;
+	}
+
+	if (allowedOrigin === true || allowedOrigin === "*") {
+		return true;
+	}
+
+	if (allowedOrigin === false) {
+		return false;
+	}
+
+	if (typeof allowedOrigin === "string") {
+		return requestOrigin === allowedOrigin;
+	}
+
+	if (Array.isArray(allowedOrigin)) {
+		return allowedOrigin.includes(requestOrigin);
+	}
+
+	return false;
+}
+
+/**
+ * Generate CORS headers for a response
+ */
+export function generateCorsHeaders(
+	request: Request,
+	corsOptions: CorsOptions,
+): Record<string, string> {
+	const headers: Record<string, string> = {};
+	const origin = request.headers.get("origin");
+
+	// Handle Access-Control-Allow-Origin
+	if (
+		isOriginAllowed(origin, corsOptions.origin) ||
+		corsOptions.origin === true ||
+		corsOptions.origin === "*"
+	) {
+		if (corsOptions.credentials) {
+			// When credentials are included, must specify exact origin (not *)
+			headers["Access-Control-Allow-Origin"] = origin || "*";
+		} else {
+			// For non-credentialed requests, can use * or specific origin
+			headers["Access-Control-Allow-Origin"] =
+				corsOptions.origin === true || corsOptions.origin === "*"
+					? "*"
+					: origin || "*";
+		}
+	}
+
+	// Handle credentials
+	if (corsOptions.credentials) {
+		headers["Access-Control-Allow-Credentials"] = "true";
+	}
+
+	// Handle exposed headers for non-preflight requests
+	if (corsOptions.exposedHeaders && corsOptions.exposedHeaders.length > 0) {
+		headers["Access-Control-Expose-Headers"] =
+			corsOptions.exposedHeaders.join(", ");
+	}
+
+	return headers;
+}
+
+/**
+ * Generate CORS preflight response headers
+ */
+export function generateCorsPreflightHeaders(
+	request: Request,
+	corsOptions: CorsOptions,
+): Record<string, string> {
+	const headers = generateCorsHeaders(request, corsOptions);
+
+	// Add preflight-specific headers
+	headers["Access-Control-Allow-Methods"] = corsOptions.methods.join(", ");
+	headers["Access-Control-Allow-Headers"] =
+		corsOptions.allowedHeaders.join(", ");
+
+	if (corsOptions.maxAge !== undefined) {
+		headers["Access-Control-Max-Age"] = corsOptions.maxAge.toString();
+	}
+
+	return headers;
+}
+
+/**
+ * Handle CORS preflight OPTIONS request
+ */
+export function handleCorsPreflightRequest(
+	request: Request,
+	corsOptions: CorsOptions,
+): Response | null {
+	if (request.method !== "OPTIONS") {
+		return null;
+	}
+
+	const origin = request.headers.get("origin");
+	const requestMethod = request.headers.get("access-control-request-method");
+	const requestHeaders = request.headers.get("access-control-request-headers");
+
+	// Check if this is a CORS preflight request
+	if (!origin || !requestMethod) {
+		return null;
+	}
+
+	// Validate the requested method is allowed
+	if (!corsOptions.methods.includes(requestMethod.toUpperCase())) {
+		return new Response(null, { status: 405 });
+	}
+
+	// Validate requested headers are allowed
+	if (requestHeaders) {
+		const requestedHeaders = requestHeaders
+			.split(",")
+			.map((h) => h.trim().toLowerCase());
+		const allowedHeadersLower = corsOptions.allowedHeaders.map((h) =>
+			h.toLowerCase(),
+		);
+		const hasDisallowedHeader = requestedHeaders.some(
+			(h) => !allowedHeadersLower.includes(h),
+		);
+
+		if (hasDisallowedHeader) {
+			return new Response(null, { status: 403 });
+		}
+	}
+
+	// Generate CORS preflight headers
+	const corsHeaders = generateCorsPreflightHeaders(request, corsOptions);
+
+	return new Response(null, {
+		status: corsOptions.optionsSuccessStatus || 204,
+		headers: corsHeaders,
+	});
+}
+
+/**
+ * Add CORS headers to an existing response
+ */
+export function addCorsHeaders(
+	response: Response,
+	request: Request,
+	corsOptions: CorsOptions,
+): Response {
+	const corsHeaders = generateCorsHeaders(request, corsOptions);
+
+	// Create new response with CORS headers added
+	const newHeaders = new Headers(response.headers);
+	for (const [key, value] of Object.entries(corsHeaders)) {
+		newHeaders.set(key, value);
+	}
+
+	return new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers: newHeaders,
+	});
+}

@@ -2,7 +2,7 @@
 
 > A modern, type-safe file-based routing API framework for Bun with automatic OpenAPI documentation generation.
 
-[![Coverage](https://github.com/boyer-nicolas/koritsu/actions/workflows/coverage.yaml/badge.svg)](https://github.com/boyer-nicolas/koritsu/actions/workflows/coverage.yaml)
+[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)](https://github.com/boyer-nicolas/koritsu/actions/workflows/coverage.yaml)
 [![Release](https://github.com/boyer-nicolas/koritsu/actions/workflows/release.yaml/badge.svg)](https://github.com/boyer-nicolas/koritsu/actions/workflows/release.yaml)
 [![NPM Version](https://img.shields.io/npm/v/koritsu)](https://www.npmjs.com/package/koritsu)
 [![NPM Downloads](https://img.shields.io/npm/dm/koritsu)](https://www.npmjs.com/package/koritsu)

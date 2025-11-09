@@ -1,4 +1,9 @@
 import { type Config, type ConfigInput, validateConfig } from "./config";
+import {
+	addCorsHeaders,
+	type CorsOptions,
+	handleCorsPreflightRequest,
+} from "./helpers";
 import { getLogger, type Logger } from "./logger";
 import { FileRouter } from "./router";
 
@@ -44,12 +49,29 @@ export class Api {
 				const startTime = Date.now();
 				const url = new URL(request.url);
 
+				// Helper function to add CORS headers to responses when CORS is enabled
+				const wrapWithCors = (response: Response): Response => {
+					if (self.config.cors?.enabled) {
+						const corsOptions: CorsOptions = {
+							origin: self.config.cors.origin,
+							methods: self.config.cors.methods,
+							allowedHeaders: self.config.cors.allowedHeaders,
+							exposedHeaders: self.config.cors.exposedHeaders,
+							credentials: self.config.cors.credentials,
+							maxAge: self.config.cors.maxAge,
+							optionsSuccessStatus: self.config.cors.optionsSuccessStatus,
+						};
+						return addCorsHeaders(response, request, corsOptions);
+					}
+					return response;
+				};
+
 				// Check for Swagger UI routes
 				const swaggerResponse = await self.fileRouter.handleSwaggerRequest(
 					url.pathname,
 				);
 				if (swaggerResponse) {
-					return swaggerResponse;
+					return wrapWithCors(swaggerResponse);
 				}
 
 				if (url.pathname === "/favicon.ico") {
@@ -57,13 +79,40 @@ export class Api {
 					return new Response(null, { status: 204 });
 				}
 
+				// Handle CORS preflight requests
+				if (self.config.cors?.enabled) {
+					const corsOptions: CorsOptions = {
+						origin: self.config.cors.origin,
+						methods: self.config.cors.methods,
+						allowedHeaders: self.config.cors.allowedHeaders,
+						exposedHeaders: self.config.cors.exposedHeaders,
+						credentials: self.config.cors.credentials,
+						maxAge: self.config.cors.maxAge,
+						optionsSuccessStatus: self.config.cors.optionsSuccessStatus,
+					};
+
+					const corsPreflightResponse = handleCorsPreflightRequest(
+						request,
+						corsOptions,
+					);
+					if (corsPreflightResponse) {
+						self.logger.http(
+							request,
+							corsPreflightResponse,
+							Date.now() - startTime,
+						);
+						return corsPreflightResponse;
+					}
+				}
+
 				// Handle proxy requests first (before static files and routes)
 				if (self.config.proxy?.enabled) {
 					const proxyResponse =
 						await self.fileRouter.handleProxyRequest(request);
 					if (proxyResponse) {
-						self.logger.http(request, proxyResponse, Date.now() - startTime);
-						return proxyResponse;
+						const finalResponse = wrapWithCors(proxyResponse);
+						self.logger.http(request, finalResponse, Date.now() - startTime);
+						return finalResponse;
 					}
 				}
 
@@ -81,8 +130,9 @@ export class Api {
 					const staticResponse = await self.fileRouter.handleStaticRequest(
 						staticPath || "/",
 					);
-					self.logger.http(request, staticResponse, Date.now() - startTime);
-					return staticResponse;
+					const finalResponse = wrapWithCors(staticResponse);
+					self.logger.http(request, finalResponse, Date.now() - startTime);
+					return finalResponse;
 				}
 
 				// Use file-based router for route requests
@@ -101,13 +151,15 @@ export class Api {
 						},
 						{ status: 404 },
 					);
-					self.logger.http(request, response, Date.now() - startTime);
-					return response;
+					const finalResponse = wrapWithCors(response);
+					self.logger.http(request, finalResponse, Date.now() - startTime);
+					return finalResponse;
 				}
 
 				const response = await self.fileRouter.handleRequest(request);
-				self.logger.http(request, response, Date.now() - startTime);
-				return response;
+				const finalResponse = wrapWithCors(response);
+				self.logger.http(request, finalResponse, Date.now() - startTime);
+				return finalResponse;
 			},
 		};
 	}

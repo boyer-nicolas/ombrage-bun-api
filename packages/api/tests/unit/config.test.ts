@@ -37,15 +37,42 @@ describe("config.ts", () => {
 					enabled: true,
 					path: "/docs",
 				},
+				cors: {
+					enabled: false,
+					origin: "*",
+					methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+					allowedHeaders: ["Content-Type", "Authorization"],
+					credentials: false,
+					maxAge: 3600,
+					optionsSuccessStatus: 204,
+				},
 				title: "Test API",
 				description: "Test API description",
 				environment: "development",
 			};
-
 			const result = ConfigSchema.safeParse(validConfig);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.data).toEqual(validConfig);
+				expect(result.data).toEqual({
+					...validConfig,
+					cors: {
+						enabled: false,
+						origin: "*",
+						methods: [
+							"GET",
+							"POST",
+							"PUT",
+							"DELETE",
+							"PATCH",
+							"HEAD",
+							"OPTIONS",
+						],
+						allowedHeaders: ["Content-Type", "Authorization"],
+						credentials: false,
+						maxAge: 3600,
+						optionsSuccessStatus: 204,
+					},
+				});
 			}
 		});
 
@@ -73,6 +100,23 @@ describe("config.ts", () => {
 					proxy: {
 						enabled: false,
 						configs: [],
+					},
+					cors: {
+						enabled: false,
+						origin: "*",
+						methods: [
+							"GET",
+							"POST",
+							"PUT",
+							"DELETE",
+							"PATCH",
+							"HEAD",
+							"OPTIONS",
+						],
+						allowedHeaders: ["Content-Type", "Authorization"],
+						credentials: false,
+						maxAge: 3600,
+						optionsSuccessStatus: 204,
 					},
 					swagger: {
 						enabled: true,
@@ -142,6 +186,15 @@ describe("config.ts", () => {
 				proxy: {
 					enabled: false,
 					configs: [],
+				},
+				cors: {
+					enabled: false,
+					origin: "*",
+					methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+					allowedHeaders: ["Content-Type", "Authorization"],
+					credentials: false,
+					maxAge: 3600,
+					optionsSuccessStatus: 204,
 				},
 				swagger: {
 					enabled: true,

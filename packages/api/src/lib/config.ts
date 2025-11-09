@@ -128,6 +128,54 @@ export const ConfigSchema = z.object({
 			configs: z.array(ProxyConfigSchema).default([]),
 		})
 		.default({ enabled: false, configs: [] }),
+	cors: z
+		.object({
+			enabled: booleanFromString.default(false),
+			origin: z
+				.union([
+					z.string().describe("Single origin URL"),
+					z.array(z.string()).describe("Array of allowed origins"),
+					z.boolean().describe("true for * (all origins), false to disable"),
+				])
+				.default("*")
+				.describe("Allowed origins for CORS requests"),
+			methods: z
+				.array(
+					z.enum(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]),
+				)
+				.default(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
+				.describe("Allowed HTTP methods for CORS requests"),
+			allowedHeaders: z
+				.array(z.string())
+				.default(["Content-Type", "Authorization"])
+				.describe("Allowed headers for CORS requests"),
+			exposedHeaders: z
+				.array(z.string())
+				.optional()
+				.describe("Headers exposed to the client"),
+			credentials: booleanFromString
+				.default(false)
+				.describe("Allow credentials in CORS requests"),
+			maxAge: numberFromString
+				.pipe(z.number().min(0).max(86400))
+				.default(3600)
+				.optional()
+				.describe("Preflight cache duration in seconds (max 24h)"),
+			optionsSuccessStatus: numberFromString
+				.pipe(z.number().min(200).max(299))
+				.default(204)
+				.optional()
+				.describe("Status code for successful OPTIONS requests"),
+		})
+		.default({
+			enabled: false,
+			origin: "*",
+			methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+			credentials: false,
+			maxAge: 3600,
+			optionsSuccessStatus: 204,
+		}),
 	swagger: z
 		.object({
 			enabled: booleanFromString.default(true),
@@ -169,6 +217,16 @@ export type Config = z.infer<typeof ConfigSchema> & {
 		enabled: boolean;
 		configs: ProxyConfig[];
 	};
+	cors?: {
+		enabled: boolean;
+		origin: string | string[] | boolean;
+		methods: string[];
+		allowedHeaders: string[];
+		exposedHeaders?: string[];
+		credentials: boolean;
+		maxAge?: number;
+		optionsSuccessStatus?: number;
+	};
 };
 
 // Input type for partial configuration
@@ -176,6 +234,16 @@ export type ConfigInput = z.input<typeof ConfigSchema> & {
 	proxy?: {
 		enabled?: boolean;
 		configs?: Partial<ProxyConfig>[];
+	};
+	cors?: {
+		enabled?: boolean;
+		origin?: string | string[] | boolean;
+		methods?: string[];
+		allowedHeaders?: string[];
+		exposedHeaders?: string[];
+		credentials?: boolean;
+		maxAge?: number;
+		optionsSuccessStatus?: number;
 	};
 };
 

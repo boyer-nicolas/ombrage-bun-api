@@ -27,6 +27,26 @@ new Server({
     "enabled": false,
     "configs": []
   },
+  "cors": {
+    "enabled": false,
+    "origin": "*",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "OPTIONS"
+    ],
+    "allowedHeaders": [
+      "Content-Type",
+      "Authorization"
+    ],
+    "credentials": false,
+    "maxAge": 3600,
+    "optionsSuccessStatus": 204
+  },
   "swagger": {
     "enabled": true,
     "path": "/"
