@@ -8,6 +8,7 @@ import {
 	type ProxyHandler,
 } from "./lib/config";
 import {
+	type CorsOptions,
 	type CreateRouteProps,
 	createRoute,
 	createRouteCollection,
@@ -28,6 +29,7 @@ export {
 	type KoritsuServer,
 	type ProxyHandler,
 	type ProxyConfig,
+	type CorsOptions,
 	createTypedResponse,
 	createRoute,
 	createRouteCollection,
