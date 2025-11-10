@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.14
+
+[compare changes](https://github.com/boyer-nicolas/koritsu/compare/v0.1.13...v0.1.14)
+
+### 🏡 Chore
+
+- Bump versions ([29a615e](https://github.com/boyer-nicolas/koritsu/commit/29a615e))
+
+### ❤️ Contributors
+
+- Nicolas Boyer <boyer63nicolas@gmail.com>
+
 ## v0.1.13
 
 [compare changes](https://github.com/boyer-nicolas/koritsu/compare/v0.1.12...v0.1.13)
