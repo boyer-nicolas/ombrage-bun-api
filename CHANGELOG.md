@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.1.15
+
+[compare changes](https://github.com/boyer-nicolas/koritsu/compare/v0.1.14...v0.1.15)
+
+### 🚀 Enhancements
+
+- External spec paths and proxy skip ([#48](https://github.com/boyer-nicolas/koritsu/pull/48))
+
+### 🏡 Chore
+
+- **deps-dev:** Bump @biomejs/biome from 2.3.2 to 2.3.4 ([#45](https://github.com/boyer-nicolas/koritsu/pull/45))
+
+### ❤️ Contributors
+
+- Nicolas Boyer ([@boyer-nicolas](https://github.com/boyer-nicolas))
+
 ## v0.1.14
 
 [compare changes](https://github.com/boyer-nicolas/koritsu/compare/v0.1.13...v0.1.14)
