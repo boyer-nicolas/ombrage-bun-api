@@ -35,6 +35,7 @@ export type ProxyHandler = (props: {
 	target?: string;
 }) => Promise<{
 	proceed: boolean;
+	skip?: boolean;
 	response?: Response;
 	headers?: Record<string, string>;
 	target?: string;

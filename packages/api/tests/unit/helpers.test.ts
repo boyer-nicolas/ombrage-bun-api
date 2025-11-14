@@ -1055,6 +1055,9 @@ describe("helpers.ts", () => {
 			};
 
 			const response = await executeProxyRequest(context);
+			if (!response) {
+				throw new Error("Response is undefined");
+			}
 			expect(response.status).toBe(200);
 
 			// Restore original fetch
@@ -1082,6 +1085,9 @@ describe("helpers.ts", () => {
 			};
 
 			const response = await executeProxyRequest(context);
+			if (!response) {
+				throw new Error("Response is undefined");
+			}
 			expect(response.status).toBe(403);
 			expect(await response.text()).toBe("Blocked");
 		});
@@ -1113,6 +1119,9 @@ describe("helpers.ts", () => {
 			};
 
 			const response = await executeProxyRequest(context);
+			if (!response) {
+				throw new Error("Response is undefined");
+			}
 			expect(response.status).toBe(200);
 
 			// Restore original fetch

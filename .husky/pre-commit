@@ -1,6 +1,54 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-bunx lint-staged --config ./lint-staged.config.mjs
+echo "Running pre-commit hooks..."
+
+echo "Building koritsu package..."
+if bun run --filter koritsu build; then
+  echo "Koritsu package built successfully."
+else
+  echo "Failed to build koritsu package. Aborting commit."
+  exit 1
+fi
+
+echo "Running lint fix..."
+if bun run lint:fix; then
+  echo "Lint fix completed successfully."
+else
+  echo "Lint fix failed. Aborting commit."
+  exit 1
+fi
+
+echo "Running tests with coverage..."
+if bun run --filter koritsu test:coverage; then
+  echo "Tests passed successfully."
+else
+  echo "Tests failed. Aborting commit."
+  exit 1
+fi
+
+echo "Running type check..."
+if bun run check; then
+  echo "Type check passed successfully."
+else
+  echo "Type check failed. Aborting commit."
+  exit 1
+fi
+
+echo "Building documentation..."
+if bun run docs:build; then
+  echo "Documentation built successfully."
+else
+  echo "Failed to build documentation. Aborting commit."
+  exit 1
+fi
+
+echo "Generating configuration..."
+if bun run ./scripts/generate-config.ts; then
+  echo "Configuration generated successfully."
+else
+  echo "Failed to generate configuration. Aborting commit."
+  exit 1
+fi
 
 git add .

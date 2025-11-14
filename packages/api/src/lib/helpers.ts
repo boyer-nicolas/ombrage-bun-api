@@ -135,7 +135,7 @@ export function findMatchingProxyConfig(
  */
 export async function executeProxyRequest(
 	context: ProxyExecutionContext,
-): Promise<Response> {
+): Promise<Response | null> {
 	const { request, params, config } = context;
 	const logger = getLogger();
 
@@ -147,6 +147,15 @@ export async function executeProxyRequest(
 				params,
 				target: config.target,
 			});
+
+			// If handler says to skip, return null to fall through to normal routing
+			if (handlerResult.skip) {
+				const url = new URL(request.url);
+				logger.debug(
+					`Proxy handler requested skip for ${request.method} ${url.pathname} - passing through to file-based routing`,
+				);
+				return null;
+			}
 
 			// If handler says not to proceed, return the handler response
 			if (!handlerResult.proceed) {

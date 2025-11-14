@@ -487,4 +487,105 @@ describe("Proxy Integration Tests", () => {
 			targetServer.stop();
 		}
 	});
+
+	test("should skip proxy and pass through to original route when handler returns skip", async () => {
+		// Create API server with a proxy that always skips
+		const testServer = new Api({
+			environment: "test",
+			server: {
+				port: 0,
+				routes: { dir: "./tests/fixtures/routes" },
+			},
+			proxy: {
+				enabled: true,
+				configs: [
+					{
+						pattern: "/test",
+						target: "http://example.com", // This should never be called
+						handler: async () => {
+							// Always skip to local route
+							return {
+								proceed: false,
+								skip: true,
+							};
+						},
+					},
+				],
+			},
+		});
+
+		const server = await testServer.start();
+
+		try {
+			// Make a request that should skip proxy and use local route
+			const response = await fetch(`http://localhost:${server.port}/test`);
+			expect(response.status).toBe(200);
+
+			// biome-ignore lint/suspicious/noExplicitAny: This is a test file
+			const data = (await response.json()) as any;
+			expect(data.message).toBe("Test fixture route");
+		} finally {
+			server.stop();
+		}
+	});
+
+	test("should skip proxy conditionally based on handler logic", async () => {
+		// Create API server with conditional skip logic
+		const testServer = new Api({
+			environment: "test",
+			server: {
+				port: 0,
+				routes: { dir: "./tests/fixtures/routes" },
+			},
+			proxy: {
+				enabled: true,
+				configs: [
+					{
+						pattern: "/test",
+						target: "http://example.com",
+						handler: async ({ request }) => {
+							// Skip if header is present, otherwise block
+							const skipHeader = request.headers.get("x-skip-proxy");
+							if (skipHeader === "true") {
+								return {
+									proceed: false,
+									skip: true,
+								};
+							}
+
+							// Block without skip
+							return {
+								proceed: false,
+								response: new Response("Proxy blocked", { status: 403 }),
+							};
+						},
+					},
+				],
+			},
+		});
+
+		const server = await testServer.start();
+
+		try {
+			// Without header - should be blocked by handler
+			const response1 = await fetch(`http://localhost:${server.port}/test`);
+			expect(response1.status).toBe(403);
+			const text1 = await response1.text();
+			expect(text1).toBe("Proxy blocked");
+
+			// With header - should skip to local route
+			const response2 = await fetch(`http://localhost:${server.port}/test`, {
+				headers: {
+					"x-skip-proxy": "true",
+				},
+			});
+			expect(response2.status).toBe(200);
+
+			// biome-ignore lint/suspicious/noExplicitAny: This is a test file
+			const data2 = (await response2.json()) as any;
+			expect(data2.message).toBe("Test fixture route");
+		} finally {
+			server.stop();
+		}
+	});
 });
